@@ -4,13 +4,17 @@
   var canvas = document.getElementById('myCanvas');
   canvas.width = window.innerWidth
   canvas.height = window.innerHeight
-  console.log("HERE")
+  paper.setup(canvas);
+ //const canvasContext = canvas.getContext('2d');
+ // canvasContext.translate(window.innerWidth, 0);
+ // canvasContext.scale(-1,1 );
+ // canvasContext.save()
+  console.log("HEREs")
   console.log(canvas)
 
   //this line eliminates need to access everything through paper object
   // but as a sideeffect will impact global scope for example breaks browsersync
   //paper.install(window)
-  paper.setup('myCanvas');
   var path = new paper.Path();
   var tool = new paper.Tool()
   const origin =  new paper.Point(100,100)
@@ -22,9 +26,11 @@
   const tileRow = 225
   const tileSpacingL = 10
 
+  const trans = (a ) => { return canvas.width - a } 
+
   class placeHolder { 
     constructor ( loc) {
-      const center = new paper.Point ( (sideL + spacingL) *loc -spacingL, placeHolderRow );
+      const center = new paper.Point ( trans((sideL + spacingL) *loc -spacingL), placeHolderRow );
       this.path = new paper.Path.Rectangle({ 
         center, 
         size: [sideL,sideL]
@@ -43,7 +49,7 @@
 
   class alphTile {
     constructor (loc, ph ) {
-      const center = new paper.Point ( (sideL + tileSpacingL) *loc -tileSpacingL, tileRow );
+      const center = new paper.Point ( trans((sideL + tileSpacingL) *loc -tileSpacingL), tileRow );
       const rect = new paper.Path.Rectangle({ 
         center, 
         size: [sideL,sideL]
