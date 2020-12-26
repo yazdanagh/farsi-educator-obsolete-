@@ -16,64 +16,97 @@
   const origin =  new paper.Point(100,100)
   const destination =  new paper.Point(300,100)
 
-  let circle = new paper.Path.Circle( { 
-    center: origin, 
-    radius: 50,
-    fillColor: 'orange'
-  })
-  let targRect = new paper.Path.Rectangle({ 
-    center: destination, 
-    size: [100,100]
-  })
+  const sideL = 100
+  const spacingL = 2
+  const placeHolderRow = 100
+  const tileRow = 225
+  const tileSpacingL = 10
 
-  circle.strokeColor = 'black';
-  targRect.strokeColor = 'black';
-  //paper.view.draw();
-  //tool.onMouseDown = (event) => {
-    //  // The mouse was clicked, so let's put a newly created Path into
-    //  // myPath, give it the color black and add the location as the
-    //  // path's first segment.
-    //  myPath = new paper.Path();
-    //  myPath.moveTo(start)
-    //  myPath.strokeColor = 'black';
-    //  myPath.add(event.point);
-    //  paper.view.draw();
-    //  console.log(event)
-    //}
-   circle.onMouseDrag = (event) => {
-     circle.position = circle.position.add(event.delta)
-     //circle.position = circle.position + event.delta
-     //console.log(event.delta)
-     //paper.view.draw();
-   }
-   circle.onMouseUp = (event ) => {
-     circle.resolve = true 
-   }
-   paper.view.onFrame = (event) => { 
-     let targ
-     if ( circle.resolve ) {
-     if ( targRect.contains(circle.position)) {
-       targ = destination
-       console.log("YOOHOO")
-     } else {
-       targ = origin
-     }
-       
-     let vector = targ.subtract(circle.position) 
-     let step  
-     console.log('vector length: ' + vector.length )
-     if ( vector.length > 10 ) {
-       step = vector.divide(10)
-       step = step.floor()
-     } else { 
-       step = vector
-     }
-     console.log( 'step is: ' +step)
-     //console.log(circle.position)
-     circle.position = circle.position.add(step)
-     }
-     if ( circle.position.equals(targ) ) {
-       circle.resolve = false
-     }
-   }
+  class placeHolder { 
+    constructor ( loc) {
+      const center = new paper.Point ( (sideL + spacingL) *loc -spacingL, placeHolderRow );
+      this.path = new paper.Path.Rectangle({ 
+        center, 
+        size: [sideL,sideL]
+      })
+      this.path.strokeColor = 'black'
+    }
+    // Getter
+    //get area() {
+      //  return this.calcArea();
+      //}
+      // Method
+      //calcArea() {
+        //  return this.height * this.width;
+        //}
+  }
+
+  class alphTile {
+    constructor (loc, ph ) {
+      const center = new paper.Point ( (sideL + tileSpacingL) *loc -tileSpacingL, tileRow );
+      const rect = new paper.Path.Rectangle({ 
+        center, 
+        size: [sideL,sideL]
+      })
+      //rect.strokeColor = 'red'
+      rect.fillColor = 'red'
+      rect.onMouseDrag = (event) => { 
+        rect.position = rect.position.add(event.delta)
+      }
+      rect.onMouseUp = (event ) => {
+        this.resolve = true 
+      }
+      this.path = rect
+      this.origin = rect.position
+      this.resolve = false
+      this.resolving = false
+      this.resolvingTarg = null
+      this.target = ph
+    }
+  }
+
+  let ph1 = new placeHolder(1)
+  let ph2 = new placeHolder(2)
+  let ph3 = new placeHolder(3)
+  //let at2 = new alphTile(2, ph2)
+  //const tiles = [at1, at2 ]
+  const tiles = [] 
+  tiles.push( new alphTile(1, ph1) )
+  tiles.push( new alphTile(2, ph2) )
+  tiles.push( new alphTile(3, ph3) )
+  window.tiles = tiles
+ 
+  paper.view.onFrame = (event) => { 
+    const tile = tiles.find(t =>  {
+      return t.resolve || t.resolvingTarg 
+    }) 
+    if ( !tile ) return
+    console.log("Found tile")
+    if ( tile.resolve ) {
+      tile.resolve = false
+      if ( tile.target.path.contains(tile.path.position)) {
+        tile.resolvingTarg = tile.target.path.position 
+      } else {
+        tile.resolvingTarg = tile.origin 
+      }
+    }
+
+    let vector = tile.resolvingTarg.subtract(tile.path.position) 
+    let step = vector  
+    console.log('vector length: ' + vector.length )
+    if ( vector.length > 20 ) {
+      console.log( 'step is: ' +step)
+      step = step.divide(10)
+      console.log( 'step is: ' +step)
+      step = step.floor()
+      console.log( 'step is: ' +step)
+    } else { 
+      step = vector
+      console.log( 'step is: ' +step)
+    }
+    tile.path.position = tile.path.position.add(step)
+    if ( tile.path.position.equals(tile.resolvingTarg) ) {
+      tile.resolvingTarg = null
+    }
+  }
 
