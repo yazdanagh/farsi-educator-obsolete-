@@ -64,16 +64,28 @@ import { placeHolder, alphTile }  from './class';
       //console.log( 'step is: ' +step)
     } else { 
       step = vector
-      if ( tile.path.position.equals(tile.target.path.position) ) {
-        this.resolved = true
-      } else if ( tile.path.position.equals(tile.origin))  {
-        this.resolved = false
-      }
+      
       renderLine()
     }
     tile.path.position = tile.path.position.add(step)
     if ( tile.path.position.equals(tile.resolvingTarg) ) {
       tile.resolvingTarg = null
+    }
+    if ( tile.path.position.equals(tile.target.path.position) ) {
+      tile.resolved = true
+      tile.group.firstChild.visible = false
+
+      tile.target.path.origBound = tile.target.path.bounds
+      tile.target.path.bounds = tile.group.lastChild.bounds 
+      console.log("resolved")
+      console.log(tile)
+    } else if ( tile.path.position.equals(tile.origin))  {
+      tile.group.firstChild.visible = true
+      tile.resolved = false
+      console.log(" non resolved")
+      console.log(tile.group)
+      tile.target.path.bounds = tile.target.path.origBound
+
     }
   }
 

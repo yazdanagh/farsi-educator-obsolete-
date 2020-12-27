@@ -3,6 +3,7 @@ const cons = require('./constants.js')
 
 const trans = (a ) => { return cons.canvasWidth - a } 
 
+const rasterWidth = 512
 class placeHolder { 
 
     // static variables
@@ -11,10 +12,12 @@ class placeHolder {
     static placeHolderRow = 100
     constructor ( loc) {
       const center = new paper.Point ( placeHolder.initialX(loc), placeHolder.initialY() );
+      
       this.path = new paper.Path.Rectangle({ 
         center, 
         size: [placeHolder.sideL, placeHolder.sideL]
       })
+      this.origBound = this.path.bounds
       this.path.strokeColor = 'black'
     }
     getPath() {
@@ -44,21 +47,29 @@ class placeHolder {
         center, 
         size: [alphTile.sideL,alphTile.sideL]
       })
-      //rect.strokeColor = 'red'
+      rect.strokeColor = 'red'
       rect.fillColor = 'red'
-      rect.onMouseDrag = (event) => { 
-        rect.position = rect.position.add(event.delta)
+      var url = 'http://assets.paperjs.org/images/marilyn.jpg';
+      var raster = new paper.Raster({
+        source: url,
+        position: center
+      });
+      raster.scale(30/512, 100/512);
+      const group = new paper.Group([rect, raster])
+      group.onMouseDrag = (event) => { 
+        group.position = group.position.add(event.delta)
       }
-      rect.onMouseUp = (event ) => {
+      group.onMouseUp = (event ) => {
         this.resolve = true 
       }
-      this.path = rect
-      this.origin = rect.position
+      this.path = group
+      this.origin = group.position
       this.resolve = false
       this.resolved = false
       this.resolving = false
       this.resolvingTarg = null
       this.target = ph
+      this.group = group
     }
     static initialX = (loc) => {
       return trans((alphTile.sideL + alphTile.tileSpacingL) *loc -alphTile.tileSpacingL)
