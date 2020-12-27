@@ -18,6 +18,7 @@ class placeHolder {
         size: [placeHolder.sideL, placeHolder.sideL]
       })
       this.origBound = this.path.bounds
+      this.aTile = null
       this.path.strokeColor = 'black'
     }
     getPath() {
@@ -68,7 +69,7 @@ class placeHolder {
       this.resolved = false
       this.resolving = false
       this.resolvingTarg = null
-      this.target = ph
+      this.ph = ph
       this.group = group
     }
     static initialX = (loc) => {

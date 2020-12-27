@@ -21,20 +21,42 @@ import { placeHolder, alphTile }  from './class';
   var path = new paper.Path();
   var tool = new paper.Tool()
 
-  let ph1 = new placeHolder(1)
-  let ph2 = new placeHolder(2)
-  let ph3 = new placeHolder(3)
+  let plHolders = []
+  plHolders.push( new placeHolder(1))
+  plHolders.push( new placeHolder(2))
+  plHolders.push( new placeHolder(3))
   //let at2 = new alphTile(2, ph2)
   //const tiles = [at1, at2 ]
   const tiles = [] 
-  tiles.push( new alphTile(1, ph1) )
-  tiles.push( new alphTile(2, ph2) )
-  tiles.push( new alphTile(3, ph3) )
-  window.tiles = tiles
+  tiles.push( new alphTile(1, plHolders[1]) )
+  tiles.push( new alphTile(2, plHolders[0]) )
+  tiles.push( new alphTile(3, plHolders[2]) )
  
 
 
   const renderLine = () => {
+      for ( let [idx,plh] of plHolders.entries() ) {
+        console.log("--------" + idx)
+        if ( plh.aTile === null ) {
+          continue
+        }
+        console.log(plh.path.position)
+        console.log(plh.aTile.path.firstChild.bounds.width)
+        console.log(plh.aTile.path.lastChild.bounds.width)
+
+        if ( idx > 0 ) {
+          // move plh first
+        }
+
+        const tile = plh.aTile.path.lastChild
+        console.log(tile.bounds)
+        console.log(plh)
+        tile.position = tile.position.add([plh.path.bounds.x + plh.path.bounds.width - tile.bounds.x - tile.bounds.width , 0 ])
+
+        //plh.path.position = plh.path.position.add( [ plh.aTile.path.firstChild.bounds.width - plh.aTile.path.lastChild.bounds.width , 0 ] )
+        //plh.aTile.path.position = plh.aTile.path.position.subtract([ 30 , 0 ])
+        window.aTile = plh.aTile
+      }
   }
 
   
@@ -46,8 +68,8 @@ import { placeHolder, alphTile }  from './class';
     console.log("Found tile")
     if ( tile.resolve ) {
       tile.resolve = false
-      if ( tile.target.path.contains(tile.path.position)) {
-        tile.resolvingTarg = tile.target.path.position 
+      if ( tile.ph.path.contains(tile.path.position)) {
+        tile.resolvingTarg = tile.ph.path.position 
       } else {
         tile.resolvingTarg = tile.origin 
       }
@@ -64,28 +86,29 @@ import { placeHolder, alphTile }  from './class';
       //console.log( 'step is: ' +step)
     } else { 
       step = vector
-      
-      renderLine()
     }
     tile.path.position = tile.path.position.add(step)
     if ( tile.path.position.equals(tile.resolvingTarg) ) {
       tile.resolvingTarg = null
     }
-    if ( tile.path.position.equals(tile.target.path.position) ) {
+    if ( tile.path.position.equals(tile.ph.path.position) ) {
       tile.resolved = true
       tile.group.firstChild.visible = false
-
-      tile.target.path.origBound = tile.target.path.bounds
-      tile.target.path.bounds = tile.group.lastChild.bounds 
+      tile.ph.aTile = tile
+      //tile.ph.path.bounds = tile.group.lastChild.bounds 
+      //tile.ph.path.visible = true
       console.log("resolved")
       console.log(tile)
+      renderLine()
     } else if ( tile.path.position.equals(tile.origin))  {
       tile.group.firstChild.visible = true
       tile.resolved = false
       console.log(" non resolved")
-      console.log(tile.group)
-      tile.target.path.bounds = tile.target.path.origBound
-
+      //console.log(tile.group)
+      console.log(tile.ph.path)
+      //tile.ph.path.bounds = tile.ph.origBound
+      console.log(tile.ph.path.bounds)
+      renderLine()
     }
   }
 
