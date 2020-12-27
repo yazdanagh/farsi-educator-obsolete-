@@ -1,9 +1,12 @@
-  var paper = require('paper');
-  //var paper = require('paper/dist/paper-full.js')
+const paper = require('paper');
+const cons = require('./constants')
+//var paper = require('paper/dist/paper-full.js')
+import { placeHolder, alphTile }  from './class';
+
 
   var canvas = document.getElementById('myCanvas');
-  canvas.width = window.innerWidth
-  canvas.height = window.innerHeight
+  canvas.width = cons.canvasWidth; // window.innerWidth
+  canvas.height = cons.canvasHeight; // window.innerHeight
   paper.setup(canvas);
  //const canvasContext = canvas.getContext('2d');
  // canvasContext.translate(window.innerWidth, 0);
@@ -17,59 +20,6 @@
   //paper.install(window)
   var path = new paper.Path();
   var tool = new paper.Tool()
-  const origin =  new paper.Point(100,100)
-  const destination =  new paper.Point(300,100)
-
-  const sideL = 100
-  const spacingL = 2
-  const placeHolderRow = 100
-  const tileRow = 225
-  const tileSpacingL = 10
-
-  const trans = (a ) => { return canvas.width - a } 
-
-  class placeHolder { 
-    constructor ( loc) {
-      const center = new paper.Point ( trans((sideL + spacingL) *loc -spacingL), placeHolderRow );
-      this.path = new paper.Path.Rectangle({ 
-        center, 
-        size: [sideL,sideL]
-      })
-      this.path.strokeColor = 'black'
-    }
-    // Getter
-    //get area() {
-      //  return this.calcArea();
-      //}
-      // Method
-      //calcArea() {
-        //  return this.height * this.width;
-        //}
-  }
-
-  class alphTile {
-    constructor (loc, ph ) {
-      const center = new paper.Point ( trans((sideL + tileSpacingL) *loc -tileSpacingL), tileRow );
-      const rect = new paper.Path.Rectangle({ 
-        center, 
-        size: [sideL,sideL]
-      })
-      //rect.strokeColor = 'red'
-      rect.fillColor = 'red'
-      rect.onMouseDrag = (event) => { 
-        rect.position = rect.position.add(event.delta)
-      }
-      rect.onMouseUp = (event ) => {
-        this.resolve = true 
-      }
-      this.path = rect
-      this.origin = rect.position
-      this.resolve = false
-      this.resolving = false
-      this.resolvingTarg = null
-      this.target = ph
-    }
-  }
 
   let ph1 = new placeHolder(1)
   let ph2 = new placeHolder(2)
@@ -82,6 +32,12 @@
   tiles.push( new alphTile(3, ph3) )
   window.tiles = tiles
  
+
+
+  const renderLine = () => {
+  }
+
+  
   paper.view.onFrame = (event) => { 
     const tile = tiles.find(t =>  {
       return t.resolve || t.resolvingTarg 
@@ -101,14 +57,19 @@
     let step = vector  
     console.log('vector length: ' + vector.length )
     if ( vector.length > 20 ) {
-      console.log( 'step is: ' +step)
+      //console.log( 'step is: ' +step)
       step = step.divide(10)
-      console.log( 'step is: ' +step)
+      //console.log( 'step is: ' +step)
       step = step.floor()
-      console.log( 'step is: ' +step)
+      //console.log( 'step is: ' +step)
     } else { 
       step = vector
-      console.log( 'step is: ' +step)
+      if ( tile.path.position.equals(tile.target.path.position) ) {
+        this.resolved = true
+      } else if ( tile.path.position.equals(tile.origin))  {
+        this.resolved = false
+      }
+      renderLine()
     }
     tile.path.position = tile.path.position.add(step)
     if ( tile.path.position.equals(tile.resolvingTarg) ) {
