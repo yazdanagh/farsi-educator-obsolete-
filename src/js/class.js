@@ -92,12 +92,13 @@ class alphTile {
         size: [alphTile.sideL,alphTile.sideL]
       })
       rect.strokeColor = 'red'
-      //rect.fillColor = 'red'
+      rect.fillColor = 'white'
       var alpI = document.getElementById(letter)
       console.log(alpI)
-      var raster = new paper.Raster(alpI)  // heigh : 95x
-     raster.position = center 
-      //raster.scale(30/512, 100/512);
+      var raster = new paper.Raster(alpI)  
+      raster.position = center 
+      console.log(raster.size)
+      raster.scale(1, 100/raster.size.height);
       const group = new paper.Group([rect, raster])
       group.onMouseDrag = (event) => { 
         group.position = group.position.add(event.delta)
