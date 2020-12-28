@@ -85,20 +85,19 @@ class alphTile {
     static tileRow = 225
     static tileSpacingL = 10
 
-    constructor (loc, ph ) {
+    constructor (loc, ph , letter ) {
       const center = new paper.Point ( alphTile.initialX(loc) , alphTile.initialY()  );
       const rect = new paper.Path.Rectangle({ 
         center, 
         size: [alphTile.sideL,alphTile.sideL]
       })
       rect.strokeColor = 'red'
-      rect.fillColor = 'red'
-      var url = 'http://assets.paperjs.org/images/marilyn.jpg';
-      var raster = new paper.Raster({
-        source: url,
-        position: center
-      });
-      raster.scale(30/512, 100/512);
+      //rect.fillColor = 'red'
+      var alpI = document.getElementById(letter)
+      console.log(alpI)
+      var raster = new paper.Raster(alpI)  // heigh : 95x
+     raster.position = center 
+      //raster.scale(30/512, 100/512);
       const group = new paper.Group([rect, raster])
       group.onMouseDrag = (event) => { 
         group.position = group.position.add(event.delta)
