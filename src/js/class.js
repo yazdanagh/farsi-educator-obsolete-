@@ -111,6 +111,7 @@ class alphTile {
       this.resolved = false
       this.resolving = false
       this.resolvingTarg = null
+      this.resolvingPhi = null
       this.ph = ph
       this.group = group
     }

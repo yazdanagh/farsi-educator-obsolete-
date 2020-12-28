@@ -29,10 +29,10 @@ import { php, phi, alphTile }  from './class';
   plHolders.push( new phi(phPane.getLocTopRight(4), phPane.getLocBottomLeft(4)))
 
   const tiles = [] 
-  tiles.push( new alphTile(1, plHolders[1], 'aa_rast' ))
-  tiles.push( new alphTile(2, plHolders[3] , 'aa_rast'))
-  tiles.push( new alphTile(3, plHolders[0] , 'be_koochik_chap' ))
-  tiles.push( new alphTile(4, plHolders[2] , 'be_koochik_chap' ))
+  tiles.push( new alphTile(1, [plHolders[1],plHolders[3]], 'aa_chasban_rast' ))
+  tiles.push( new alphTile(2, [plHolders[1],plHolders[3]] , 'aa_chasban_rast'))
+  tiles.push( new alphTile(3, [plHolders[2],plHolders[0]] , 'be_koochik_chap' ))
+  tiles.push( new alphTile(4, [plHolders[2],plHolders[0]] , 'be_koochik_chap' ))
   window.tiles = tiles
  
 
@@ -85,11 +85,19 @@ import { php, phi, alphTile }  from './class';
     console.log("Found tile")
     if ( tile.resolve ) {
       tile.resolve = false
-      if ( tile.ph.path.contains(tile.path.position)) {
-        tile.resolvingTarg = tile.ph.path.position 
-      } else {
-        tile.resolvingTarg = tile.origin 
+      console.log(tile.ph)
+      for ( let ph of tile.ph ) {
+        if ( ph.aTile ) { 
+          continue
+        }
+      console.log(ph)
+        if ( ph.path.contains(tile.path.position)) {
+          tile.resolvingTarg = ph.path.position 
+          tile.resolvingPhi = ph 
+          break
+        } 
       }
+      tile.resolvingTarg = tile.resolvingTarg || tile.origin
     }
 
     let vector = tile.resolvingTarg.subtract(tile.path.position) 
@@ -108,25 +116,27 @@ import { php, phi, alphTile }  from './class';
     if ( tile.path.position.equals(tile.resolvingTarg) ) {
       tile.resolvingTarg = null
     }
-    if ( tile.path.position.equals(tile.ph.path.position) ) {
+    if ( tile.resolvingPhi && tile.path.position.equals(tile.resolvingPhi.path.position) ) {
       tile.resolved = true
       tile.group.firstChild.visible = false
-      tile.ph.aTile = tile
+      tile.resolvingPhi.aTile = tile
       //tile.ph.path.bounds = tile.group.lastChild.bounds 
-      tile.ph.path.visible = false
+      tile.resolvingPhi.path.visible = false
       console.log("resolved")
       console.log(tile)
       renderLine()
     } else if ( tile.path.position.equals(tile.origin))  {
       tile.group.firstChild.visible = true
       tile.resolved = false
-      tile.ph.aTile = null
+      if ( tile.resolvingPhi ) {
+        tile.resolvingPhi.aTile = null
+        tile.resolvingPhi.path.visible = true
+      }
       console.log(" non resolved")
       //console.log(tile.group)
       console.log(tile.ph.path)
-      tile.ph.path.visible = true
+      tile.resolvingPhi = null
       //tile.ph.path.bounds = tile.ph.origBound
-      console.log(tile.ph.path.bounds)
       renderLine()
     }
   }
