@@ -1,7 +1,7 @@
 const paper = require('paper');
 const cons = require('./constants')
 //var paper = require('paper/dist/paper-full.js')
-import { placeHolder, alphTile }  from './class';
+import { php, phi, alphTile }  from './class';
 
 
   var canvas = document.getElementById('myCanvas');
@@ -20,13 +20,13 @@ import { placeHolder, alphTile }  from './class';
   //paper.install(window)
   var path = new paper.Path();
   var tool = new paper.Tool()
+  var phPane = new php(5)
 
   let plHolders = []
-  plHolders.push( new placeHolder(1))
-  plHolders.push( new placeHolder(2))
-  plHolders.push( new placeHolder(3))
-  //let at2 = new alphTile(2, ph2)
-  //const tiles = [at1, at2 ]
+  plHolders.push( new phi(phPane.getLocTopRight(1), phPane.getLocBottomLeft(1)))
+  plHolders.push( new phi(phPane.getLocTopRight(2), phPane.getLocBottomLeft(2)))
+  plHolders.push( new phi(phPane.getLocTopRight(3), phPane.getLocBottomLeft(3)))
+
   const tiles = [] 
   tiles.push( new alphTile(1, plHolders[1]) )
   tiles.push( new alphTile(2, plHolders[0]) )
@@ -35,6 +35,7 @@ import { placeHolder, alphTile }  from './class';
 
 
   const renderLine = () => {
+  return
       for ( let [idx,plh] of plHolders.entries() ) {
         console.log("--------" + idx)
         if ( plh.aTile === null ) {
