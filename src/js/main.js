@@ -28,11 +28,22 @@ import { php, phi, alphTile }  from './class';
   plHolders.push( new phi(phPane.getLocTopRight(3), phPane.getLocBottomLeft(3)))
   plHolders.push( new phi(phPane.getLocTopRight(4), phPane.getLocBottomLeft(4)))
 
+  const kalameh = "be_koochik_chap aa_chasban_rast be_koochik_chap aa_chasban_rast".split(' ')
+
   const tiles = [] 
-  tiles.push( new alphTile(1, [plHolders[1],plHolders[3]], 'aa_chasban_rast' ))
-  tiles.push( new alphTile(2, [plHolders[1],plHolders[3]] , 'aa_chasban_rast'))
-  tiles.push( new alphTile(3, [plHolders[2],plHolders[0]] , 'be_koochik_chap' ))
-  tiles.push( new alphTile(4, [plHolders[2],plHolders[0]] , 'be_koochik_chap' ))
+  console.log(kalameh)
+  let idx = 0
+  for ( let harf of kalameh ) {
+    const occurances = kalameh.reduce( (tot,elem) => { if (elem === harf) { tot.push(idx)} return tot } , [] )
+    console.log(occurances)
+    const plHoldersArray = occurances.map( a => plHolders[a] )
+    tiles.push( new alphTile(idx+1, plHoldersArray, harf ))
+    idx++
+   //tiles.push( new alphTile(1, [plHolders[1],plHolders[3]], 'aa_chasban_rast' ))
+   //tiles.push( new alphTile(2, [plHolders[1],plHolders[3]] , 'aa_chasban_rast'))
+   //tiles.push( new alphTile(3, [plHolders[2],plHolders[0]] , 'be_koochik_chap' ))
+   //tiles.push( new alphTile(4, [plHolders[2],plHolders[0]] , 'be_koochik_chap' ))
+  }
   window.tiles = tiles
  
 
