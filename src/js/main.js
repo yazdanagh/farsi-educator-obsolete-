@@ -23,17 +23,20 @@ import { php, phi, alphTile }  from './class';
   var phPane = new php(5)
 
   let plHolders = []
-  plHolders.push( new phi(phPane.getLocTopRight(1), phPane.getLocBottomLeft(1)))
-  plHolders.push( new phi(phPane.getLocTopRight(2), phPane.getLocBottomLeft(2)))
-  plHolders.push( new phi(phPane.getLocTopRight(3), phPane.getLocBottomLeft(3)))
-  plHolders.push( new phi(phPane.getLocTopRight(4), phPane.getLocBottomLeft(4)))
+ //plHolders.push( new phi(phPane.getLocTopRight(1), phPane.getLocBottomLeft(1)))
+ //plHolders.push( new phi(phPane.getLocTopRight(2), phPane.getLocBottomLeft(2)))
+ //plHolders.push( new phi(phPane.getLocTopRight(3), phPane.getLocBottomLeft(3)))
+ //plHolders.push( new phi(phPane.getLocTopRight(4), phPane.getLocBottomLeft(4)))
 
-  const kalameh = "be_koochik_chap aa_chasban_rast be_koochik_chap aa_chasban_rast".split(' ')
+  //const kalameh = "be_koochik_chap aa_chasban_rast be_koochik_chap aa_chasban_rast".split(' ')
+  //const kalameh = "aa_bakola be_bozorg_tanha".split(' ')
+  const kalameh = "be_koochik_chap aa_chasban_rast be_koochik_chap aa_chasban_rast faseleh aa_bakola be_bozorg_tanha".split(' ') 
 
   const tiles = [] 
   console.log(kalameh)
   let idx = 0
   for ( let harf of kalameh ) {
+    plHolders.push( new phi(phPane.getLocTopRight(idx+1), phPane.getLocBottomLeft(idx+1)))
     const occurances = kalameh.reduce( (tot,elem) => { if (elem === harf) { tot.push(idx)} return tot } , [] )
     console.log(occurances)
     const plHoldersArray = occurances.map( a => plHolders[a] )
