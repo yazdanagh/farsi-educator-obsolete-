@@ -80,15 +80,15 @@ import { php, phi, atp, ati }  from './class';
            startingTopRight = startingTopRight.subtract(php.phiSide, 0) 
         } else { 
            const tile = plh.aTile.group
-           window.tile = tile
+           //window.tile = tile
            console.log("HERE")
            console.log(tile.bounds)
            console.log(tile.firstChild.bounds)
-           const newBound = new paper.Rectangle(startingTopRight, startingTopRight.subtract(tile.lastChild.bounds.width, -php.phiSide ))
+           console.log(tile.lastChild.bounds)
+           const newBound = new paper.Rectangle(startingTopRight, startingTopRight.subtract(tile.lastChild.bounds.width, -tile.lastChild.bounds.height ))
             console.log(newBound)
            tile.bounds = newBound 
            startingTopRight = startingTopRight.subtract(tile.bounds.width, 0) 
-//           ksjskjskj()
         }
 
       }
@@ -110,7 +110,7 @@ import { php, phi, atp, ati }  from './class';
           tile.resolvingTarg = ph.phiRect.position 
           tile.resolvingPhi = ph 
           console.log("then here ")
-          window.ph = ph
+          //window.ph = ph
           break
         } 
       }
