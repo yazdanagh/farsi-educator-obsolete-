@@ -17,9 +17,9 @@ class phi {
    console.log(bottomLeft)
    this.phiRect = new paper.Path.Rectangle(topRight, bottomLeft )
    this.origBound = this.phiRect.bounds
-    this.aTile = null
-    this.phiRect.strokeColor = 'black'
-    this.phiRect.fillColor = 'white'
+   this.aTile = null
+   this.phiRect.strokeColor = 'black'
+   this.phiRect.fillColor = 'white'
   }
   getPhiRect() {
     return this.phiRect
@@ -29,27 +29,24 @@ class phi {
 class php {
     
     // external margins
-    static rightMargin = 50
     static minLeftMargin = 30
-    static topMargin = 50
 
-    static phiSide = 60
+    static phiSide = 80
     static phiSpacing = 10
-    static phiRow = php.phiSide + 2 * php.phiSpacing
+    static phpRow = php.phiSide + 2 * php.phiSpacing
     static phiGutter = 12 
 
-    constructor ( numTiles ) {
-       let tilesPerRow = cons.canvasWidth 
-       tilesPerRow -= (php.rightMargin + php.minLeftMargin) 
+    constructor ( paneTopRight, numTiles ) {
+       window.ptr = paneTopRight
+       let tilesPerRow = (paneTopRight.x + php.minLeftMargin) 
        tilesPerRow -= (numTiles -1)*php.phiGutter  
        tilesPerRow = tilesPerRow/ php.phiSide  
        tilesPerRow = Math.floor(tilesPerRow)
 
        const numRows = Math.ceil(numTiles / tilesPerRow) 
        console.log(`${numRows} rows with ${tilesPerRow} tiles in each row`)
-       const topRight = new paper.Point( 
-         cons.canvasWidth - php.rightMargin, php.topMargin );
-       const bottomLeft = topRight.subtract( tilesPerRow * php.phiSide + ( tilesPerRow -1 ) * php.phiGutter , -numRows * php.phiRow )
+       const topRight = paneTopRight 
+       const bottomLeft = topRight.subtract( tilesPerRow * php.phiSide + ( tilesPerRow -1 ) * php.phiGutter , -numRows * php.phpRow )
        this.phpRect = paper.Path.Rectangle(
            topRight, bottomLeft
          )
@@ -67,49 +64,72 @@ class php {
 }
 
 
-class alphTile {
+// alphabet tile pane
+class atp {
   // static variables
-    static sideL = 100
-    static tileRow = 225
-    static tileSpacingL = 10
+  //static atiSide = 80
+  //static tileRow = 225
+  //static tileSpacingL = 10
 
-   constructor (loc, ph , letter ) {
-     const center = new paper.Point ( alphTile.initialX(loc) , alphTile.initialY()  );
-     const rect = new paper.Path.Rectangle({ 
-       center, 
-       size: [alphTile.sideL,alphTile.sideL]
-     })
-     rect.strokeColor = 'red'
-     rect.fillColor = 'white'
-     var alpI = document.getElementById(letter)
+  // external margins
+  static rightMargin = 50
+  static topMargin = 30
+
+  static atiSide = 80
+  static atpSpacing = 10
+  static atpRow = atp.atiSide + 2 * atp.atpSpacing
+  static atiGutter = 10
+  constructor (TR , numAlphs ) {
+    const topRight = TR.add(0, atp.topMargin)  
+    const bottomLeft = topRight.subtract( numAlphs * atp.atiSide + ( numAlphs -1 ) * atp.atiGutter + 3 * atp.atpSpacing, -atp.atpRow  )
+    this.atpRect = paper.Path.Rectangle(
+      topRight, bottomLeft
+    )
+    window.atpRect = this.atpRect
+
+    this.atpRect.strokeColor = 'red'
+    this.atpRect.fillColor = 'white'
+    this.atiRowTR = topRight.subtract ( atp.atpSpacing, -atp.atpSpacing )
+  }
+  getAtiTopRight(loc) { 
+    return this.atiRowTR.subtract( (loc-1)* ( atp.atiSide + atp.atiGutter), 0 )
+  }
+  getAtiBottomLeft(loc)  {
+    return this.atiRowTR.subtract( (loc)* ( atp.atiSide + atp.atiGutter),  -atp.atiSide )
+    }
+}
+
+// alphabet tile instance
+class ati {
+  constructor ( topRight, bottomLeft, phList, letter) {
+    console.log(topRight)
+    console.log(bottomLeft)
+    this.atiRect = new paper.Path.Rectangle(topRight, bottomLeft )
+    this.atiRect.strokeColor = 'red'
+    this.atiRect.fillColor = 'white'
+    let alpI = document.getElementById(letter)
      console.log(alpI)
      var raster = new paper.Raster(alpI)  
-     raster.position = center 
+     raster.position = this.atiRect.position 
      console.log(raster.size)
-     raster.scale(1, 100/raster.size.height);
-     const group = new paper.Group([rect, raster])
+     raster.scale(1, atp.atiSide/raster.size.height);
+     const group = new paper.Group([this.atiRect, raster])
      group.onMouseDrag = (event) => { 
-       group.position = group.position.add(event.delta)
-     }
-     group.onMouseUp = (event ) => {
-       this.resolve = true 
-     }
-     this.path = group
-     this.origin = group.position
-     this.resolve = false
-     this.resolved = false
-     this.resolving = false
-     this.resolvingTarg = null
-     this.resolvingPhi = null
-     this.ph = ph
-     this.group = group
-   }
-   static initialX = (loc) => {
-     return trans((alphTile.sideL + alphTile.tileSpacingL) *loc -alphTile.tileSpacingL)
-   }
-   static initialY = () => {
-     return alphTile.tileRow
-   }
+         group.position = group.position.add(event.delta)
+       }
+       group.onMouseUp = (event ) => {
+         this.resolve = true 
+       }
+       this.path = group
+       this.origin = group.position
+       this.resolve = false
+       this.resolved = false
+       this.resolving = false
+       this.resolvingTarg = null
+       this.resolvingPhi = null
+       this.ph = phList
+       this.group = group
   }
+}
 
-  export { php, alphTile, phi };
+ export { php, atp, ati, phi };

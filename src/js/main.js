@@ -1,7 +1,7 @@
 const paper = require('paper');
 const cons = require('./constants')
 //var paper = require('paper/dist/paper-full.js')
-import { php, phi, alphTile }  from './class';
+import { php, phi, atp, ati }  from './class';
 
 
   var canvas = document.getElementById('myCanvas');
@@ -21,28 +21,46 @@ import { php, phi, alphTile }  from './class';
   //paper.install(window)
   var path = new paper.Path();
   var tool = new paper.Tool()
-  var phPane = new php(5)
 
-  let plHolders = []
+  const paneTopMargin = 50
+  const paneRightMargin = 50
+  const topRight = new paper.Point( 
+  cons.canvasWidth - paneTopMargin, paneRightMargin );
+  var phPane = new php( topRight, 5)
+
+  let phInsts = []
 
   //const kalameh = "be_koochik_chap aa_chasban_rast be_koochik_chap aa_chasban_rast".split(' ')
-  //const kalameh = "aa_bakola be_bozorg_tanha".split(' ')
-  const kalameh = "be_koochik_chap aa_chasban_rast be_koochik_chap aa_chasban_rast faseleh aa_bakola be_bozorg_tanha".split(' ') 
+  const kalameh = "aa_bakola be_bozorg_tanha".split(' ')
+  //const kalameh = "be_koochik_chap aa_chasban_rast be_koochik_chap aa_chasban_rast faseleh aa_bakola be_bozorg_tanha".split(' ') 
 
-  const tiles = [] 
+  //window.phPane = phPane
+  const atInsts = [] 
   console.log(kalameh)
   let idx = 0
   for ( let harf of kalameh ) {
-    plHolders.push( new phi(phPane.getPhiTopRight(idx+1), phPane.getPhiBottomLeft(idx+1)))
+    phInsts.push( new phi(phPane.getPhiTopRight(idx+1), phPane.getPhiBottomLeft(idx+1)))
     const occurances = kalameh.reduce( (tot,elem) => { if (elem === harf) { tot.push(idx)} return tot } , [] )
-    const plHoldersArray = occurances.map( a => plHolders[a] )
-    tiles.push( new alphTile(idx+1, plHoldersArray, harf ))
-    idx++
+    const plHoldersArray = occurances.map( a => phInsts[a] )
+
+  console.log(cons)
+  let alphaGroup = cons.alphaGroups.find( g => g.includes(harf))
+  let atPane = new atp(phPane.phpRect.bounds.bottomRight.add(0,idx*atp.atpRow), cons.alphaGroups.length  )
+  let idx2=1
+  for ( let alpha of alphaGroup ) { 
+    let atInst1 = new ati( atPane.getAtiTopRight(idx2) , atPane.getAtiBottomLeft(idx2), plHoldersArray, alpha  )
+    idx2++
+    atInsts.push(atInst1)
+  }
+  //window.at = atInst1
+  //window.atp = atPane
+
+  idx++
   }
 
   const renderLine = () => {
       let startingTopRight = phPane.phiRowTR
-      for ( let [idx,plh] of plHolders.entries() ) {
+      for ( let [idx,plh] of phInsts.entries() ) {
         console.log("--------" + idx)
         if ( plh.aTile === null ) {
             const newBound = new paper.Rectangle(startingTopRight, startingTopRight.subtract(php.phiSide, -php.phiSide ))
@@ -63,11 +81,11 @@ import { php, phi, alphTile }  from './class';
   }
   
   paper.view.onFrame = (event) => { 
-    const tile = tiles.find(t =>  {
-      return t.resolve || t.resolvingTarg 
-    }) 
+    const tile = atInsts.find(t => { 
+        return t.resolve || t.resolvingTarg 
+    })
     if ( !tile ) return
-    console.log("Found tile")
+    console.log("Found tile: " + tile)
     if ( tile.resolve ) {
       tile.resolve = false
       for ( let ph of tile.ph ) {
@@ -77,6 +95,8 @@ import { php, phi, alphTile }  from './class';
         if ( ph.phiRect.contains(tile.path.position)) {
           tile.resolvingTarg = ph.phiRect.position 
           tile.resolvingPhi = ph 
+          console.log("then here ")
+          window.ph = ph
           break
         } 
       }
