@@ -116,8 +116,9 @@ class ati {
      raster.scale(1, (atp.atiSide-ati.rasterMargin)/raster.size.height);
      const group = new paper.Group([this.atiRect, raster])
      group.onMouseDrag = (event) => { 
-         group.position = group.position.add(event.delta)
-       }
+       group.position = group.position.add(event.delta)
+       window.gr = this
+     }
        group.onMouseUp = (event ) => {
          this.resolve = true 
        }

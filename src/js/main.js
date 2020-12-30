@@ -32,7 +32,7 @@ import { php, phi, atp, ati }  from './class';
 
   //const kalameh = "be_koochik_chap aa_chasban_rast be_koochik_chap aa_chasban_rast".split(' ')
   //const kalameh = "aa_bakola be_bozorg_tanha".split(' ')
-  const kalameh = "be_koochik_chap aa_chasban_rast be_koochik_chap aa_chasban_rast faseleh aa_bakola be_bozorg_tanha".split(' ') 
+  const kalameh = "be_koochik_chap aa_chasban_rast be_koochik_chap aa_chasban_rast faseleh aa_bakola be_bozorg_tanha faseleh de_tanha aa_bikola de_tanha".split(' ') 
 
   //window.phPane = phPane
   const atInsts = [] 
@@ -42,25 +42,42 @@ import { php, phi, atp, ati }  from './class';
     phInsts.push( new phi(phPane.getPhiTopRight(idx+1), phPane.getPhiBottomLeft(idx+1)))
     idx++
   }
+  window.phInsts = phInsts
   // iterate twice to make sure all ati are create on top phi
   idx = 0
+  const atPaneCreated = {}
   for ( let harf of kalameh ) {
-    const occurances = kalameh.reduce( (tot,elem) => { if (elem === harf) { tot.push(idx)} return tot } , [] )
-    const plHoldersArray = occurances.map( a => phInsts[a] )
-
+    if ( atPaneCreated[harf] ) { continue }
+    
   //console.log(cons)
   let alphaGroup = cons.alphaGroups.find( g => g.includes(harf))
   let atPane = new atp(phPane.phpRect.bounds.bottomRight.add(0,idx*(atp.atpRow+10)), cons.alphaGroups.length  )
   let idx2=1
   for ( let alpha of alphaGroup ) { 
-    let atInst1
-    if ( alpha === harf ) {
-      atInst1 = new ati( atPane.getAtiTopRight(idx2) , atPane.getAtiBottomLeft(idx2), plHoldersArray, alpha  )
-    } else {
-      atInst1 = new ati( atPane.getAtiTopRight(idx2) , atPane.getAtiBottomLeft(idx2), [], alpha  )
-    }
+
+    const occurances = kalameh.reduce( (tot,elem,harfIndex) => { 
+      if (elem === alpha) { 
+        tot.push(harfIndex)
+      } 
+      return tot 
+    } , [] )
+    console.log(occurances)
+    const plHoldersArray = occurances.map( a => phInsts[a] )
+
+    atPaneCreated[alpha] = true
+    let atInst
+    //if ( alpha === harf ) {
+      atInst = new ati( atPane.getAtiTopRight(idx2) , atPane.getAtiBottomLeft(idx2), plHoldersArray, alpha  )
+      atInsts.push(atInst)
+      atInst = new ati( atPane.getAtiTopRight(idx2) , atPane.getAtiBottomLeft(idx2), plHoldersArray, alpha  )
+      atInsts.push(atInst)
+    //} else {
+     //atInst = new ati( atPane.getAtiTopRight(idx2) , atPane.getAtiBottomLeft(idx2), [], alpha  )
+     //atInsts.push(atInst)
+     //atInst = new ati( atPane.getAtiTopRight(idx2) , atPane.getAtiBottomLeft(idx2), [], alpha  )
+     //atInsts.push(atInst)
+    //}
     idx2++
-    atInsts.push(atInst1)
   }
   //window.at = atInst1
   //window.atp = atPane
