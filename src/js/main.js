@@ -31,8 +31,8 @@ import { php, phi, atp, ati }  from './class';
   let phInsts = []
 
   //const kalameh = "be_koochik_chap aa_chasban_rast be_koochik_chap aa_chasban_rast".split(' ')
-  const kalameh = "aa_bakola be_bozorg_tanha".split(' ')
-  //const kalameh = "be_koochik_chap aa_chasban_rast be_koochik_chap aa_chasban_rast faseleh aa_bakola be_bozorg_tanha".split(' ') 
+  //const kalameh = "aa_bakola be_bozorg_tanha".split(' ')
+  const kalameh = "be_koochik_chap aa_chasban_rast be_koochik_chap aa_chasban_rast faseleh aa_bakola be_bozorg_tanha".split(' ') 
 
   //window.phPane = phPane
   const atInsts = [] 
@@ -40,15 +40,25 @@ import { php, phi, atp, ati }  from './class';
   let idx = 0
   for ( let harf of kalameh ) {
     phInsts.push( new phi(phPane.getPhiTopRight(idx+1), phPane.getPhiBottomLeft(idx+1)))
+    idx++
+  }
+  // iterate twice to make sure all ati are create on top phi
+  idx = 0
+  for ( let harf of kalameh ) {
     const occurances = kalameh.reduce( (tot,elem) => { if (elem === harf) { tot.push(idx)} return tot } , [] )
     const plHoldersArray = occurances.map( a => phInsts[a] )
 
-  console.log(cons)
+  //console.log(cons)
   let alphaGroup = cons.alphaGroups.find( g => g.includes(harf))
-  let atPane = new atp(phPane.phpRect.bounds.bottomRight.add(0,idx*atp.atpRow), cons.alphaGroups.length  )
+  let atPane = new atp(phPane.phpRect.bounds.bottomRight.add(0,idx*(atp.atpRow+10)), cons.alphaGroups.length  )
   let idx2=1
   for ( let alpha of alphaGroup ) { 
-    let atInst1 = new ati( atPane.getAtiTopRight(idx2) , atPane.getAtiBottomLeft(idx2), plHoldersArray, alpha  )
+    let atInst1
+    if ( alpha === harf ) {
+      atInst1 = new ati( atPane.getAtiTopRight(idx2) , atPane.getAtiBottomLeft(idx2), plHoldersArray, alpha  )
+    } else {
+      atInst1 = new ati( atPane.getAtiTopRight(idx2) , atPane.getAtiBottomLeft(idx2), [], alpha  )
+    }
     idx2++
     atInsts.push(atInst1)
   }
@@ -69,12 +79,16 @@ import { php, phi, atp, ati }  from './class';
            plh.phiRect.bounds = newBound
            startingTopRight = startingTopRight.subtract(php.phiSide, 0) 
         } else { 
-           const tile = plh.aTile.path
+           const tile = plh.aTile.group
+           window.tile = tile
+           console.log("HERE")
            console.log(tile.bounds)
-           const newBound = new paper.Rectangle(startingTopRight, startingTopRight.subtract(tile.bounds.width, -php.phiSide ))
+           console.log(tile.firstChild.bounds)
+           const newBound = new paper.Rectangle(startingTopRight, startingTopRight.subtract(tile.lastChild.bounds.width, -php.phiSide ))
             console.log(newBound)
            tile.bounds = newBound 
            startingTopRight = startingTopRight.subtract(tile.bounds.width, 0) 
+//           ksjskjskj()
         }
 
       }
@@ -92,7 +106,7 @@ import { php, phi, atp, ati }  from './class';
         if ( ph.aTile ) { 
           continue
         }
-        if ( ph.phiRect.contains(tile.path.position)) {
+        if ( ph.phiRect.contains(tile.group.position)) {
           tile.resolvingTarg = ph.phiRect.position 
           tile.resolvingPhi = ph 
           console.log("then here ")
@@ -103,7 +117,7 @@ import { php, phi, atp, ati }  from './class';
       tile.resolvingTarg = tile.resolvingTarg || tile.origin
     }
 
-    let vector = tile.resolvingTarg.subtract(tile.path.position) 
+    let vector = tile.resolvingTarg.subtract(tile.group.position) 
     let step = vector  
     console.log('vector length: ' + vector.length )
     if ( vector.length > 20 ) {
@@ -115,20 +129,20 @@ import { php, phi, atp, ati }  from './class';
     } else { 
       step = vector
     }
-    tile.path.position = tile.path.position.add(step)
-    if ( tile.path.position.equals(tile.resolvingTarg) ) {
+    tile.group.position = tile.group.position.add(step)
+    if ( tile.group.position.equals(tile.resolvingTarg) ) {
       tile.resolvingTarg = null
     }
-    if ( tile.resolvingPhi && tile.path.position.equals(tile.resolvingPhi.phiRect.position) ) {
+    if ( tile.resolvingPhi && tile.group.position.equals(tile.resolvingPhi.phiRect.position) ) {
       tile.resolved = true
       tile.group.firstChild.visible = false
       tile.resolvingPhi.aTile = tile
-      //tile.ph.path.bounds = tile.group.lastChild.bounds 
+      //tile.ph.group.bounds = tile.group.lastChild.bounds 
       tile.resolvingPhi.phiRect.visible = false
       console.log("resolved")
       console.log(tile)
       renderLine()
-    } else if ( tile.path.position.equals(tile.origin))  {
+    } else if ( tile.group.position.equals(tile.origin))  {
       tile.group.firstChild.visible = true
       tile.resolved = false
       if ( tile.resolvingPhi ) {
@@ -139,7 +153,7 @@ import { php, phi, atp, ati }  from './class';
       //console.log(tile.group)
       console.log(tile.ph.phiRect)
       tile.resolvingPhi = null
-      //tile.ph.path.bounds = tile.ph.origBound
+      //tile.ph.group.bounds = tile.ph.origBound
       renderLine()
     }
   }

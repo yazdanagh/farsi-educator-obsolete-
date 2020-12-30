@@ -34,11 +34,11 @@ class php {
     static phiSide = 80
     static phiSpacing = 10
     static phpRow = php.phiSide + 2 * php.phiSpacing
-    static phiGutter = 12 
+    static phiGutter = 4 
 
     constructor ( paneTopRight, numTiles ) {
        window.ptr = paneTopRight
-       let tilesPerRow = (paneTopRight.x + php.minLeftMargin) 
+       let tilesPerRow = (paneTopRight.x - php.minLeftMargin) 
        tilesPerRow -= (numTiles -1)*php.phiGutter  
        tilesPerRow = tilesPerRow/ php.phiSide  
        tilesPerRow = Math.floor(tilesPerRow)
@@ -59,7 +59,7 @@ class php {
     }
     getPhiBottomLeft(loc,row=1)  {
       // TODO : implement Row
-      return this.phiRowTR.subtract( (loc)* ( php.phiSide + php.phiGutter),  -php.phiSide )
+      return this.phiRowTR.subtract( (loc)* ( php.phiSide + php.phiGutter) -php.phiGutter,  -php.phiSide )
     }
 }
 
@@ -81,29 +81,30 @@ class atp {
   static atiGutter = 10
   constructor (TR , numAlphs ) {
     const topRight = TR.add(0, atp.topMargin)  
-    const bottomLeft = topRight.subtract( numAlphs * atp.atiSide + ( numAlphs -1 ) * atp.atiGutter + 3 * atp.atpSpacing, -atp.atpRow  )
+    const bottomLeft = topRight.subtract( numAlphs * atp.atiSide + ( numAlphs -1 ) * atp.atiGutter + 2 * atp.atpSpacing, -atp.atpRow  )
     this.atpRect = paper.Path.Rectangle(
       topRight, bottomLeft
     )
     window.atpRect = this.atpRect
 
     this.atpRect.strokeColor = 'red'
-    this.atpRect.fillColor = 'white'
+    this.atpRect.fillColor = '#ea3c53'
     this.atiRowTR = topRight.subtract ( atp.atpSpacing, -atp.atpSpacing )
   }
   getAtiTopRight(loc) { 
     return this.atiRowTR.subtract( (loc-1)* ( atp.atiSide + atp.atiGutter), 0 )
   }
   getAtiBottomLeft(loc)  {
-    return this.atiRowTR.subtract( (loc)* ( atp.atiSide + atp.atiGutter),  -atp.atiSide )
+    return this.atiRowTR.subtract( (loc)* ( atp.atiSide + atp.atiGutter) - atp.atiGutter,  -atp.atiSide )
     }
 }
 
 // alphabet tile instance
 class ati {
+    static rasterMargin = 5
   constructor ( topRight, bottomLeft, phList, letter) {
-    console.log(topRight)
-    console.log(bottomLeft)
+    //console.log(topRight)
+    //console.log(bottomLeft)
     this.atiRect = new paper.Path.Rectangle(topRight, bottomLeft )
     this.atiRect.strokeColor = 'red'
     this.atiRect.fillColor = 'white'
@@ -112,7 +113,7 @@ class ati {
      var raster = new paper.Raster(alpI)  
      raster.position = this.atiRect.position 
      console.log(raster.size)
-     raster.scale(1, atp.atiSide/raster.size.height);
+     raster.scale(1, (atp.atiSide-ati.rasterMargin)/raster.size.height);
      const group = new paper.Group([this.atiRect, raster])
      group.onMouseDrag = (event) => { 
          group.position = group.position.add(event.delta)
@@ -120,7 +121,7 @@ class ati {
        group.onMouseUp = (event ) => {
          this.resolve = true 
        }
-       this.path = group
+       this.group = group
        this.origin = group.position
        this.resolve = false
        this.resolved = false
