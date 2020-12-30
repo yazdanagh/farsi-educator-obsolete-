@@ -34,6 +34,18 @@ import { php, phi, atp, ati }  from './class';
   //const kalameh = "aa_bakola be_bozorg_tanha".split(' ')
   const kalameh = "be_koochik_chap aa_chasban_rast be_koochik_chap aa_chasban_rast faseleh aa_bakola be_bozorg_tanha faseleh de_tanha aa_bikola de_tanha".split(' ') 
 
+  for ( let harf of kalameh.filter( (value, index, self) => {return self.indexOf(value) === index; })){
+    
+    let alphaGroup = cons.alphaGroups.find( g => g.includes(harf))
+    for ( let alpha of alphaGroup ) {
+      let elem = document.createElement("img");
+      elem.setAttribute("src", `images2/${alpha}.png`);
+      elem.setAttribute("id", alpha);
+      elem.setAttribute("style", "display:none");
+      document.getElementById("allImages").appendChild(elem);
+    }
+  }
+
   //window.phPane = phPane
   const atInsts = [] 
   console.log(kalameh)
@@ -66,17 +78,10 @@ import { php, phi, atp, ati }  from './class';
 
     atPaneCreated[alpha] = true
     let atInst
-    //if ( alpha === harf ) {
-      atInst = new ati( atPane.getAtiTopRight(idx2) , atPane.getAtiBottomLeft(idx2), plHoldersArray, alpha  )
-      atInsts.push(atInst)
-      atInst = new ati( atPane.getAtiTopRight(idx2) , atPane.getAtiBottomLeft(idx2), plHoldersArray, alpha  )
-      atInsts.push(atInst)
-    //} else {
-     //atInst = new ati( atPane.getAtiTopRight(idx2) , atPane.getAtiBottomLeft(idx2), [], alpha  )
-     //atInsts.push(atInst)
-     //atInst = new ati( atPane.getAtiTopRight(idx2) , atPane.getAtiBottomLeft(idx2), [], alpha  )
-     //atInsts.push(atInst)
-    //}
+    atInst = new ati( atPane.getAtiTopRight(idx2) , atPane.getAtiBottomLeft(idx2), plHoldersArray, alpha  )
+    atInsts.push(atInst)
+    atInst = new ati( atPane.getAtiTopRight(idx2) , atPane.getAtiBottomLeft(idx2), plHoldersArray, alpha  )
+    atInsts.push(atInst)
     idx2++
   }
   //window.at = atInst1

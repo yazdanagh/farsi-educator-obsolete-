@@ -1,2 +1,5 @@
 dist/bundle.js
 node_modules/
+.DS_Store
+dist/.DS_Store
+TODO
