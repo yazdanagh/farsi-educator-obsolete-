@@ -28,6 +28,20 @@ import { php, phi, atp, ati }  from './class';
   cons.canvasWidth - paneTopMargin, paneRightMargin );
   var phPane = new php( topRight, 5)
 
+
+  // ear
+  //
+  let ear = document.getElementById("ear")
+  let earRaster = new paper.Raster(ear)  
+  console.log(ear)
+  let earPosition = topRight.add( php.phiSpacing + php.phiSide/4 , php.phiSpacing + php.phiSide/2 ) // php.phiSpacing )
+  earRaster.position = earPosition  
+  console.log(earPosition)
+  //window.earRaster = earRaster
+  earRaster.onMouseDown= (event ) => {
+      document.getElementById('audio').play()
+  }
+
   let phInsts = []
 
   //const kalameh = "be_koochik_chap aa_chasban_rast be_koochik_chap aa_chasban_rast".split(' ')
