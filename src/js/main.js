@@ -26,31 +26,49 @@ import { php, phi, atp, ati }  from './class';
   const paneRightMargin = 50
   const topRight = new paper.Point( 
   cons.canvasWidth - paneTopMargin, paneRightMargin );
-  var phPane = new php( topRight, 5)
-
+  const darsId = 3
+  const kalameh = cons.darses[darsId][0].split(' ')
+  var phPane = new php( topRight, kalameh.length + 2)
 
   // ear
   //
-  let ear = document.getElementById("ear")
-  let earRaster = new paper.Raster(ear)  
-  console.log(ear)
-  let earPosition = topRight.add( php.phiSpacing + php.phiSide/4 , php.phiSpacing + php.phiSide/2 ) // php.phiSpacing )
-  earRaster.position = earPosition  
-  console.log(earPosition)
-  //window.earRaster = earRaster
-  earRaster.onMouseDown= (event ) => {
-      document.getElementById('audio').play()
+  let earPosition = topRight.add( php.phiSpacing + php.phiSide/4 , php.phiSpacing + php.phiSide/2 ) 
+  const createEar = ( earPosition, audio ) => { 
+
+    let audioElem = document.createElement("audio");
+    audioElem.setAttribute("src", `audios/${audio}.m4a`);
+    audioElem.setAttribute("id", `${audio}`);
+    document.getElementById("allAudios").appendChild(audioElem);
+    let ear = document.getElementById("ear")
+    let earRaster = new paper.Raster(ear)  
+    earRaster.position = earPosition  
+    earRaster.strokeColor = "yellow"
+    //window.earRaster = earRaster
+    earRaster.onMouseDown= (event ) => {
+      document.getElementById(audio).play()
+    }
+    console.log("created ear for : " + audio)
   }
+  createEar(earPosition, cons.darses[darsId][1]);
 
   let phInsts = []
 
   //const kalameh = "be_koochik_chap aa_chasban_rast be_koochik_chap aa_chasban_rast".split(' ')
   //const kalameh = "aa_bakola be_bozorg_tanha".split(' ')
-  const kalameh = "be_koochik_chap aa_chasban_rast be_koochik_chap aa_chasban_rast faseleh aa_bakola be_bozorg_tanha faseleh de_tanha aa_bikola de_tanha".split(' ') 
+  //const kalameh = "be_koochik_chap aa_chasban_rast be_koochik_chap aa_chasban_rast faseleh aa_bakola be_bozorg_tanha faseleh de_tanha aa_bikola de_tanha".split(' ') 
 
-  for ( let harf of kalameh.filter( (value, index, self) => {return self.indexOf(value) === index; })){
+  const kalamehUnique = kalameh.filter((value, index, self) => {return self.indexOf(value) === index; })
+  const kalamehRand = shuffle(kalamehUnique)
+
+  for ( let harf of kalamehUnique){
     
+    console.log(harf)
     let alphaGroup = cons.alphaGroups.find( g => g.includes(harf))
+   //let firstAlph = alphaGroup[0].match(/([a-z]*)_/).[1]
+   //let audioElem = document.createElement("audio");
+   //audioElem.setAttribute("src", `audios/${firstAlph}.m4a`);
+   //audioElem.setAttribute("id", `${firstAlph}`);
+   //document.getElementById("allAudios").appendChild(audioElem);
     for ( let alpha of alphaGroup ) {
       let elem = document.createElement("img");
       elem.setAttribute("src", `images2/${alpha}.png`);
@@ -72,12 +90,17 @@ import { php, phi, atp, ati }  from './class';
   // iterate twice to make sure all ati are create on top phi
   idx = 0
   const atPaneCreated = {}
-  for ( let harf of kalameh ) {
+  for ( let harf of shuffle(kalamehUnique) ) {
     if ( atPaneCreated[harf] ) { continue }
     
   //console.log(cons)
   let alphaGroup = cons.alphaGroups.find( g => g.includes(harf))
-  let atPane = new atp(phPane.phpRect.bounds.bottomRight.add(0,idx*(atp.atpRow+10)), cons.alphaGroups.length  )
+  let topRight = phPane.phpRect.bounds.bottomRight.add(0,idx*(atp.atpRow+10))
+  if ( harf != "faseleh" ) {
+    const audio = harf.match(/([a-z]*)_/).[1]
+    createEar(topRight.add( atp.atpSpacing + atp.atiSide/4  , atp.atpSpacing + atp.atiSide/2   ) ,audio)
+  }
+  let atPane = new atp( topRight, cons.alphaGroups.length  )
   let idx2=1
   for ( let alpha of alphaGroup ) { 
 
@@ -193,4 +216,25 @@ import { php, phi, atp, ati }  from './class';
       renderLine()
     }
   }
+
+
+  function shuffle(array) {
+    var currentIndex = array.length, temporaryValue, randomIndex;
+
+    // While there remain elements to shuffle...
+    while (0 !== currentIndex) {
+
+      // Pick a remaining element...
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex -= 1;
+
+      // And swap it with the current element.
+      temporaryValue = array[currentIndex];
+      array[currentIndex] = array[randomIndex];
+      array[randomIndex] = temporaryValue;
+    }
+
+    return array;
+  }
+
 

@@ -73,7 +73,7 @@ class atp {
 
   // external margins
   static rightMargin = 50
-  static topMargin = 30
+  //static topMargin = 30
 
   static atiSide = 80
   static atpSpacing = 10
