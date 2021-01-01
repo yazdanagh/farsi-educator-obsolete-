@@ -130,12 +130,14 @@ import { php, phi, atp, ati }  from '../class';
     
   //console.log(cons)
   let alphaGroup = cons.alphaGroups.find( g => g.includes(harf))
-  let topRight = phPane.phpRect.bounds.bottomRight.add(0,idx*(atp.atpRow+10))
+  let topRight = phPane.phpRect.bounds.bottomRight.add(0, 20 ) 
+  topRight = topRight.add(0,  idx*(atp.atpRow+10))
+  
   if ( harf != "faseleh" ) {
     const audio = harf.match(/([a-z]*)_/).[1]
     createEar(topRight.add( atp.atpSpacing + atp.atiSide/4  , atp.atpSpacing + atp.atiSide/2   ) ,audio)
   }
-  let atPane = new atp( topRight, cons.alphaGroups.length  )
+  let atPane = new atp( topRight, alphaGroup.length  )
   let idx2=1
   for ( let alpha of alphaGroup ) { 
 
