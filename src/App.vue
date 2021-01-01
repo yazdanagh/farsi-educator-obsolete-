@@ -38,20 +38,20 @@
     </v-app-bar>
 
     <v-main>
-      <!-- <router-view></router-view> -->
-      <Main> </Main>
+      <router-view></router-view> 
+      <!-- <Main> </Main> -->
     </v-main>
   </v-app>
 </template>
 
 <script>
-import Main from './components/Main';
+//import Main from './components/Main';
 
 export default {
   name: 'App',
 
   components: {
-    Main,
+    //Main,
   },
 
   data: () => ({

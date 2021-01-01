@@ -109,7 +109,9 @@ class ati {
     this.atiRect.strokeColor = 'red'
     this.atiRect.fillColor = 'white'
     let alpI = document.getElementById(letter)
-     console.log(alpI)
+    console.log(document)
+    console.log(letter)
+    console.log(alpI)
      var raster = new paper.Raster(alpI)  
      raster.position = this.atiRect.position 
      console.log(raster.size)
