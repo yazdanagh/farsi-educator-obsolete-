@@ -1,9 +1,9 @@
 var paper = require('paper');
-const cons = require('./constants.js')
+//const cons = require('./constants.js')
 
-const trans = (a ) => { return cons.canvasWidth - a } 
+//const trans = (a ) => { return cons.canvasWidth - a } 
 
-const rasterWidth = 512
+//const rasterWidth = 512
 
 
 
@@ -53,11 +53,11 @@ class php {
        this.phiRowTR = topRight.subtract ( php.phiSpacing, -php.phiSpacing )
        this.phpRect.fillColor = '#d3d3d3'
     }
-    getPhiTopRight(loc,row=1) { 
+    getPhiTopRight(loc) { // todo: add row 
       // TODO : implement Row
       return this.phiRowTR.subtract( (loc-1)* ( php.phiSide + php.phiGutter), 0 )
     }
-    getPhiBottomLeft(loc,row=1)  {
+    getPhiBottomLeft(loc)  { // todo : add row
       // TODO : implement Row
       return this.phiRowTR.subtract( (loc)* ( php.phiSide + php.phiGutter) -php.phiGutter,  -php.phiSide )
     }
@@ -119,7 +119,7 @@ class ati {
        group.position = group.position.add(event.delta)
        window.gr = this
      }
-       group.onMouseUp = (event ) => {
+       group.onMouseUp = ( ) => {
          this.resolve = true 
        }
        this.group = group
