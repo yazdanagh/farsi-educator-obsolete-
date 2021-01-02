@@ -13,8 +13,8 @@ class phi {
   // static variables
   constructor ( topRight, bottomLeft) {
 
-   console.log(topRight)
-   console.log(bottomLeft)
+   //console.log(topRight)
+   //console.log(bottomLeft)
    this.phiRect = new paper.Path.Rectangle(topRight, bottomLeft )
    this.origBound = this.phiRect.bounds
    this.aTile = null
@@ -109,12 +109,12 @@ class ati {
     this.atiRect.strokeColor = 'red'
     this.atiRect.fillColor = 'white'
     let alpI = document.getElementById(letter)
-    console.log(document)
-    console.log(letter)
-    console.log(alpI)
+    //console.log(document)
+    //console.log(letter)
+    //console.log(alpI)
      var raster = new paper.Raster(alpI)  
      raster.position = this.atiRect.position 
-     console.log(raster.size)
+     //console.log(raster.size)
      raster.scale(1, (atp.atiSide-ati.rasterMargin)/raster.size.height);
      const group = new paper.Group([this.atiRect, raster])
      group.onMouseDrag = (event) => { 

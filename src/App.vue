@@ -5,6 +5,7 @@
       color="primary"
       dark
     >
+    <!--
       <div class="d-flex align-center">
         <v-img
           alt="Vuetify Logo"
@@ -24,6 +25,7 @@
           width="100"
         />
       </div>
+      -->
 
       <v-spacer></v-spacer>
 

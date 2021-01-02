@@ -12,13 +12,12 @@
    </canvas>
    <div  id="allImages">
      <div v-for="(aG,aIdx) in alphaGroups" :key="aIdx" >
-     <img v-for="alpha in aG" :key="alpha"  v-bind:id="alpha" v-bind:src="`/images2/${alpha}.png`"> 
+     <img v-for="alpha in aG" :key="alpha" style="display:none"  v-bind:id="alpha" v-bind:src="`/images2/${alpha}.png`"> 
       <img id="ear" style="display:none" src="/images2/ear.jpg" > 
      </div>
    </div>
    <div id="allAudios">
-     <audio controls src="/audios/madar.m4a"> </audio>
-     <audio :src="audioKalameh" :id="audioKalamehId"  :key="aIdx" > </audio>
+     <audio :src="audioKalameh" :id="audioKalamehId"  > </audio>
      <audio v-for="(aG,aIdx) in alphaGroups" :src="audioAlph(aG)" :id="audioAlphId(aG)" :key="aIdx" >
      </audio>
    </div>
@@ -33,6 +32,7 @@
 const cons = require('../constants.js');
 const paper =  require('paper');
 import { php, phi, atp, ati }  from '../class';
+import axios from 'axios';
 
   export default {
     name: 'Main',
@@ -43,9 +43,9 @@ import { php, phi, atp, ati }  from '../class';
       }
     },
     watch: {
-     async darsId(newVal) {
-       await this.initCanvas(newVal)
-     }
+    //async darsId(newVal) {
+    //  //await this.initCanvas(newVal)
+    //}
    },
     async mounted() {
       console.log("Hello")
@@ -56,8 +56,12 @@ import { php, phi, atp, ati }  from '../class';
       this.darsId = this.$route.params.darsId
       console.log(this.$route.params)
       console.log(this.darsId)
-      await this.initCanvas(this.darsId)
-   },
+      //this.initCanvas()
+      setTimeout ( () => { 
+        console.log("WAAIIIITT")
+        this.initCanvas()
+      }, 500) 
+    },
    computed: { 
      audioKalameh() {
        return '/audios/' + cons.darses[this.darsId][1] + '.m4a'
@@ -97,7 +101,9 @@ import { php, phi, atp, ati }  from '../class';
 
      async initCanvas() {
 
-      await setTimeout( () => {}, 2000) 
+  //    const a = await setTimeout( function () {}, 200000) 
+  //    console.log(a)
+
 
 
   // scalaing like this wont fix RtoL issue
@@ -172,7 +178,7 @@ import { php, phi, atp, ati }  from '../class';
 
   //window.phPane = phPane
   const atInsts = [] 
-  console.log(this.kalameh)
+  //console.log(this.kalameh)
   let idx = 0
   for ( idx of this.kalameh.keys() ) {
     phInsts.push( new phi(phPane.getPhiTopRight(idx+1), phPane.getPhiBottomLeft(idx+1)))
@@ -204,8 +210,8 @@ import { php, phi, atp, ati }  from '../class';
       } 
       return tot 
     } , [] )
-    console.log( harf + " Occurs:" ) 
-    console.log( occurances)
+    //console.log( harf + " Occurs:" ) 
+    //console.log( occurances)
     const plHoldersArray = occurances.map( a => phInsts[a] )
 
     let atInst
@@ -245,7 +251,7 @@ import { php, phi, atp, ati }  from '../class';
       }
   }
   
-  paper.view.onFrame = () => { 
+  paper.view.onFrame = async () => { 
     const tile = atInsts.find(t => { 
         return t.resolve || t.resolvingTarg 
     })
@@ -295,8 +301,16 @@ import { php, phi, atp, ati }  from '../class';
       renderLine()
       const done = checkFinished()
       if ( done ) {
-         //this.darsId++
+        //console.log("DDDDDDDOOONNE")
+        this.darsId++;
+         await axios.put('http://localhost:3085/users', { student: 'Yara', dars: this.darsId  })
+          setTimeout ( () => { 
+            console.log("WAAIIIITT")
+            this.initCanvas()
+          }, 500)
+         //this.$router.push({ key: this.$router.fullPath, name: 'main', params: { darsId:this.darsId } })
          //location.reload()
+
       }
     } else if ( tile.group.position.equals(tile.origin))  {
       tile.group.firstChild.visible = true
