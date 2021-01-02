@@ -30,14 +30,15 @@ module.exports = (app) => {
   app.get('/users', async (req, res) => {
     console.log("HERE")
     const stConf = await fs.readFile('./students.config',"utf-8")
-    console.log(stConf)
-    let students = stConf.split('\n').slice(0,-1)
-    students = students.reduce((tot,a) => { 
-        const b = a.split(':'); 
-        tot[b[0]] = b[1] 
-        return tot;
-       } , {})
-    console.log(students)
+    const students = JSON.parse(stConf)
+
+  //let students = stConf.split('\n').slice(0,-1)
+  //students = students.reduce((tot,a) => { 
+  //    const b = a.split(':'); 
+  //    tot[b[0]] = b[1] 
+  //    return tot;
+  //   } , {})
+   console.log(students)
     
    //let students = {
    //   "Yara" : 4,
@@ -50,7 +51,13 @@ module.exports = (app) => {
   app.put('/users', async (req, res) => {
     console.log("HERE PUT")
     console.log(req.body)
-    res.json( )
+    const stConf = await fs.readFile('./students.config',"utf-8")
+    const students = JSON.parse(stConf)
+    const progress = req.body 
+    students[progress['student']] = progress['dars']
+    console.log(JSON.stringify(students,null,2))
+    await fs.writeFile('./students.config',JSON.stringify(students,null,2))
+    res.json({success:true})
 
   });
 

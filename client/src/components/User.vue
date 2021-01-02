@@ -3,13 +3,13 @@
 <v-row class="text-center">
 
 <v-col cols="6">
-<router-link :to="'/dars/' + students['Yara']">
+<router-link :to="studentRoute('Yara')">
     <v-img src="images2/Yara.jpg"></v-img>
 </router-link>
 </v-col>
 
 <v-col cols="6"> 
-<router-link :to="'/dars/' + students['Delsa']">
+<router-link :to="studentRoute('Delsa')">
     <v-img src="images2/Delsa.jpg"></v-img>
 </router-link>
 </v-col>
@@ -46,6 +46,9 @@ export default {
   computed: { 
   },
   methods: { 
+    studentRoute(student) {
+      return `/dars/${this.students[student]}?student=${student}`
+    }
   }
 }
 </script>

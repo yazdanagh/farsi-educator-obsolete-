@@ -39,13 +39,14 @@ import axios from 'axios';
     data: function () {
       return {
         darsId: 1,
+        student: '',
         canvas: null
       }
     },
     watch: {
-    //async darsId(newVal) {
-    //  //await this.initCanvas(newVal)
-    //}
+   //async darsId(newVal) {
+   //  //await this.initCanvas(newVal)
+   //}
    },
     async mounted() {
       console.log("Hello")
@@ -54,6 +55,7 @@ import axios from 'axios';
       this.canvas.height = cons.canvasHeight; // window.innerHeight
       paper.setup(this.canvas);
       this.darsId = this.$route.params.darsId
+      this.student = this.$route.query.student
       console.log(this.$route.params)
       console.log(this.darsId)
       //this.initCanvas()
@@ -92,6 +94,15 @@ import axios from 'axios';
    methods: {
 
      
+     async changeRoute() {
+       console.log("INJJAAA")
+       await this.$router.push(`/dars/${this.darsId}`)
+       setTimeout ( () => { 
+             console.log("WAAIIIITT")
+             this.initCanvas()
+           }, 2000)
+
+     },
      audioAlph(aG) {
        return '/audios/' + aG[0].match(/([a-z]*)_/).[1] + '.m4a'
      },
@@ -301,15 +312,17 @@ import axios from 'axios';
       renderLine()
       const done = checkFinished()
       if ( done ) {
-        //console.log("DDDDDDDOOONNE")
+           console.log(this.$router)
+        console.log("DDDDDDDOOONNE")
         this.darsId++;
-         await axios.put('http://localhost:3085/users', { student: 'Yara', dars: this.darsId  })
-          setTimeout ( () => { 
-            console.log("WAAIIIITT")
-            this.initCanvas()
-          }, 500)
-         //this.$router.push({ key: this.$router.fullPath, name: 'main', params: { darsId:this.darsId } })
-         //location.reload()
+         await axios.put('http://localhost:3085/users', { student: this.student, dars: this.darsId  })
+           await this.changeRoute()
+           //this.$router.push({  name: 'main', params: { darsId:this.darsId } })
+          //setTimeout ( () => { 
+          //  console.log("WAAIIIITT")
+          //  this.initCanvas()
+          //}, 2000)
+           //location.reload()
 
       }
     } else if ( tile.group.position.equals(tile.origin))  {
