@@ -1,0 +1,27 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "farsi educator backend",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "serve": "nodemon index.js"
+  },
+  "author": "Yazdan Aghaghiri",
+  "license": "ISC",
+  "dependencies": {
+    "bluebird": "^3.7.2",
+    "body-parser": "^1.19.0",
+    "child-process": "^1.0.2",
+    "cookie-parser": "^1.4.5",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "fs-extra": "^9.0.1",
+    "lodash": "^4.17.20",
+    "path": "^0.12.7",
+    "util": "^0.12.3"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.6"
+  }
+}
