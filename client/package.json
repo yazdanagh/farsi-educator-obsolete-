@@ -7,7 +7,7 @@
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "build:images": "imagemin public/images2/**/* --out-dir=dist/images2",
-    "build:audios": "cp public/audios/* dist/audios"
+    "build:audios": "mkdir dist/audios && cp public/audios/* dist/audios/"
   },
   "dependencies": {
     "@mdi/js": "^5.8.55",
