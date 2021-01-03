@@ -51,209 +51,202 @@ import { php, phi, atp, ati }  from '../class';
 import { mdiHome, mdiArrowRightBold, mdiArrowLeftBold } from '@mdi/js';
 import axios from 'axios';
 
-  export default {
-    name: 'Main',
-    data: function () {
-      return {
-        darsId: 1,
-        darsDone: false,
-        student: '',
-        mdiArrowRightBold,
-        mdiArrowLeftBold,
-        mdiHome,
-        canvas: null
-      }
+export default {
+  name: 'Main',
+  data: function () {
+    return {
+      darsId: 1,
+      darsDone: false,
+      student: '',
+      mdiArrowRightBold,
+      mdiArrowLeftBold,
+      mdiHome,
+      canvas: null
+    }
+  },
+  watch: {
+    //async darsId(newVal) {
+      //  //await this.updateCanvas(newVal)
+      //}
+  },
+  async mounted() {
+    this.initCanvas()
+    this.darsId = this.$route.params.darsId
+    this.student = this.$route.query.student
+    setTimeout ( () => { 
+      console.log("WAAIIIITT")
+      this.updateCanvas()
+    }, 500) 
+  },
+  computed: { 
+    audioDars() {
+      return '/audios/' + cons.darses[this.darsId][1] + '.m4a'
     },
-    watch: {
-   //async darsId(newVal) {
-   //  //await this.updateCanvas(newVal)
-   //}
-   },
-    async mounted() {
-      this.initCanvas()
-      this.darsId = this.$route.params.darsId
-      this.student = this.$route.query.student
+    audioDarsId() {
+      return cons.darses[this.darsId][1]
+    },
+    darsKalameh() {  
+      return cons.darses[this.darsId][0].split(' ')
+    },
+    alphaGroups() {
+
+      let harfHash = {}
+      const kalamehUnique = this.darsKalameh.filter((value, index, self) => {return self.indexOf(value) === index; })
+      let alphaGrps = kalamehUnique.reduce((tot,harf) => { 
+        if ( harfHash[harf] ) return tot 
+        let alphaGroup = cons.alphaGroups.find( g => g.includes(harf))
+        tot.push(alphaGroup)
+        for ( let harf of alphaGroup ) {
+          harfHash[harf] = 1
+        }
+        return tot
+      }, [])
+      return alphaGrps
+    }
+  },
+  //
+  methods: {
+    async initCanvas() {
+      this.canvas = document.getElementById('myCanvas');
+      this.canvas.width =  cons.canvasWidth; // window.innerWidth
+      this.canvas.height = cons.canvasHeight; // window.innerHeight
+      await paper.setup(this.canvas);
+      // scalaing like this wont fix RtoL issue
+      // const canvasContext = canvas.getContext('2d');
+      // canvasContext.translate(window.innerWidth, 0);
+      // canvasContext.scale(-1,1 );
+      // canvasContext.save()
+
+      //this line eliminates need to access everything through paper object
+      // but as a sideeffect will impact global scope for example breaks browsersync
+      //paper.install(window)
+    },
+    async goToUsers() {
+      await this.$router.push(`/`)
+    },
+    async goToNextDars() {
+      this.darsId++;
+      await this.goToDars()
+    },
+    async goToPrevDars() {
+      this.darsId--;
+      await this.goToDars()
+    },
+    async goToDars() {
+      await this.$router.push(`/dars/${this.darsId}`)
       setTimeout ( () => { 
-        console.log("WAAIIIITT")
         this.updateCanvas()
-      }, 500) 
+      }, 50 )
+
     },
-   computed: { 
-     audioDars() {
-       return '/audios/' + cons.darses[this.darsId][1] + '.m4a'
-     },
-     audioDarsId() {
-       return cons.darses[this.darsId][1]
-     },
-     darsKalameh() {  
-        return cons.darses[this.darsId][0].split(' ')
-     },
-     alphaGroups() {
+    audioAlph(aG) {
+      return '/audios/' + aG[0].match(/([a-z]*)_/).[1] + '.m4a'
+    },
+    audioAlphId(aG) {
+      return aG[0].match(/([a-z]*)_/).[1]
+    },
 
-       let harfHash = {}
-       const kalamehUnique = this.darsKalameh.filter((value, index, self) => {return self.indexOf(value) === index; })
-       let alphaGrps = kalamehUnique.reduce((tot,harf) => { 
-         if ( harfHash[harf] ) return tot 
-         let alphaGroup = cons.alphaGroups.find( g => g.includes(harf))
-         tot.push(alphaGroup)
-         for ( let harf of alphaGroup ) {
-           harfHash[harf] = 1
-         }
-         return tot
-       }, [])
-       return alphaGrps
-     }
-   },
-   //
-   methods: {
-     async initCanvas() {
-       this.canvas = document.getElementById('myCanvas');
-       this.canvas.width =  cons.canvasWidth; // window.innerWidth
-       this.canvas.height = cons.canvasHeight; // window.innerHeight
-       await paper.setup(this.canvas);
-       // scalaing like this wont fix RtoL issue
-       // const canvasContext = canvas.getContext('2d');
-       // canvasContext.translate(window.innerWidth, 0);
-       // canvasContext.scale(-1,1 );
-       // canvasContext.save()
+    async updateCanvas() {
 
-       //this line eliminates need to access everything through paper object
-       // but as a sideeffect will impact global scope for example breaks browsersync
-       //paper.install(window)
-     },
-     async goToUsers() {
-       await this.$router.push(`/`)
-     },
-     async goToNextDars() {
-       this.darsId++;
-       await this.goToDars()
-     },
-     async goToPrevDars() {
-       this.darsId--;
-       await this.goToDars()
-     },
-     async goToDars() {
-       await this.$router.push(`/dars/${this.darsId}`)
-       setTimeout ( () => { 
-         this.updateCanvas()
-       }, 50 )
+      const createEar = ( earPosition, audio ) => { 
+        let ear = document.getElementById("ear")
+        let earRaster = new paper.Raster(ear)  
+        earRaster.position = earPosition  
+        earRaster.strokeColor = "yellow"
+        //window.earRaster = earRaster
+        earRaster.onMouseDown= ( ) => {
+          document.getElementById(audio).play()
+        }
+        //console.log("created ear for : " + audio)
+      }
 
-     },
-     audioAlph(aG) {
-       return '/audios/' + aG[0].match(/([a-z]*)_/).[1] + '.m4a'
-     },
-     audioAlphId(aG) {
-       return aG[0].match(/([a-z]*)_/).[1]
-     },
+      paper.project.activeLayer.removeChildren();
+      paper.view.draw();
+      document.getElementById("myCanvas").style.opacity = 0.2;
 
-     async updateCanvas() {
-       paper.project.activeLayer.removeChildren();
-       paper.view.draw();
-       document.getElementById("myCanvas").style.opacity = 0.2;
+      const paneTopMargin = 50
+      const paneRightMargin = 50
+      const topRight = new paper.Point( 
+      cons.canvasWidth - paneTopMargin, paneRightMargin );
+      var phPane = new php( topRight, this.darsKalameh.length + 2)
+      const earPosition = topRight.add( php.phiSpacing + php.phiSide/4 , php.phiSpacing + php.phiSide/2 ) 
+      createEar(earPosition, cons.darses[this.darsId][1]);
 
-       const paneTopMargin = 50
-       const paneRightMargin = 50
-       const topRight = new paper.Point( 
-       cons.canvasWidth - paneTopMargin, paneRightMargin );
-       var phPane = new php( topRight, this.darsKalameh.length + 2)
+      let phInsts = []
+      const atInsts = [] 
+      let idx = 0
+      for ( idx of this.darsKalameh.keys() ) {
+        phInsts.push( new phi(phPane.getPhiTopRight(idx+1), phPane.getPhiBottomLeft(idx+1)))
+        idx++
+      }
+    // iterate twice to make sure all ati are create on top phi
+    idx = 0
+    //const atPaneCreated = {}
+    for ( let alphaGroup of shuffle(this.alphaGroups) ) {
 
-       // ear
-       let earPosition = topRight.add( php.phiSpacing + php.phiSide/4 , php.phiSpacing + php.phiSide/2 ) 
-       const createEar = ( earPosition, audio ) => { 
+      //console.log(cons)
+      let topRight = phPane.phpRect.bounds.bottomRight.add(0, 20 ) 
+      topRight = topRight.add(0,  idx*(atp.atpRow+10))
 
-         let ear = document.getElementById("ear")
-         let earRaster = new paper.Raster(ear)  
-         earRaster.position = earPosition  
-         earRaster.strokeColor = "yellow"
-         //window.earRaster = earRaster
-         earRaster.onMouseDown= ( ) => {
-           document.getElementById(audio).play()
-         }
-         //console.log("created ear for : " + audio)
-       }
-       createEar(earPosition, cons.darses[this.darsId][1]);
+      //if ( harf != "faseleh" ) {
+        //  const audio = harf.match(/([a-z]*)_/).[1]
+        //  createEar(topRight.add( atp.atpSpacing + atp.atiSide/4  , atp.atpSpacing + atp.atiSide/2   ) ,audio)
+        //}
+        let atPane = new atp( topRight, alphaGroup.length  )
+        let idx2=1
+        for ( let harf of alphaGroup ) {
+          const audio = harf.match(/([a-z]*)_/).[1]
+          createEar(topRight.add( atp.atpSpacing + atp.atiSide/4  , atp.atpSpacing + atp.atiSide/2   ) ,audio)
+          const occurances = this.darsKalameh.reduce( (tot,elem,harfIndex) => { 
+            if (elem === harf) { 
+              tot.push(harfIndex)
+            } 
+            return tot 
+          } , [] )
+          //console.log( harf + " Occurs:" ) 
+          //console.log( occurances)
+          const plHoldersArray = occurances.map( a => phInsts[a] )
 
-       let phInsts = []
+          let atInst
+          atInst = new ati( atPane.getAtiTopRight(idx2) , atPane.getAtiBottomLeft(idx2), plHoldersArray, harf  )
+          atInsts.push(atInst)
+          atInst = new ati( atPane.getAtiTopRight(idx2) , atPane.getAtiBottomLeft(idx2), plHoldersArray, harf  )
+          atInsts.push(atInst)
+          idx2++
+        }
+      //window.at = atInst1
+      //window.atp = atPane
+      idx++
+    }
+  const renderLine = () => {
+    let startingTopRight = phPane.phiRowTR
+    for ( let [idx,plh] of phInsts.entries() ) {
+      console.log("--------" + idx)
+      if ( plh.aTile === null ) {
+        const newBound = new paper.Rectangle(startingTopRight, startingTopRight.subtract(php.phiSide, -php.phiSide ))
+        console.log(plh.phiRect.bounds)
+        console.log(newBound)
+        plh.phiRect.bounds = newBound
+        startingTopRight = startingTopRight.subtract(php.phiSide, 0) 
+      } else { 
+        const tile = plh.aTile.group
+        //window.tile = tile
+        console.log("HERE")
+        console.log(tile.bounds)
+        console.log(tile.firstChild.bounds)
+        console.log(tile.lastChild.bounds)
+        const newBound = new paper.Rectangle(startingTopRight, startingTopRight.subtract(tile.lastChild.bounds.width, -tile.lastChild.bounds.height ))
+        console.log(newBound)
+        tile.bounds = newBound 
+        startingTopRight = startingTopRight.subtract(tile.bounds.width, 0) 
+      }
 
+    }
+  }
 
-       //window.phPane = phPane
-       const atInsts = [] 
-       //console.log(this.kalameh)
-       let idx = 0
-       for ( idx of this.darsKalameh.keys() ) {
-         phInsts.push( new phi(phPane.getPhiTopRight(idx+1), phPane.getPhiBottomLeft(idx+1)))
-         idx++
-       }
-     window.phInsts = phInsts
-     // iterate twice to make sure all ati are create on top phi
-     idx = 0
-     //const atPaneCreated = {}
-     for ( let alphaGroup of this.alphaGroups ) {
-
-       //console.log(cons)
-       let topRight = phPane.phpRect.bounds.bottomRight.add(0, 20 ) 
-       topRight = topRight.add(0,  idx*(atp.atpRow+10))
-
-       //if ( harf != "faseleh" ) {
-         //  const audio = harf.match(/([a-z]*)_/).[1]
-         //  createEar(topRight.add( atp.atpSpacing + atp.atiSide/4  , atp.atpSpacing + atp.atiSide/2   ) ,audio)
-         //}
-         let atPane = new atp( topRight, alphaGroup.length  )
-         let idx2=1
-         for ( let harf of alphaGroup ) {
-
-           const audio = harf.match(/([a-z]*)_/).[1]
-           createEar(topRight.add( atp.atpSpacing + atp.atiSide/4  , atp.atpSpacing + atp.atiSide/2   ) ,audio)
-           const occurances = this.darsKalameh.reduce( (tot,elem,harfIndex) => { 
-             if (elem === harf) { 
-               tot.push(harfIndex)
-             } 
-             return tot 
-           } , [] )
-           //console.log( harf + " Occurs:" ) 
-           //console.log( occurances)
-           const plHoldersArray = occurances.map( a => phInsts[a] )
-
-           let atInst
-           atInst = new ati( atPane.getAtiTopRight(idx2) , atPane.getAtiBottomLeft(idx2), plHoldersArray, harf  )
-           atInsts.push(atInst)
-           atInst = new ati( atPane.getAtiTopRight(idx2) , atPane.getAtiBottomLeft(idx2), plHoldersArray, harf  )
-           atInsts.push(atInst)
-           idx2++
-         }
-       //window.at = atInst1
-       //window.atp = atPane
-       idx++
-     }
-   const renderLine = () => {
-     let startingTopRight = phPane.phiRowTR
-     for ( let [idx,plh] of phInsts.entries() ) {
-       console.log("--------" + idx)
-       if ( plh.aTile === null ) {
-         const newBound = new paper.Rectangle(startingTopRight, startingTopRight.subtract(php.phiSide, -php.phiSide ))
-         console.log(plh.phiRect.bounds)
-         console.log(newBound)
-         plh.phiRect.bounds = newBound
-         startingTopRight = startingTopRight.subtract(php.phiSide, 0) 
-       } else { 
-         const tile = plh.aTile.group
-         //window.tile = tile
-         console.log("HERE")
-         console.log(tile.bounds)
-         console.log(tile.firstChild.bounds)
-         console.log(tile.lastChild.bounds)
-         const newBound = new paper.Rectangle(startingTopRight, startingTopRight.subtract(tile.lastChild.bounds.width, -tile.lastChild.bounds.height ))
-         console.log(newBound)
-         tile.bounds = newBound 
-         startingTopRight = startingTopRight.subtract(tile.bounds.width, 0) 
-       }
-
-     }
-   }
-  
   paper.view.onFrame = async () => { 
     const tile = atInsts.find(t => { 
-        return t.resolve || t.resolvingTarg 
+      return t.resolve || t.resolvingTarg 
     })
     if ( !tile ) return
     console.log("Found tile: " + tile)
@@ -301,7 +294,7 @@ import axios from 'axios';
       renderLine()
       const done = checkFinished()
       if ( done ) {
-           console.log(this.$router)
+        console.log(this.$router)
         console.log("DDDDDDDOOONNE")
         await axios.put('http://localhost:3085/users', { student: this.student, dars: this.darsId  })
           this.darsDone = true
@@ -332,36 +325,25 @@ import axios from 'axios';
     return true
   }
 
+  function shuffle(array) {
+    var currentIndex = array.length, temporaryValue, randomIndex;
 
-//function shuffle(array) {
-//  var currentIndex = array.length, temporaryValue, randomIndex;
-//
-//  // While there remain elements to shuffle...
-//  while (0 !== currentIndex) {
-//
-//    // Pick a remaining element...
-//    randomIndex = Math.floor(Math.random() * currentIndex);
-//    currentIndex -= 1;
-//
-//    // And swap it with the current element.
-//    temporaryValue = array[currentIndex];
-//    array[currentIndex] = array[randomIndex];
-//    array[randomIndex] = temporaryValue;
-//  }
-//
-//  return array;
-//}
+    // While there remain elements to shuffle...
+    while (0 !== currentIndex) {
 
+      // Pick a remaining element...
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex -= 1;
 
-
-
-      document.getElementById("myCanvas").style.opacity =  1 
+      // And swap it with the current element.
+      temporaryValue = array[currentIndex];
+      array[currentIndex] = array[randomIndex];
+      array[randomIndex] = temporaryValue;
+    }
+    return array;
   }
-
-  
-  
-
-
+  document.getElementById("myCanvas").style.opacity =  1 
     }
   }
+}
 </script>
