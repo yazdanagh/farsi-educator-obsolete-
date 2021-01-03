@@ -5,17 +5,17 @@
 <v-col cols="3">
 <v-spacer> </v-spacer>
 <div>
-<v-btn @click="goToUsers" large class="mt-15" color="blue lighten-1" >  درس بعد 
+<v-btn style="width:100%" x-large @click="goToUsers" large class="mt-15" color="blue lighten-1" >  درس بعد 
 <v-icon large>  {{ mdiHome }} </v-icon>
 </v-btn>
 </div>
 <div>
-<v-btn :disabled="!darsDone" @click="goToNextDars" large class="mt-5" color="blue lighten-1" >  درس بعد 
+<v-btn x-large style="width:100%"  @click="goToNextDars" large :class="{'disable-btn': !darsDone}" class="mt-5" v-bind:color=" darsDone ? 'blue lighten-1' : 'blue lighten-1'" >  درس بعد 
 <v-icon large>  {{ mdiArrowRightBold }} </v-icon>
 </v-btn>
 </div>
 <div>
-<v-btn @click="goToPrevDars" large class="mt-5" color="blue lighten-1" >  درس قبل 
+<v-btn x-large style="width:100%" @click="goToPrevDars" large class="mt-5" color="blue lighten-1" >  درس قبل 
 <v-icon large>  {{ mdiArrowLeftBold }} </v-icon>
 </v-btn>
 </div>
@@ -24,7 +24,7 @@
 
 <v-col cols="9" class="mb-4">
 <!--<img id="ear" style="display:none" src="images2/ear.jpg" >  -->
-   <canvas id="myCanvas" resize style="border: 1px solid black; float: right;">
+   <canvas id="myCanvas" resize class="mt-5" style="border: 1px solid black; float: right;">
    </canvas>
    <div  id="allImages">
      <div v-for="(aG,aIdx) in alphaGroups" :key="aIdx" >
@@ -125,6 +125,7 @@ export default {
       await this.$router.push(`/`)
     },
     async goToNextDars() {
+      await axios.put('http://localhost:3085/users', { student: this.student, dars: this.darsId  })
       this.darsId++;
       await this.goToDars()
     },
@@ -292,13 +293,7 @@ export default {
       console.log("resolved")
       console.log(tile)
       renderLine()
-      const done = checkFinished()
-      if ( done ) {
-        console.log(this.$router)
-        console.log("DDDDDDDOOONNE")
-        await axios.put('http://localhost:3085/users', { student: this.student, dars: this.darsId  })
-          this.darsDone = true
-      }
+      this.darsDone = await checkFinished()
     } else if ( tile.group.position.equals(tile.origin))  {
       tile.group.firstChild.visible = true
       tile.resolved = false
@@ -312,10 +307,11 @@ export default {
       tile.resolvingPhi = null
       //tile.ph.group.bounds = tile.ph.origBound
       renderLine()
+      this.darsDone = await checkFinished()
     }
   }
 
-  const checkFinished = () => {
+  const checkFinished = async () => {
     //let done = true
     for ( let phInst of phInsts ) {  
       if ( !phInst.aTile ) {
@@ -347,3 +343,10 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.disable-btn {
+  pointer-events: none;
+  opacity: 0.2;
+}
+</style>

@@ -34,7 +34,7 @@
         target="_blank"
         text
       >
-        <span class="mr-2">آموزش فارسی</span>
+        <span style="font-size: 1.8em" class="mr-2">آموزش فارسی</span>
         <!-- <v-icon>mdi-open-in-new</v-icon> -->
       </v-btn>
     </v-app-bar>
