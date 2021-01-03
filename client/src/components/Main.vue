@@ -3,6 +3,22 @@
 <v-row class="text-center">
 
 <v-col cols="3">
+<v-spacer> </v-spacer>
+<div>
+<v-btn @click="goToUsers" large class="mt-15" color="blue lighten-1" >  درس بعد 
+<v-icon large>  {{ mdiHome }} </v-icon>
+</v-btn>
+</div>
+<div>
+<v-btn :disabled="!darsDone" @click="goToNextDars" large class="mt-5" color="blue lighten-1" >  درس بعد 
+<v-icon large>  {{ mdiArrowRightBold }} </v-icon>
+</v-btn>
+</div>
+<div>
+<v-btn @click="goToPrevDars" large class="mt-5" color="blue lighten-1" >  درس قبل 
+<v-icon large>  {{ mdiArrowLeftBold }} </v-icon>
+</v-btn>
+</div>
 
 </v-col>
 
@@ -17,7 +33,7 @@
      </div>
    </div>
    <div id="allAudios">
-     <audio :src="audioKalameh" :id="audioKalamehId"  > </audio>
+     <audio :src="audioDars" :id="audioDarsId"  > </audio>
      <audio v-for="(aG,aIdx) in alphaGroups" :src="audioAlph(aG)" :id="audioAlphId(aG)" :key="aIdx" >
      </audio>
    </div>
@@ -32,6 +48,7 @@
 const cons = require('../constants.js');
 const paper =  require('paper');
 import { php, phi, atp, ati }  from '../class';
+import { mdiHome, mdiArrowRightBold, mdiArrowLeftBold } from '@mdi/js';
 import axios from 'axios';
 
   export default {
@@ -39,46 +56,43 @@ import axios from 'axios';
     data: function () {
       return {
         darsId: 1,
+        darsDone: false,
         student: '',
+        mdiArrowRightBold,
+        mdiArrowLeftBold,
+        mdiHome,
         canvas: null
       }
     },
     watch: {
    //async darsId(newVal) {
-   //  //await this.initCanvas(newVal)
+   //  //await this.updateCanvas(newVal)
    //}
    },
     async mounted() {
-      console.log("Hello")
-      this.canvas = document.getElementById('myCanvas');
-      this.canvas.width =  cons.canvasWidth; // window.innerWidth
-      this.canvas.height = cons.canvasHeight; // window.innerHeight
-      paper.setup(this.canvas);
+      this.initCanvas()
       this.darsId = this.$route.params.darsId
       this.student = this.$route.query.student
-      console.log(this.$route.params)
-      console.log(this.darsId)
-      //this.initCanvas()
       setTimeout ( () => { 
         console.log("WAAIIIITT")
-        this.initCanvas()
+        this.updateCanvas()
       }, 500) 
     },
    computed: { 
-     audioKalameh() {
+     audioDars() {
        return '/audios/' + cons.darses[this.darsId][1] + '.m4a'
      },
-     audioKalamehId() {
+     audioDarsId() {
        return cons.darses[this.darsId][1]
      },
-     kalameh () {  
+     darsKalameh() {  
         return cons.darses[this.darsId][0].split(' ')
      },
      alphaGroups() {
 
        let harfHash = {}
-       const kalamehUnique = this.kalameh.filter((value, index, self) => {return self.indexOf(value) === index; })
-       let alphaGrps=  kalamehUnique.reduce((tot,harf) => { 
+       const kalamehUnique = this.darsKalameh.filter((value, index, self) => {return self.indexOf(value) === index; })
+       let alphaGrps = kalamehUnique.reduce((tot,harf) => { 
          if ( harfHash[harf] ) return tot 
          let alphaGroup = cons.alphaGroups.find( g => g.includes(harf))
          tot.push(alphaGroup)
@@ -92,15 +106,37 @@ import axios from 'axios';
    },
    //
    methods: {
+     async initCanvas() {
+       this.canvas = document.getElementById('myCanvas');
+       this.canvas.width =  cons.canvasWidth; // window.innerWidth
+       this.canvas.height = cons.canvasHeight; // window.innerHeight
+       await paper.setup(this.canvas);
+       // scalaing like this wont fix RtoL issue
+       // const canvasContext = canvas.getContext('2d');
+       // canvasContext.translate(window.innerWidth, 0);
+       // canvasContext.scale(-1,1 );
+       // canvasContext.save()
 
-     
-     async changeRoute() {
-       console.log("INJJAAA")
+       //this line eliminates need to access everything through paper object
+       // but as a sideeffect will impact global scope for example breaks browsersync
+       //paper.install(window)
+     },
+     async goToUsers() {
+       await this.$router.push(`/`)
+     },
+     async goToNextDars() {
+       this.darsId++;
+       await this.goToDars()
+     },
+     async goToPrevDars() {
+       this.darsId--;
+       await this.goToDars()
+     },
+     async goToDars() {
        await this.$router.push(`/dars/${this.darsId}`)
        setTimeout ( () => { 
-             console.log("WAAIIIITT")
-             this.initCanvas()
-           }, 2000)
+         this.updateCanvas()
+       }, 50 )
 
      },
      audioAlph(aG) {
@@ -110,157 +146,110 @@ import axios from 'axios';
        return aG[0].match(/([a-z]*)_/).[1]
      },
 
-     async initCanvas() {
+     async updateCanvas() {
+       paper.project.activeLayer.removeChildren();
+       paper.view.draw();
+       document.getElementById("myCanvas").style.opacity = 0.2;
 
-  //    const a = await setTimeout( function () {}, 200000) 
-  //    console.log(a)
+       const paneTopMargin = 50
+       const paneRightMargin = 50
+       const topRight = new paper.Point( 
+       cons.canvasWidth - paneTopMargin, paneRightMargin );
+       var phPane = new php( topRight, this.darsKalameh.length + 2)
+
+       // ear
+       let earPosition = topRight.add( php.phiSpacing + php.phiSide/4 , php.phiSpacing + php.phiSide/2 ) 
+       const createEar = ( earPosition, audio ) => { 
+
+         let ear = document.getElementById("ear")
+         let earRaster = new paper.Raster(ear)  
+         earRaster.position = earPosition  
+         earRaster.strokeColor = "yellow"
+         //window.earRaster = earRaster
+         earRaster.onMouseDown= ( ) => {
+           document.getElementById(audio).play()
+         }
+         //console.log("created ear for : " + audio)
+       }
+       createEar(earPosition, cons.darses[this.darsId][1]);
+
+       let phInsts = []
 
 
+       //window.phPane = phPane
+       const atInsts = [] 
+       //console.log(this.kalameh)
+       let idx = 0
+       for ( idx of this.darsKalameh.keys() ) {
+         phInsts.push( new phi(phPane.getPhiTopRight(idx+1), phPane.getPhiBottomLeft(idx+1)))
+         idx++
+       }
+     window.phInsts = phInsts
+     // iterate twice to make sure all ati are create on top phi
+     idx = 0
+     //const atPaneCreated = {}
+     for ( let alphaGroup of this.alphaGroups ) {
 
-  // scalaing like this wont fix RtoL issue
-  // const canvasContext = canvas.getContext('2d');
-  // canvasContext.translate(window.innerWidth, 0);
-  // canvasContext.scale(-1,1 );
-  // canvasContext.save()
-  console.log("HEREs")
+       //console.log(cons)
+       let topRight = phPane.phpRect.bounds.bottomRight.add(0, 20 ) 
+       topRight = topRight.add(0,  idx*(atp.atpRow+10))
 
-  //this line eliminates need to access everything through paper object
-  // but as a sideeffect will impact global scope for example breaks browsersync
-  //paper.install(window)
-  //var path = new paper.Path();
-  //var tool = new paper.Tool()
+       //if ( harf != "faseleh" ) {
+         //  const audio = harf.match(/([a-z]*)_/).[1]
+         //  createEar(topRight.add( atp.atpSpacing + atp.atiSide/4  , atp.atpSpacing + atp.atiSide/2   ) ,audio)
+         //}
+         let atPane = new atp( topRight, alphaGroup.length  )
+         let idx2=1
+         for ( let harf of alphaGroup ) {
 
+           const audio = harf.match(/([a-z]*)_/).[1]
+           createEar(topRight.add( atp.atpSpacing + atp.atiSide/4  , atp.atpSpacing + atp.atiSide/2   ) ,audio)
+           const occurances = this.darsKalameh.reduce( (tot,elem,harfIndex) => { 
+             if (elem === harf) { 
+               tot.push(harfIndex)
+             } 
+             return tot 
+           } , [] )
+           //console.log( harf + " Occurs:" ) 
+           //console.log( occurances)
+           const plHoldersArray = occurances.map( a => phInsts[a] )
 
-  const paneTopMargin = 50
-  const paneRightMargin = 50
-  const topRight = new paper.Point( 
-  cons.canvasWidth - paneTopMargin, paneRightMargin );
-  //const kalameh = cons.darses[this.darsId][0].split(' ')
-  var phPane = new php( topRight, this.kalameh.length + 2)
+           let atInst
+           atInst = new ati( atPane.getAtiTopRight(idx2) , atPane.getAtiBottomLeft(idx2), plHoldersArray, harf  )
+           atInsts.push(atInst)
+           atInst = new ati( atPane.getAtiTopRight(idx2) , atPane.getAtiBottomLeft(idx2), plHoldersArray, harf  )
+           atInsts.push(atInst)
+           idx2++
+         }
+       //window.at = atInst1
+       //window.atp = atPane
+       idx++
+     }
+   const renderLine = () => {
+     let startingTopRight = phPane.phiRowTR
+     for ( let [idx,plh] of phInsts.entries() ) {
+       console.log("--------" + idx)
+       if ( plh.aTile === null ) {
+         const newBound = new paper.Rectangle(startingTopRight, startingTopRight.subtract(php.phiSide, -php.phiSide ))
+         console.log(plh.phiRect.bounds)
+         console.log(newBound)
+         plh.phiRect.bounds = newBound
+         startingTopRight = startingTopRight.subtract(php.phiSide, 0) 
+       } else { 
+         const tile = plh.aTile.group
+         //window.tile = tile
+         console.log("HERE")
+         console.log(tile.bounds)
+         console.log(tile.firstChild.bounds)
+         console.log(tile.lastChild.bounds)
+         const newBound = new paper.Rectangle(startingTopRight, startingTopRight.subtract(tile.lastChild.bounds.width, -tile.lastChild.bounds.height ))
+         console.log(newBound)
+         tile.bounds = newBound 
+         startingTopRight = startingTopRight.subtract(tile.bounds.width, 0) 
+       }
 
-  // ear
-  //
-  let earPosition = topRight.add( php.phiSpacing + php.phiSide/4 , php.phiSpacing + php.phiSide/2 ) 
-  const createEar = ( earPosition, audio ) => { 
-
-   //let audioElem = document.createElement("audio");
-   //audioElem.setAttribute("src", `audios/${audio}.m4a`);
-   //audioElem.setAttribute("id", `${audio}`);
-   //document.getElementById("allAudios").appendChild(audioElem);
-    let ear = document.getElementById("ear")
-    let earRaster = new paper.Raster(ear)  
-    earRaster.position = earPosition  
-    earRaster.strokeColor = "yellow"
-    //window.earRaster = earRaster
-    earRaster.onMouseDown= ( ) => {
-      document.getElementById(audio).play()
-    }
-    console.log("created ear for : " + audio)
-  }
-  createEar(earPosition, cons.darses[this.darsId][1]);
-
-  let phInsts = []
-
-  //const kalameh = "be_koochik_chap aa_chasban_rast be_koochik_chap aa_chasban_rast".split(' ')
-  //const kalameh = "aa_bakola be_bozorg_tanha".split(' ')
-  //const kalameh = "be_koochik_chap aa_chasban_rast be_koochik_chap aa_chasban_rast faseleh aa_bakola be_bozorg_tanha faseleh de_tanha aa_bikola de_tanha".split(' ') 
-
-  //const kalamehUnique = this.kalameh.filter((value, index, self) => {return self.indexOf(value) === index; })
-  //const kalamehRand = shuffle(kalamehUnique)
-
- //for ( let harf of this.kalamehUnique){
- //  
- //  console.log(harf)
- //  //let alphaGroup = cons.alphaGroups.find( g => g.includes(harf))
- //  //let alphaGroup = this.alphaGroups[harf]
- // //let firstAlph = alphaGroup[0].match(/([a-z]*)_/).[1]
- // //let audioElem = document.createElement("audio");
- // //audioElem.setAttribute("src", `audios/${firstAlph}.m4a`);
- // //audioElem.setAttribute("id", `${firstAlph}`);
- // //document.getElementById("allAudios").appendChild(audioElem);
- // //for ( let alpha of alphaGroup ) {
- // //  let elem = document.createElement("img");
- // //  elem.setAttribute("src", `images2/${alpha}.png`);
- // //  elem.setAttribute("id", alpha);
- // //  elem.setAttribute("style", "display:none");
- // //  document.getElementById("allImages").appendChild(elem);
- // //}
- //}
-
-  //window.phPane = phPane
-  const atInsts = [] 
-  //console.log(this.kalameh)
-  let idx = 0
-  for ( idx of this.kalameh.keys() ) {
-    phInsts.push( new phi(phPane.getPhiTopRight(idx+1), phPane.getPhiBottomLeft(idx+1)))
-    idx++
-  }
-  window.phInsts = phInsts
-  // iterate twice to make sure all ati are create on top phi
-  idx = 0
-  //const atPaneCreated = {}
-  for ( let alphaGroup of this.alphaGroups ) {
-    
-  //console.log(cons)
-  let topRight = phPane.phpRect.bounds.bottomRight.add(0, 20 ) 
-  topRight = topRight.add(0,  idx*(atp.atpRow+10))
-  
- //if ( harf != "faseleh" ) {
- //  const audio = harf.match(/([a-z]*)_/).[1]
- //  createEar(topRight.add( atp.atpSpacing + atp.atiSide/4  , atp.atpSpacing + atp.atiSide/2   ) ,audio)
- //}
-  let atPane = new atp( topRight, alphaGroup.length  )
-  let idx2=1
-    for ( let harf of alphaGroup ) {
-
-      const audio = harf.match(/([a-z]*)_/).[1]
-      createEar(topRight.add( atp.atpSpacing + atp.atiSide/4  , atp.atpSpacing + atp.atiSide/2   ) ,audio)
-    const occurances = this.kalameh.reduce( (tot,elem,harfIndex) => { 
-      if (elem === harf) { 
-        tot.push(harfIndex)
-      } 
-      return tot 
-    } , [] )
-    //console.log( harf + " Occurs:" ) 
-    //console.log( occurances)
-    const plHoldersArray = occurances.map( a => phInsts[a] )
-
-    let atInst
-    atInst = new ati( atPane.getAtiTopRight(idx2) , atPane.getAtiBottomLeft(idx2), plHoldersArray, harf  )
-    atInsts.push(atInst)
-    atInst = new ati( atPane.getAtiTopRight(idx2) , atPane.getAtiBottomLeft(idx2), plHoldersArray, harf  )
-    atInsts.push(atInst)
-    idx2++
-  }
-  //window.at = atInst1
-  //window.atp = atPane
-  idx++
-  }
-  const renderLine = () => {
-      let startingTopRight = phPane.phiRowTR
-      for ( let [idx,plh] of phInsts.entries() ) {
-        console.log("--------" + idx)
-        if ( plh.aTile === null ) {
-            const newBound = new paper.Rectangle(startingTopRight, startingTopRight.subtract(php.phiSide, -php.phiSide ))
-            console.log(plh.phiRect.bounds)
-            console.log(newBound)
-           plh.phiRect.bounds = newBound
-           startingTopRight = startingTopRight.subtract(php.phiSide, 0) 
-        } else { 
-           const tile = plh.aTile.group
-           //window.tile = tile
-           console.log("HERE")
-           console.log(tile.bounds)
-           console.log(tile.firstChild.bounds)
-           console.log(tile.lastChild.bounds)
-           const newBound = new paper.Rectangle(startingTopRight, startingTopRight.subtract(tile.lastChild.bounds.width, -tile.lastChild.bounds.height ))
-            console.log(newBound)
-           tile.bounds = newBound 
-           startingTopRight = startingTopRight.subtract(tile.bounds.width, 0) 
-        }
-
-      }
-  }
+     }
+   }
   
   paper.view.onFrame = async () => { 
     const tile = atInsts.find(t => { 
@@ -314,16 +303,8 @@ import axios from 'axios';
       if ( done ) {
            console.log(this.$router)
         console.log("DDDDDDDOOONNE")
-        this.darsId++;
-         await axios.put('http://localhost:3085/users', { student: this.student, dars: this.darsId  })
-           await this.changeRoute()
-           //this.$router.push({  name: 'main', params: { darsId:this.darsId } })
-          //setTimeout ( () => { 
-          //  console.log("WAAIIIITT")
-          //  this.initCanvas()
-          //}, 2000)
-           //location.reload()
-
+        await axios.put('http://localhost:3085/users', { student: this.student, dars: this.darsId  })
+          this.darsDone = true
       }
     } else if ( tile.group.position.equals(tile.origin))  {
       tile.group.firstChild.visible = true
@@ -352,31 +333,29 @@ import axios from 'axios';
   }
 
 
- //function shuffle(array) {
- //  var currentIndex = array.length, temporaryValue, randomIndex;
-
- //  // While there remain elements to shuffle...
- //  while (0 !== currentIndex) {
-
- //    // Pick a remaining element...
- //    randomIndex = Math.floor(Math.random() * currentIndex);
- //    currentIndex -= 1;
-
- //    // And swap it with the current element.
- //    temporaryValue = array[currentIndex];
- //    array[currentIndex] = array[randomIndex];
- //    array[randomIndex] = temporaryValue;
- //  }
-
- //  return array;
- //}
-
-
+//function shuffle(array) {
+//  var currentIndex = array.length, temporaryValue, randomIndex;
+//
+//  // While there remain elements to shuffle...
+//  while (0 !== currentIndex) {
+//
+//    // Pick a remaining element...
+//    randomIndex = Math.floor(Math.random() * currentIndex);
+//    currentIndex -= 1;
+//
+//    // And swap it with the current element.
+//    temporaryValue = array[currentIndex];
+//    array[currentIndex] = array[randomIndex];
+//    array[randomIndex] = temporaryValue;
+//  }
+//
+//  return array;
+//}
 
 
 
 
-
+      document.getElementById("myCanvas").style.opacity =  1 
   }
 
   

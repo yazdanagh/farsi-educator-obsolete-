@@ -13,11 +13,18 @@ export const alphaGroups = [
 ]
 
 export const darses = [ 
-  [ "be_koochik_chap aa_chasban_rast be_koochik_chap aa_chasban_rast", "baba" ],
-  [ "aa_bakola be_bozorg_tanha", "ab" ],
-  [ "be_koochik_chap aa_chasban_rast de_tanha" , "bad" ],
-  [ "me_koochik_chap aa_chasban_rast de_tanha re_tanha" , "madar" ],
-  [ "be_koochik_chap aa_chasban_rast de_tanha aa_bikola me_bozorg_tanha" , "badam" ],
-  [ "ye_koochik_chap aa_chasban_rast re_tanha aa_bikola" , "yara" ]
+  [ "be_koochik_chap aa_chasban_rast be_koochik_chap aa_chasban_rast", "baabaa" ], // 0
+  [ "aa_bakola be_bozorg_tanha", "aab" ],
+  [ "be_koochik_chap aa_chasban_rast de_tanha" , "baad" ],
+  [ "be_koochik_chap aa_chasban_rast me_bozorg_tanha" , "baam" ],
+  [ "de_tanha aa_bikola me_bozorg_tanha" , "daam" ],
+  [ "be_koochik_chap aa_chasban_rast de_tanha aa_bikola me_bozorg_tanha" , "baadaam" ],
+  [ "me_koochik_chap aa_chasban_rast re_tanha" , "maar" ],
+  [ "de_tanha re_tanha" , "dar" ],
+  [ "aa_bakola re_tanha de_tanha" , "aard" ],
+  [ "de_tanha aa_bikola re_tanha aa_bikola" , "daaraa" ],
+  [ "me_koochik_chap aa_chasban_rast de_tanha re_tanha" , "maadar" ], // 10
+  [ "ye_koochik_chap aa_chasban_rast re_tanha aa_bikola" , "yaara" ], 
+  [ "de_tanha ye_koochik_chap de_chasban_rast"  , "deed" ] , 
   //"be_koochik_chap aa_chasban_rast be_koochik_chap aa_chasban_rast faseleh aa_bakola be_bozorg_tanha faseleh de_tanha aa_bikola de_tanha",
 ]

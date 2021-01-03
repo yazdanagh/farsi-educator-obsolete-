@@ -2,7 +2,7 @@
   <v-app>
     <v-app-bar
       app
-      color="primary"
+      color="blue lighten-2"
       dark
     >
     <!--
@@ -34,8 +34,8 @@
         target="_blank"
         text
       >
-        <span class="mr-2">Farsi Educator</span>
-        <v-icon>mdi-open-in-new</v-icon>
+        <span class="mr-2">آموزش فارسی</span>
+        <!-- <v-icon>mdi-open-in-new</v-icon> -->
       </v-btn>
     </v-app-bar>
 
