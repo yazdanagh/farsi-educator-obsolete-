@@ -43,6 +43,7 @@ module.exports = (app) => {
             console.log(req.params)
       console.log(students)
       const student = doAuth(req,students)
+//    console.log(student)
       if ( student ) {
          res.json(student)
       } else {
@@ -54,12 +55,12 @@ module.exports = (app) => {
 
     const stConf = await fs.readFile('./students_new.config',"utf-8")
     const students = JSON.parse(stConf)
-    console.log(students)
+    //console.log(students)
     const student = doAuth(req,students)
     console.log(student)
     if ( student ) {
     student['darsId'] = req.body.darsId 
-    console.log(JSON.stringify(students,null,2))
+    //console.log(JSON.stringify(students,null,2))
     await fs.writeFile('./students_new.config',JSON.stringify(students,null,2))
     res.json({success:true})
 

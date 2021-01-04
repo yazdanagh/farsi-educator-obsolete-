@@ -122,7 +122,7 @@ solo
 
 <script>
 
-import axios from 'axios'
+//import axios from 'axios'
 
 export default {
   name: 'User',
@@ -135,11 +135,11 @@ export default {
   watch: {
   },
   async mounted() {
-    console.log("KJKJKJKJ")
-    const res = (await axios.get('http://localhost:3085/users'))
-      console.log(res)
-      this.students = res['data']
-    console.log(res['data'])
+   //console.log("KJKJKJKJ")
+   //const res = (await axios.get('http://localhost:3085/users'))
+   //  console.log(res)
+   //  this.students = res['data']
+   //console.log(res['data'])
 
   },
   computed: { 
