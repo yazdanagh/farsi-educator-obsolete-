@@ -4,8 +4,59 @@
 
 <v-col cols="3">
 <v-spacer> </v-spacer>
-<div>
-<v-btn style="width:100%" x-large @click="goToUsers" large class="mt-5" color="blue lighten-1" >  درس بعد 
+<div class="mt-5">
+
+
+  <v-card
+    class="mx-auto mt-5"
+    max-width="374"
+  >
+
+    <v-img
+      height="250"
+      src="/images2/Yara.jpg"
+    ></v-img>
+
+    <v-card-title>
+
+   {{ this.student.name }}
+    </v-card-title>
+
+    <v-divider class="mx-4"></v-divider>
+    <v-card-text>
+      <v-row
+        class="mx-0"
+        >
+        Studied {{ this.darsId }} of {{ this.totalDarses() }} lessons
+   <br/>
+  Learned: 6 out of 28 alphabets
+
+      </v-row>
+    </v-card-text>
+
+
+    
+  </v-card>
+
+  <!--
+  <v-card-text>
+  Name: {{ this.student.name }}
+   <br/>
+  Studied {{ this.darsId }} of 100 lessons
+   <br/>
+  Learned: 6 out of 28 alphabets
+  </v-card-text>
+  -->
+
+  <!--
+  
+   {{ this.student.naam }}
+   <br/>
+   <br/>
+   ۱۰۰ از {{ this.pn(this.darsId) }} درس 
+   -->
+   
+<v-btn style="width:100%" x-large @click="goToUsers" large class="mt-5" color="blue lighten-1" > الفبا 
 <v-icon large>  {{ mdiHome }} </v-icon>
 </v-btn>
 </div>
@@ -50,6 +101,8 @@ const paper =  require('paper');
 import { php, phi, atp, ati }  from '../class';
 import { mdiHome, mdiArrowRightBold, mdiArrowLeftBold } from '@mdi/js';
 import axios from 'axios';
+import pn from 'persian-number';
+
 
 export default {
   name: 'Main',
@@ -78,8 +131,8 @@ export default {
     const res = await axios.get(`http://localhost:3085/students?email=${this.email}&code=${this.code}`)
     console.log(res.daw)
     this.initCanvas()
-    this.student = res.data 
-    this.darsId = this.student['darsId']
+    this.student = res.data
+    this.darsId = this.student.darsId 
     //this.student = this.$route.query.student
     setTimeout ( () => { 
       console.log("WAAIIIITT")
@@ -118,6 +171,12 @@ export default {
   },
   //
   methods: {
+    totalDarses() {
+      return cons.darses.length
+    },
+    pn(num) {
+      return pn.convert(num)
+    },
     async initCanvas() {
       this.canvas = document.getElementById('myCanvas');
       //this.canvas.width =   cons.canvasWidth; // window.innerWidth
@@ -142,8 +201,8 @@ export default {
       await this.$router.push(`/`)
     },
     async goToNextDars() {
-      await axios.put(`http://localhost:3085/students?email=${this.email}&code=${this.code}`, { student: this.student, darsId: this.darsId  })
       this.darsId++;
+      await axios.put(`http://localhost:3085/students?email=${this.email}&code=${this.code}`, { student: this.student.student, darsId: this.darsId  })
       await this.goToDars()
     },
     async goToPrevDars() {

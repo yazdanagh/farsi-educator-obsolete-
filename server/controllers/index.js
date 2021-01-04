@@ -44,7 +44,7 @@ module.exports = (app) => {
       console.log(students)
       const student = doAuth(req,students)
       if ( student ) {
-         res.json({student: student.name, darsId: student.darsId })
+         res.json(student)
       } else {
          res.sendStatus(404);
       }
