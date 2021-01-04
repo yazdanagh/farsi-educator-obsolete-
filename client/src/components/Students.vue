@@ -1,11 +1,15 @@
 <template>
 <v-container>
-<v-row class="text-center">
+<v-row class="mt-10 text-center">
 
-
+ <v-data-table
+    :headers="headers"
+    :items="students"
+    :items-per-page="5"
+    class="elevation-1"
+  ></v-data-table>
 
 </v-row>
-
 </v-container>
 </template>
 
@@ -17,27 +21,19 @@ export default {
   name: 'User',
   data: function () {
     return {
+      students: [],
+      headers: "name naam darsId email code".split(' ').map( a => {  return { 'text': a, 'value': a }} )
     }
   },
   watch: {
   },
   async mounted() {
-    const res = (await axios.get('http://localhost:3085/students'))
-      console.log(res)
-      this.students = res['data']
-    console.log(res['data'])
-
+    const res = (await axios.get('http://localhost:3085/students?admin_code=6100'))
+    this.students = res.data
   },
   computed: { 
   },
   methods: { 
-    studentRoute(student) {
-      if ( student === 'Yara' ) {
-        return `/dars?email=yazdan.aghaghiri@gmail.com&code=8318`
-      } else {
-        return `/dars?email=yazdan.aghaghiri@gmail.com&code=8173`
-      }
-    }
   }
 }
 </script>

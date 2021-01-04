@@ -35,24 +35,35 @@ module.exports = (app) => {
 
 
   app.get('/students/:code', async (req, res) => {
-
-    console.log('eeja')
     const email = req.query.email
     const code = req.params.code
-      const stConf = await fs.readFile('./students_new.config',"utf-8")
-      const students = JSON.parse(stConf)
-      console.log(code)
-      console.log(students)
-       console.log(req.params)
+    const stConf = await fs.readFile('./students_new.config',"utf-8")
+    const students = JSON.parse(stConf)
+    console.log(code)
+    console.log(students)
+    console.log(req.params)
     const student = doAuth(code,email,students)
-//    console.log(student)
-      if ( student ) {
+    //    console.log(student)
+    if ( student ) {
       console.log("FOUND")
-         res.json(student)
-      } else {
-         res.sendStatus(404);
-      }
+      res.json(student)
+    } else {
+      res.sendStatus(404);
+    }
   })
+
+  app.get('/students', async (req, res) => {
+    const admin_code = req.query.admin_code
+    const stConf = await fs.readFile('./students_new.config',"utf-8")
+    const students = JSON.parse(stConf)
+    if ( admin_code == 6100 ) {
+      console.log("FOUND")
+      res.json(students)
+    } else {
+      res.sendStatus(404);
+    }
+  })
+
   
   app.put('/students/:code', async (req, res) => {
 

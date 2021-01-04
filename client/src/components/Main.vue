@@ -14,7 +14,7 @@
 
     <v-img
       height="250"
-      src="/images2/Yara.jpg"
+      :src='"/images2/" + student.name + ".jpg"'
     ></v-img>
 
     <v-card-title>
@@ -34,8 +34,6 @@
       </v-row>
     </v-card-text>
 
-
-    
   </v-card>
 
   <!--
@@ -123,7 +121,7 @@ export default {
       //}
   },
   async mounted() {
-    // try {
+    try {
       
     this.email = this.$route.query.email
     this.code = this.$route.params.code
@@ -137,10 +135,10 @@ export default {
       console.log("WAAIIIITT")
       this.updateCanvas()
     }, 500) 
-    //} catch (e) {
-      //this.$router.push('/')
-      //console.log(e)
-   // }
+    } catch (e) {
+      console.log(e)
+      this.$router.push('/')
+    }
   },
   computed: { 
     audioDars() {

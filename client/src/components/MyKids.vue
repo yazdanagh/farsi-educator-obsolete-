@@ -4,13 +4,13 @@
 
 <v-col cols="6">
 <router-link :to="studentRoute('Yara')">
-    <v-img src="images2/Yara.jpg"></v-img>
+    <v-img src='images2/Yara%20Aghaghiri.jpg'></v-img>
 </router-link>
 </v-col>
 
 <v-col cols="6"> 
 <router-link :to="studentRoute('Delsa')">
-    <v-img src="images2/Delsa.jpg"></v-img>
+    <v-img src="images2/Delsa%20Aghaghiri.jpg"></v-img>
 </router-link>
 </v-col>
 
@@ -21,7 +21,7 @@
 
 <script>
 
-import axios from 'axios'
+//import axios from 'axios'
 
 export default {
   name: 'User',
@@ -36,11 +36,11 @@ export default {
   watch: {
   },
   async mounted() {
-    console.log("KJKJKJKJ")
-    const res = (await axios.get('http://localhost:3085/users'))
-      console.log(res)
-      this.students = res['data']
-    console.log(res['data'])
+   //console.log("KJKJKJKJ")
+   //const res = (await axios.get('http://localhost:3085/users'))
+   //  console.log(res)
+   //  this.students = res['data']
+   //console.log(res['data'])
 
   },
   computed: { 
@@ -48,9 +48,9 @@ export default {
   methods: { 
     studentRoute(student) {
       if ( student === 'Yara' ) {
-        return `/dars?email=yazdan.aghaghiri@gmail.com&code=8318`
+        return `/dars/8318?email=yazdan.aghaghiri@gmail.com`
       } else {
-        return `/dars?email=yazdan.aghaghiri@gmail.com&code=8173`
+        return `/dars/8173?email=yazdan.aghaghiri@gmail.com`
       }
     }
   }
