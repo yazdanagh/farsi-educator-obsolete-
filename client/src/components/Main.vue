@@ -24,7 +24,7 @@
 
 <v-col cols="9" class="mb-4">
 <!--<img id="ear" style="display:none" src="images2/ear.jpg" >  -->
-   <canvas id="myCanvas" resize class="mt-5" style="border: 1px solid black; float: right;">
+   <canvas id="myCanvas" resize class="mt-5" style="border: 1px solid black; float: right;width:100%">
    </canvas>
    <div  id="allImages">
      <div v-for="(aG,aIdx) in alphaGroups" :key="aIdx" >
@@ -70,13 +70,25 @@ export default {
       //}
   },
   async mounted() {
+
+    try {
+    console.log(this.$route)
+    this.email = this.$route.params.email
+    this.code = this.$route.params.code
+    const res = await axios.get(`http://localhost:3085/students?email=${this.email}&code=${this.code}`)
+    console.log(res.daw)
     this.initCanvas()
-    this.darsId = this.$route.params.darsId
-    this.student = this.$route.query.student
+    this.student = res.data 
+    this.darsId = this.student['darsId']
+    //this.student = this.$route.query.student
     setTimeout ( () => { 
       console.log("WAAIIIITT")
       this.updateCanvas()
     }, 500) 
+    } catch (e) {
+      this.$router.push('/')
+      console.log(e)
+    }
   },
   computed: { 
     audioDars() {
@@ -108,7 +120,7 @@ export default {
   methods: {
     async initCanvas() {
       this.canvas = document.getElementById('myCanvas');
-      this.canvas.width =  cons.canvasWidth; // window.innerWidth
+      //this.canvas.width =   cons.canvasWidth; // window.innerWidth
       this.canvas.height = cons.canvasHeight; // window.innerHeight
       await paper.setup(this.canvas);
       // scalaing like this wont fix RtoL issue
@@ -120,12 +132,17 @@ export default {
       //this line eliminates need to access everything through paper object
       // but as a sideeffect will impact global scope for example breaks browsersync
       //paper.install(window)
+      console.log(this.canvas.width)
+
+     //if ( this.canvas.width < 800 ) {
+     //  php.phiSide = 40
+     //}
     },
     async goToUsers() {
       await this.$router.push(`/`)
     },
     async goToNextDars() {
-      await axios.put('http://localhost:3085/users', { student: this.student, dars: this.darsId  })
+      await axios.put(`http://localhost:3085/students?email=${this.email}&code=${this.code}`, { student: this.student, darsId: this.darsId  })
       this.darsId++;
       await this.goToDars()
     },

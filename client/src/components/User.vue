@@ -1,22 +1,123 @@
 <template>
-<v-container>
-<v-row class="text-center">
 
-<v-col cols="6">
-<router-link :to="studentRoute('Yara')">
-    <v-img src="images2/Yara.jpg"></v-img>
-</router-link>
-</v-col>
+ <v-container
+          class="fill-height"
+          fluid
+        >
+  <v-row
+            align="center"
+            justify="center"
+          >
+            <v-col
+              cols="12"
+              sm="8"
+              md="4"
+            >
+              <v-card class="elevation-12">
+                <v-toolbar
+                  color="blue lighten-1"
+                  dark
+                  flat
+                >
+                  <v-spacer></v-spacer>
+                  <v-tooltip bottom>
+                  </v-tooltip>
+                </v-toolbar>
+                <v-card-text>
+                  <v-form>
+                    <v-text-field
+                      label="پست الکترونیک"
+                      name="login"
+                      prepend-icon="mdi-email"
+                      type="text" 
+                      v-model="email"
+                    ></v-text-field>
 
-<v-col cols="6"> 
-<router-link :to="studentRoute('Delsa')">
-    <v-img src="images2/Delsa.jpg"></v-img>
-</router-link>
-</v-col>
+                    <v-text-field
+                      id="password"
+                      label="رمز ورود "
+                      name="password"
+                      v-model="accessCode"
+                      prepend-icon="mdi-lock"
+                      type="password"
+                      ></v-text-field>
+                      <!--
+                      <v-text-field
+                      id="password"
+                      label="نام دانش آموز"
+                      name="password"
+                      v-model="student"
+                      prepend-icon="mdi-account"
+                      type="password"
+                    ></v-text-field>
+                    -->
+                  </v-form>
+                </v-card-text>
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn large @click="goToSchool" color="blue ligthen-1"> برو به مدرسه </v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-col>
+          </v-row>
+          </v-container>
+
+          <!--
+          
+<v-container
+          class="fill-height"
+          fluid
+        >
+          <v-row
+            align="center"
+            justify="center"
+          >
+                      <v-col class="text-center">
+        <v-text-field class="d-flex align-center mt-5"
+label="کد ورود خود رو وارد کنید "
+solo
+> 
+</v-text-field>
+                      </v-col>
+                      </v-row>
+                      </v-container>
+                      -->
+
+<!--
+<v-row justify="center"  class="text-center">
+<div
+      class="d-flex align-center mt-15"
+      color="grey"
+      flat
+      min-width="500"
+      height="400"
+    >
+
+<v-text-field class="d-flex align-center mt-5"
+label="کد ورود خود رو وارد کنید "
+solo
+> 
+</v-text-field>
+    </div>
+<div
+      class="d-flex align-center mt-15"
+      color="grey"
+      flat
+      min-width="500"
+      height="400"
+    >
+
+      <v-text-field class="d-flex align-center mt-5"
+label="کد ورود خود رو وارد کنید "
+solo
+> 
+</v-text-field>
+
+    </div>
 
 </v-row>
+-->
 
-</v-container>
 </template>
 
 <script>
@@ -27,10 +128,8 @@ export default {
   name: 'User',
   data: function () {
     return {
-      students: {
-        Yara: 4,
-        Delsa: 3
-      },
+      email: '',
+      accessCode: '',
     }
   },
   watch: {
@@ -46,6 +145,13 @@ export default {
   computed: { 
   },
   methods: { 
+    goToSchool() {
+      const email = this.email
+      const code = this.accessCode
+      //this.$router.push(`/dars/${this.students[student]}?student=${student}&code=${code}`)
+      this.$router.push({ name: 'main', params: {email,code }})
+
+    },
     studentRoute(student) {
       return `/dars/${this.students[student]}?student=${student}`
     }

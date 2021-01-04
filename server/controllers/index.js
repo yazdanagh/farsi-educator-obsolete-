@@ -18,6 +18,15 @@ const _= require("lodash")
 const middleware  = require('./middleware');
 
 
+const doAuth = (req,students) => {
+  const email = req.query.email
+  const code = req.query.code
+  const student = students.find( st => { 
+    return st.email === email && st.code == code 
+  })
+  return student 
+}
+
 //const cronMachines = defines.cronMachines 
 
 module.exports = (app) => {
@@ -27,25 +36,57 @@ module.exports = (app) => {
   //app.use( '/jobs', [middleware.assignCurrentUser ]); //, middleware.requireCurrentUser]);
 
 
+  app.get('/students', async (req, res) => {
+
+      const stConf = await fs.readFile('./students_new.config',"utf-8")
+      const students = JSON.parse(stConf)
+            console.log(req.params)
+      console.log(students)
+      const student = doAuth(req,students)
+      if ( student ) {
+         res.json({student: student.name, darsId: student.darsId })
+      } else {
+         res.sendStatus(404);
+      }
+  })
+  
+  app.put('/students', async (req, res) => {
+
+    const stConf = await fs.readFile('./students_new.config',"utf-8")
+    const students = JSON.parse(stConf)
+    console.log(students)
+    const student = doAuth(req,students)
+    console.log(student)
+    if ( student ) {
+    student['darsId'] = req.body.darsId 
+    console.log(JSON.stringify(students,null,2))
+    await fs.writeFile('./students_new.config',JSON.stringify(students,null,2))
+    res.json({success:true})
+
+      } else {
+         res.sendStatus(404);
+      }
+    
+  });
+
   app.get('/users', async (req, res) => {
     console.log("HERE")
     const stConf = await fs.readFile('./students.config',"utf-8")
     const students = JSON.parse(stConf)
 
-  //let students = stConf.split('\n').slice(0,-1)
-  //students = students.reduce((tot,a) => { 
-  //    const b = a.split(':'); 
-  //    tot[b[0]] = b[1] 
-  //    return tot;
+    //let students = stConf.split('\n').slice(0,-1)
+    //students = students.reduce((tot,a) => { 
+      //    const b = a.split(':'); 
+      //    tot[b[0]] = b[1] 
+      //    return tot;
   //   } , {})
-   console.log(students)
-    
-   //let students = {
-   //   "Yara" : 4,
-   //   "Delsa": 2
-   //}
-    res.json( students )
+  console.log(students)
 
+  //let students = {
+    //   "Yara" : 4,
+    //   "Delsa": 2
+    //}
+    res.json( students )
   });
 
   app.put('/users', async (req, res) => {
@@ -60,6 +101,7 @@ module.exports = (app) => {
     res.json({success:true})
 
   });
+
 
 }
 
