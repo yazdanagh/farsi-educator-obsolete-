@@ -2,6 +2,8 @@
 client/node_modules
 client/dist
 server/node_modules
+server/students_new.config
+server/students.config
 
 
 # local env files
