@@ -149,7 +149,7 @@ export default {
       const email = this.email
       const code = this.accessCode
       //this.$router.push(`/dars/${this.students[student]}?student=${student}&code=${code}`)
-      this.$router.push({ name: 'main', params: {email,code }})
+      this.$router.push({ name: 'main', query: {email,code }})
 
     },
     studentRoute(student) {

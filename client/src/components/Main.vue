@@ -11,12 +11,12 @@
 </div>
 <div>
 <v-btn x-large style="width:100%"  @click="goToNextDars" large :class="{'disable-btn': !darsDone}" class="mt-5" v-bind:color=" darsDone ? 'blue lighten-1' : 'blue lighten-1'" >  درس بعد 
-<v-icon large>  {{ mdiArrowRightBold }} </v-icon>
+<v-icon large>  {{ mdiArrowLeftBold }} </v-icon>
 </v-btn>
 </div>
 <div>
 <v-btn x-large style="width:100%" @click="goToPrevDars" large class="mt-5" color="blue lighten-1" >  درس قبل 
-<v-icon large>  {{ mdiArrowLeftBold }} </v-icon>
+<v-icon large>  {{ mdiArrowRightBold }} </v-icon>
 </v-btn>
 </div>
 
@@ -73,8 +73,8 @@ export default {
 
     try {
     console.log(this.$route)
-    this.email = this.$route.params.email
-    this.code = this.$route.params.code
+    this.email = this.$route.query.email
+    this.code = this.$route.query.code
     const res = await axios.get(`http://localhost:3085/students?email=${this.email}&code=${this.code}`)
     console.log(res.daw)
     this.initCanvas()
@@ -151,7 +151,7 @@ export default {
       await this.goToDars()
     },
     async goToDars() {
-      await this.$router.push(`/dars/${this.darsId}`)
+      //await this.$router.push(`/dars/${this.darsId}`)
       setTimeout ( () => { 
         this.updateCanvas()
       }, 50 )
@@ -180,7 +180,7 @@ export default {
 
       paper.project.activeLayer.removeChildren();
       paper.view.draw();
-      document.getElementById("myCanvas").style.opacity = 0.2;
+      //document.getElementById("myCanvas").style.opacity = 0.2;
 
       const paneTopMargin = 50
       const paneRightMargin = 50
@@ -355,7 +355,7 @@ export default {
     }
     return array;
   }
-  document.getElementById("myCanvas").style.opacity =  1 
+  //document.getElementById("myCanvas").style.opacity =  1 
     }
   }
 }

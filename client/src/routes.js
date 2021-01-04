@@ -9,7 +9,7 @@ const routes = [
     name: 'user' 
   },
   {
-    path: '/dars/:darsId',
+    path: '/dars',
     component: Main,
     name: 'main'
   }
