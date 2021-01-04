@@ -15,7 +15,7 @@ const routes = [
     name: 'mykids' 
   },
   {
-    path: '/dars',
+    path: '/dars/:code',
     component: Main,
     name: 'main'
   }

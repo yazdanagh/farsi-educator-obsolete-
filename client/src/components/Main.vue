@@ -123,13 +123,12 @@ export default {
       //}
   },
   async mounted() {
-
-    try {
-    console.log(this.$route)
+    // try {
+      
     this.email = this.$route.query.email
-    this.code = this.$route.query.code
-    const res = await axios.get(`http://localhost:3085/students?email=${this.email}&code=${this.code}`)
-    console.log(res.daw)
+    this.code = this.$route.params.code
+    const res = await axios.get(`http://localhost:3085/students/${this.code}?email=${this.email}`)
+    console.log(res.data)
     this.initCanvas()
     this.student = res.data
     this.darsId = this.student.darsId 
@@ -138,10 +137,10 @@ export default {
       console.log("WAAIIIITT")
       this.updateCanvas()
     }, 500) 
-    } catch (e) {
-      this.$router.push('/')
-      console.log(e)
-    }
+    //} catch (e) {
+      //this.$router.push('/')
+      //console.log(e)
+   // }
   },
   computed: { 
     audioDars() {
@@ -202,7 +201,7 @@ export default {
     },
     async goToNextDars() {
       this.darsId++;
-      await axios.put(`http://localhost:3085/students?email=${this.email}&code=${this.code}`, { student: this.student.student, darsId: this.darsId  })
+      await axios.put(`http://localhost:3085/students/code=${this.code}?email=${this.email}`, { student: this.student.student, darsId: this.darsId  })
       await this.goToDars()
     },
     async goToPrevDars() {

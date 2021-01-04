@@ -18,9 +18,7 @@ const _= require("lodash")
 const middleware  = require('./middleware');
 
 
-const doAuth = (req,students) => {
-  const email = req.query.email
-  const code = req.query.code
+const doAuth = (code,email,students) => {
   const student = students.find( st => { 
     return st.email === email && st.code == code 
   })
@@ -36,27 +34,34 @@ module.exports = (app) => {
   //app.use( '/jobs', [middleware.assignCurrentUser ]); //, middleware.requireCurrentUser]);
 
 
-  app.get('/students', async (req, res) => {
+  app.get('/students/:code', async (req, res) => {
 
+    console.log('eeja')
+    const email = req.query.email
+    const code = req.params.code
       const stConf = await fs.readFile('./students_new.config',"utf-8")
       const students = JSON.parse(stConf)
-            console.log(req.params)
+      console.log(code)
       console.log(students)
-      const student = doAuth(req,students)
+       console.log(req.params)
+    const student = doAuth(code,email,students)
 //    console.log(student)
       if ( student ) {
+      console.log("FOUND")
          res.json(student)
       } else {
          res.sendStatus(404);
       }
   })
   
-  app.put('/students', async (req, res) => {
+  app.put('/students/:code', async (req, res) => {
 
+    const email = req.query.email
+    const code = req.params.code
     const stConf = await fs.readFile('./students_new.config',"utf-8")
     const students = JSON.parse(stConf)
     //console.log(students)
-    const student = doAuth(req,students)
+    const student = doAuth(code,email,students)
     console.log(student)
     if ( student ) {
     student['darsId'] = req.body.darsId 
