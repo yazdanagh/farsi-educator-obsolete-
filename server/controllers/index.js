@@ -63,6 +63,19 @@ module.exports = (app) => {
       res.sendStatus(404);
     }
   })
+  app.post('/students-update', async (req, res) => {
+    const admin_code = req.query.admin_code
+    if ( true || admin_code === 6100 ) {
+    const students = req.body 
+    console.log(JSON.stringify(students,null,2))
+    await fs.writeFile('./students.config',JSON.stringify(students,null,2))
+    res.json({success:true})
+       
+    } else {
+      res.sendStatus(404);
+    }
+  })
+
 
   
   app.put('/students/:code', async (req, res) => {

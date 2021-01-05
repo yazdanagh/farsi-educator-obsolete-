@@ -59,7 +59,7 @@
 </v-btn>
 </div>
 <div>
-<v-btn x-large style="width:100%"  @click="goToNextDars" large :class="{'disable-btn': !darsDone}" class="mt-5" v-bind:color=" darsDone ? 'blue lighten-1' : 'blue lighten-1'" >  درس بعد 
+<v-btn x-large style="width:100%"  @click="goToNextDars" large :class="{'disable-btn': false && !darsDone}" class="mt-5" v-bind:color=" darsDone ? 'blue lighten-1' : 'blue lighten-1'" >  درس بعد 
 <v-icon large>  {{ mdiArrowLeftBold }} </v-icon>
 </v-btn>
 </div>
