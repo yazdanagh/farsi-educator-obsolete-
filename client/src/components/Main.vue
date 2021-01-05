@@ -199,7 +199,7 @@ export default {
     },
     async goToNextDars() {
       this.darsId++;
-      await axios.put(`http://localhost:3085/students/code=${this.code}?email=${this.email}`, { student: this.student.student, darsId: this.darsId  })
+      await axios.put(`http://localhost:3085/students/${this.code}?email=${this.email}`, { student: this.student.student, darsId: this.darsId  })
       await this.goToDars()
     },
     async goToPrevDars() {
