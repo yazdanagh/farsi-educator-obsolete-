@@ -16,7 +16,7 @@ const routes = [
     name: 'mykids' 
   },
   {
-    path: '/students',
+    path: '/all_students',
     component: Students,
     name: 'admin_students' 
   },

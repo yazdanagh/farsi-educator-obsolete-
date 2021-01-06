@@ -198,7 +198,7 @@ export default {
     },
   },
   async mounted() {
-    const res = (await axios.get('http://localhost:3085/students?admin_code=6100'))
+    const res = (await axios.get('/students?admin_code=6100'))
     this.students = res.data
   },
 
@@ -250,7 +250,7 @@ export default {
         this.close()
       },
       async saveAll() {
-        await axios.post(`http://localhost:3085/students-update`, { students:this.students })
+        await axios.post(`/students-update`, { students:this.students })
       }
   }
 }
