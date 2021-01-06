@@ -27,10 +27,6 @@ export default {
   name: 'User',
   data: function () {
     return {
-      students: {
-        Yara: 4,
-        Delsa: 3
-      },
     }
   },
   watch: {
