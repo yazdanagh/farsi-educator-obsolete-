@@ -125,7 +125,8 @@ export default {
       
     this.email = this.$route.query.email
     this.code = this.$route.params.code
-    const res = await axios.get(`http://localhost:3085/students/${this.code}?email=${this.email}`)
+    //const res = await axios.get(`http://localhost:3085/students/${this.code}?email=${this.email}`)
+    const res = await axios.get(`/students/${this.code}?email=${this.email}`)
     console.log(res.data)
     this.initCanvas()
     this.student = res.data
@@ -199,7 +200,8 @@ export default {
     },
     async goToNextDars() {
       this.darsId++;
-      await axios.put(`http://localhost:3085/students/${this.code}?email=${this.email}`, { student: this.student.student, darsId: this.darsId  })
+      //await axios.put(`http://localhost:3085/students/${this.code}?email=${this.email}`, { student: this.student.student, darsId: this.darsId  })
+      await axios.put(`/students/${this.code}?email=${this.email}`, { student: this.student.student, darsId: this.darsId  })
       await this.goToDars()
     },
     async goToPrevDars() {
