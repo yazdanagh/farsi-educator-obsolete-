@@ -14,6 +14,7 @@ const _= require("lodash")
 //const dJSON = require('dirty-json');
 
 
+const configFile = './students_new.config'
 
 const middleware  = require('./middleware');
 
@@ -37,12 +38,12 @@ module.exports = (app) => {
   app.get('/students/:code', async (req, res) => {
     const email = req.query.email
     const code = req.params.code
-    const stConf = await fs.readFile('./students_new.config',"utf-8")
+    const stConf = await fs.readFile(configFile,"utf-8")
     const students = JSON.parse(stConf)
     console.log(code)
     console.log(students)
     console.log(req.params)
-    const student = doAuth(code,email,students)
+    const student = doAuth(code,email,students.students)
     //    console.log(student)
     if ( student ) {
       console.log("FOUND")
@@ -54,7 +55,7 @@ module.exports = (app) => {
 
   app.get('/students', async (req, res) => {
     const admin_code = req.query.admin_code
-    const stConf = await fs.readFile('./students_new.config',"utf-8")
+    const stConf = await fs.readFile(configFile,"utf-8")
     const students = JSON.parse(stConf)
     if ( admin_code == 6100 ) {
       console.log("FOUND")
@@ -68,7 +69,7 @@ module.exports = (app) => {
     if ( true || admin_code === 6100 ) {
     const students = req.body 
     console.log(JSON.stringify(students,null,2))
-    await fs.writeFile('./students.config',JSON.stringify(students,null,2))
+    await fs.writeFile(configFile,JSON.stringify(students,null,2))
     res.json({success:true})
        
     } else {
@@ -82,7 +83,7 @@ module.exports = (app) => {
 
     const email = req.query.email
     const code = req.params.code
-    const stConf = await fs.readFile('./students_new.config',"utf-8")
+    const stConf = await fs.readFile(configFile,"utf-8")
     const students = JSON.parse(stConf)
     //console.log(students)
     const student = doAuth(code,email,students)
@@ -90,7 +91,7 @@ module.exports = (app) => {
     if ( student ) {
     student['darsId'] = req.body.darsId 
     //console.log(JSON.stringify(students,null,2))
-    await fs.writeFile('./students_new.config',JSON.stringify(students,null,2))
+    await fs.writeFile(configFile,JSON.stringify(students,null,2))
     res.json({success:true})
 
       } else {
