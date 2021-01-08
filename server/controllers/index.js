@@ -86,7 +86,7 @@ module.exports = (app) => {
     const stConf = await fs.readFile(configFile,"utf-8")
     const students = JSON.parse(stConf)
     //console.log(students)
-    const student = doAuth(code,email,students)
+    const student = doAuth(code,email,students.students)
     console.log(student)
     if ( student ) {
     student['darsId'] = req.body.darsId 
