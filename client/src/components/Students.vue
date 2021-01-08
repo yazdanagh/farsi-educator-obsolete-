@@ -200,7 +200,7 @@ export default {
   },
   async mounted() {
     const res = (await axios.get(`${this.backendHost}/students?admin_code=6100`))
-    this.students = res.data
+    this.students = res.data.students
   },
 
   computed: { 
