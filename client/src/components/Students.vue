@@ -10,6 +10,16 @@
     :items-per-page="5"
     class="elevation-1"
   >
+   <template v-slot:item.name="{ item }">
+      <v-chip
+        color="grey lighten-3"
+        dark
+      >
+<router-link :to="'/dars/' + item.code + '?email=' + item.email">
+        {{ item.name }}
+</router-link>
+      </v-chip>
+    </template>
   <template v-slot:top>
       <v-toolbar
         flat
