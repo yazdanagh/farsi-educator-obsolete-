@@ -263,7 +263,7 @@ export default {
       //await this.$router.push(`/dars/${this.darsId}`)
       setTimeout ( () => { 
         this.updateCanvas()
-      }, 50 )
+      }, 500 )
 
     },
     audioAlph(aG) {
