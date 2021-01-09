@@ -251,6 +251,9 @@ export default {
         this.close()
       },
       async saveAll() {
+        for ( let student of this.students ) { 
+          student.darsId = parseInt(student.darsId)
+        }
         await axios.post(`${this.backendHost}/students-update`, { students:this.students })
       }
   }

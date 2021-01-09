@@ -154,9 +154,12 @@ export default {
     this.code = this.$route.params.code
     const res = await axios.get(`${this.backendHost}/students/${this.code}?email=${this.email}`)
     console.log(res.data)
-    this.initCanvas()
+    this.darsId = parseInt(res.data['darsId']) + 1 
     this.student = res.data
-    this.darsId = this.student.darsId + 1 
+    console.log("this")
+    console.log(this)
+    this.initCanvas()
+      this.$emit('darsId', this.darsId )
     //this.student = this.$route.query.student
     setTimeout ( () => { 
       console.log("WAAIIIITT")
@@ -238,9 +241,14 @@ export default {
       await this.$router.push(`/`)
     },
     async goToNextDars() {
+      if ( this.darsId <= this.student.darsId ) { 
+        // nothing
+      } else { 
+        await axios.put(`${this.backendHost}/students/${this.code}?email=${this.email}`, { student: this.student.student, darsId: this.darsId  })
+        this.student = (await axios.get(`${this.backendHost}/students/${this.code}?email=${this.email}`)).data
+        this.darsDone = false
+      }
       this.darsId++;
-      this.student.darsId++
-      await axios.put(`${this.backendHost}/students/${this.code}?email=${this.email}`, { student: this.student.student, darsId: this.darsId  })
       await this.fetchDars()
     },
     async goToPrevDars() {
