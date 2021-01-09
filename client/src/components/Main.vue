@@ -17,21 +17,27 @@
       :src='"/images2/" + student.name + ".jpg"'
     ></v-img>
 
-    <v-card-title>
-
-   {{ this.student.name }}
+    <v-card-title class="d-flex flex-row-reverse">
+   {{ this.student.naam }}
     </v-card-title>
 
-    <v-divider class="mx-4"></v-divider>
-    <v-card-text>
+    <v-divider class="mx-3"></v-divider>
+    <v-card-text class="d-flex flex-row-reverse">
+          {{ pn(this.student.darsId) }} درس را خوانده است 
+          <br>
+          {{ alefba(this.student.darsId) }} تا از الفبا را آموخته است 
+          <!--
       <v-row
         class="mx-0"
         >
-        Studied {{ this.darsId }} of {{ this.totalDarses() }} lessons
-   <br/>
-  Learned: 6 out of 28 alphabets
+        <div >
+        </div>
+        <div>
+          {{ pn(this.darsId/2) }} تا از الفبا را آموخته است 
+        </div>
 
       </v-row>
+      -->
     </v-card-text>
 
   </v-card>
@@ -53,29 +59,40 @@
    <br/>
    ۱۰۰ از {{ this.pn(this.darsId) }} درس 
    -->
-   
 <v-btn style="width:100%" x-large @click="goToUsers" large class="mt-5" color="blue lighten-1" > الفبا 
 <v-icon large>  {{ mdiHome }} </v-icon>
 </v-btn>
 </div>
 <div>
-<v-btn x-large style="width:100%"  @click="goToNextDars" large :class="{'disable-btn': false && !darsDone}" class="mt-5" v-bind:color=" darsDone ? 'blue lighten-1' : 'blue lighten-1'" >  درس بعد 
+  <v-btn x-large style="width:100%"  @click="goToNextDars" large :class="{'disable-btn': darsId > student.darsId && !darsDone}" class="mt-5" v-bind:color=" darsDone ? 'blue lighten-1' : 'blue lighten-1'" >  درس بعد 
 <v-icon large>  {{ mdiArrowLeftBold }} </v-icon>
 </v-btn>
 </div>
+
 <div>
 <v-btn x-large style="width:100%" @click="goToPrevDars" large class="mt-5" color="blue lighten-1" >  درس قبل 
 <v-icon large>  {{ mdiArrowRightBold }} </v-icon>
 </v-btn>
 </div>
 <div>
- <v-text-field
-            label="Solo"
-            placeholder="Placeholder"
-            solo
-          ></v-text-field>
-        </div>
+  <v-row>
+
+  <v-col cols="1">
+  </v-col>
+  <v-col cols="6">
+  <v-text-field class="mt-5"
+  v-model="selectedDarsId"
+  label="شماره درس"
+  ></v-text-field>
+  </v-col>
+  <v-col cols="5">
+  <v-btn x-large  style="width:100%" @click="goToDars(selectedDarsId)" large class="mt-5" color="blue lighten-1" > برو به درس
+  </v-btn>
+  </v-col>
+  </v-row>
+</div>
 </v-col>
+
 
 <v-col cols="9" class="mb-4">
 <!--<img id="ear" style="display:none" src="images2/ear.jpg" >  -->
@@ -113,6 +130,7 @@ export default {
   data: function () {
     return {
       darsId: 1,
+      selectedDarsId: '',
       darsDone: false,
       student: '',
       mdiArrowRightBold,
@@ -123,9 +141,11 @@ export default {
     }
   },
   watch: {
-    //async darsId(newVal) {
+    async darsId(newVal) {
       //  //await this.updateCanvas(newVal)
-      //}
+      this.$emit('darsId', newVal )
+    }
+
   },
   async mounted() {
     try {
@@ -136,7 +156,7 @@ export default {
     console.log(res.data)
     this.initCanvas()
     this.student = res.data
-    this.darsId = this.student.darsId 
+    this.darsId = this.student.darsId + 1 
     //this.student = this.$route.query.student
     setTimeout ( () => { 
       console.log("WAAIIIITT")
@@ -175,6 +195,19 @@ export default {
   },
   //
   methods: {
+    alefba() {
+      if ( this.darsId < 2 ) {
+        return this.pn(2)
+      } else if ( this.darsId < 5 ) {
+        return this.pn(3)
+      } else if ( this.darsId < 10 ) {
+        return this.pn(4)
+      } else if ( this.darsId < 15 ) {
+        return this.pn(5)
+      } else {
+        return this.pn(6)
+      }
+    },
     totalDarses() {
       return cons.darses.length
     },
@@ -206,14 +239,19 @@ export default {
     },
     async goToNextDars() {
       this.darsId++;
+      this.student.darsId++
       await axios.put(`${this.backendHost}/students/${this.code}?email=${this.email}`, { student: this.student.student, darsId: this.darsId  })
-      await this.goToDars()
+      await this.fetchDars()
     },
     async goToPrevDars() {
       this.darsId--;
-      await this.goToDars()
+      await this.fetchDars()
     },
-    async goToDars() {
+    async goToDars(n) { 
+      this.darsId = n
+      await this.fetchDars()
+    },
+    async fetchDars() {
       //await this.$router.push(`/dars/${this.darsId}`)
       setTimeout ( () => { 
         this.updateCanvas()

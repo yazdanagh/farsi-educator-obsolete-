@@ -33,13 +33,17 @@
         href="/"
         text
       >
-        <span style="font-size: 1.8em" class="mr-2">آموزش فارسی</span>
+      <span style="font-size: 1.8em" class="mr-2">آموزش فارسی 
+        <span v-if="darsIdCopy">
+     - درس شماره  {{ pn(this.darsIdCopy) }}
+      </span>
+      </span>
         <!-- <v-icon>mdi-open-in-new</v-icon> -->
       </v-btn>
     </v-app-bar>
 
     <v-main>
-      <router-view></router-view> 
+      <router-view @darsId="onClickChild"></router-view> 
       <!-- <Main> </Main> -->
     </v-main>
   </v-app>
@@ -47,6 +51,7 @@
 
 <script>
 //import Main from './components/Main';
+import pn from 'persian-number';
 
 export default {
   name: 'App',
@@ -54,9 +59,17 @@ export default {
   components: {
     //Main,
   },
+  methods: {
+    pn(num) {
+      return pn.convert(num)
+    },
+    onClickChild (value) {
+      this.darsIdCopy = value
+    }
+  },
 
   data: () => ({
-    //
+    darsIdCopy: '' 
   }),
 };
 </script>
