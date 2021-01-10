@@ -12,6 +12,7 @@ const exec = util.promisify(require('child_process').exec);
 const fs = bluebird.promisifyAll(require("fs-extra"))
 const _= require("lodash")
 //const dJSON = require('dirty-json');
+const db = require("../mongo.js")
 
 
 const configFile = './students_new.config'
@@ -38,12 +39,14 @@ module.exports = (app) => {
   app.get('/students/:code', async (req, res) => {
     const email = req.query.email
     const code = req.params.code
-    const stConf = await fs.readFile(configFile,"utf-8")
-    const students = JSON.parse(stConf)
-    console.log(code)
-    console.log(students)
-    console.log(req.params)
-    const student = doAuth(code,email,students.students)
+    //const stConf = await fs.readFile(configFile,"utf-8")
+    //const students = JSON.parse(stConf)
+    const students = await db.student.find({code,email})   
+	  const student = students[0]
+    console.log(student)
+    //console.log(students)
+    //console.log(req.params)
+    //const student = doAuth(code,email,students.students)
     //    console.log(student)
     if ( student ) {
       console.log("FOUND")
@@ -55,9 +58,12 @@ module.exports = (app) => {
 
   app.get('/students', async (req, res) => {
     const admin_code = req.query.admin_code
-    const stConf = await fs.readFile(configFile,"utf-8")
-    const students = JSON.parse(stConf)
-    if ( admin_code == 6100 ) {
+    const students = await db.student.find({})   
+    //const stConf = await fs.readFile(configFile,"utf-8")
+    //const students = JSON.parse(stConf)
+    console.log("ALL")
+    console.log(students)
+    if ( students && admin_code == 6100 ) {
       console.log("FOUND")
       res.json(students)
     } else {
@@ -67,11 +73,14 @@ module.exports = (app) => {
   app.post('/students-update', async (req, res) => {
     const admin_code = req.query.admin_code
     if ( true || admin_code === 6100 ) {
-    const students = req.body 
-    console.log(JSON.stringify(students,null,2))
-    await fs.writeFile(configFile,JSON.stringify(students,null,2))
+    const updatedStudents = req.body.students 
+	    console.log(updatedStudents)
+    const students = await db.student.find({})   
+    //console.log(JSON.stringify(students,null,2))
+    //await fs.writeFile(configFile,JSON.stringify(students,null,2))
+    await db.student.deleteMany({})   //
+    await db.student.create(updatedStudents)
     res.json({success:true})
-       
     } else {
       res.sendStatus(404);
     }
