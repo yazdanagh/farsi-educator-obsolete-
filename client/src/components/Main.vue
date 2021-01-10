@@ -59,7 +59,7 @@
    <br/>
    ۱۰۰ از {{ this.pn(this.darsId) }} درس 
    -->
-<v-btn style="width:100%" x-large @click="goToUsers" large class="mt-5" color="blue lighten-1" > الفبا 
+   <v-btn style="width:100%" x-large @click="goToUsers" large class="disable-btn mt-5" color="blue lighten-1" > الفبا ( بزودی ) 
 <v-icon large>  {{ mdiHome }} </v-icon>
 </v-btn>
 </div>
@@ -164,7 +164,7 @@ export default {
     setTimeout ( () => { 
       console.log("WAAIIIITT")
       this.updateCanvas()
-    }, 500) 
+    }, 1000) 
     } catch (e) {
       console.log(e)
       this.$router.push('/')
@@ -263,7 +263,7 @@ export default {
       //await this.$router.push(`/dars/${this.darsId}`)
       setTimeout ( () => { 
         this.updateCanvas()
-      }, 500 )
+      }, 1000 )
 
     },
     audioAlph(aG) {
