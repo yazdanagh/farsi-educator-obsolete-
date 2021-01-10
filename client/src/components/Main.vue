@@ -130,6 +130,7 @@ export default {
   data: function () {
     return {
       darsId: 1,
+      dars: null,
       selectedDarsId: '',
       darsDone: false,
       student: '',
@@ -142,6 +143,8 @@ export default {
   },
   watch: {
     async darsId(newVal) {
+      let res = await axios.get(`${this.backendHost}/darses/${newVal}`)
+      this.dars = res.data
       //  //await this.updateCanvas(newVal)
       this.$emit('darsId', newVal )
     }
@@ -152,10 +155,12 @@ export default {
       
     this.email = this.$route.query.email
     this.code = this.$route.params.code
-    const res = await axios.get(`${this.backendHost}/students/${this.code}?email=${this.email}`)
+    let res = await axios.get(`${this.backendHost}/students/${this.code}?email=${this.email}`)
     console.log(res.data)
     this.darsId = parseInt(res.data['darsId']) + 1 
     this.student = res.data
+    res = await axios.get(`${this.backendHost}/darses/${this.darsId}`)
+    this.dars = res.data
     console.log("this")
     console.log(this)
     this.initCanvas()
@@ -172,18 +177,21 @@ export default {
   },
   computed: { 
     audioDars() {
-      return '/audios/' + cons.darses[this.darsId][1] + '.m4a'
+      return '/audios/' + this.darsKalameh + '.m4a'
     },
     audioDarsId() {
       return cons.darses[this.darsId][1]
     },
-    darsKalameh() {  
-      return cons.darses[this.darsId][0].split(' ')
-    },
+   darsHoroof() {  
+     return this.dars ? this.dars['horoof'].split(' ') : [] 
+   },
+   darsKalameh() {
+     return this.dars ? this.dars['kalameh'] : ''
+   },
     alphaGroups() {
 
       let harfHash = {}
-      const kalamehUnique = this.darsKalameh.filter((value, index, self) => {return self.indexOf(value) === index; })
+      const kalamehUnique = this.darsHoroof.filter((value, index, self) => {return self.indexOf(value) === index; })
       let alphaGrps = kalamehUnique.reduce((tot,harf) => { 
         if ( harfHash[harf] ) return tot 
         let alphaGroup = cons.alphaGroups.find( g => g.includes(harf))
@@ -211,9 +219,9 @@ export default {
         return this.pn(6)
       }
     },
-    totalDarses() {
-      return cons.darses.length
-    },
+   //totalDarses() {
+   //  return cons.darses.length
+   //},
     pn(num) {
       return pn.convert(num)
     },
@@ -295,14 +303,14 @@ export default {
       const paneRightMargin = 50
       const topRight = new paper.Point( 
       cons.canvasWidth - paneTopMargin, paneRightMargin );
-      var phPane = new php( topRight, this.darsKalameh.length + 2)
+      var phPane = new php( topRight, this.darsHoroof.length + 2)
       const earPosition = topRight.add( php.phiSpacing + php.phiSide/4 , php.phiSpacing + php.phiSide/2 ) 
-      createEar(earPosition, cons.darses[this.darsId][1]);
+      createEar(earPosition, this.darsKalameh);
 
       let phInsts = []
       const atInsts = [] 
       let idx = 0
-      for ( idx of this.darsKalameh.keys() ) {
+      for ( idx of this.darsHoroof.keys() ) {
         phInsts.push( new phi(phPane.getPhiTopRight(idx+1), phPane.getPhiBottomLeft(idx+1)))
         idx++
       }
@@ -324,7 +332,7 @@ export default {
         for ( let harf of alphaGroup ) {
           const audio = harf.match(/([a-z]*)_/).[1]
           createEar(topRight.add( atp.atpSpacing + atp.atiSide/4  , atp.atpSpacing + atp.atiSide/2   ) ,audio)
-          const occurances = this.darsKalameh.reduce( (tot,elem,harfIndex) => { 
+          const occurances = this.darsHoroof.reduce( (tot,elem,harfIndex) => { 
             if (elem === harf) { 
               tot.push(harfIndex)
             } 

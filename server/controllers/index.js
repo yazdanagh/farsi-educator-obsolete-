@@ -142,6 +142,16 @@ module.exports = (app) => {
 
   });
 
+  app.get('/darses/:darsId', async (req, res) => {
+    const darsId = req.params.darsId
+    const dars = await db.dars.findOne({darsId})   
+    if ( dars ) {
+      console.log("FOUND" + dars)
+      res.json(dars)
+    } else {
+      res.sendStatus(404);
+    }
+  })
 
 }
 

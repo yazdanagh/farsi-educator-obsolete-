@@ -15,7 +15,7 @@ export const alphaGroups = [
 ]
 
 export const darses = [ 
-  [ "be_koochik_chap aa_chasban be_koochik_chap aa_chasban", "baabaa" ], // 0
+  [ "be_koochik_chap aa_chasban be_koochik_chap aa_chasban", "baabaa" ], 
   [ "aa_bakola be_bozorg_tanha", "aab" ],
   [ "be_koochik_chap aa_chasban de_tanha" , "baad" ],
   [ "be_koochik_chap aa_chasban me_bozorg_tanha" , "baam" ],
@@ -25,7 +25,7 @@ export const darses = [
   [ "de_tanha re_tanha" , "dar" ],
   [ "aa_bakola re_tanha de_tanha" , "aard" ],
   [ "de_tanha aa_bikola re_tanha aa_bikola" , "daaraa" ],
-  [ "me_koochik_chap aa_chasban de_tanha re_tanha" , "maadar" ], // 10
+  [ "me_koochik_chap aa_chasban de_tanha re_tanha" , "maadar" ], 
   [ "ye_koochik_chap aa_chasban re_tanha aa_bikola" , "yaara" ], 
   [ "de_tanha ye_koochik_chap de_chasban"  , "deed" ] , 
   [ "ne_koochik_rast aa_chasban ne_bozorg_tanha"  , "naan" ] , 
