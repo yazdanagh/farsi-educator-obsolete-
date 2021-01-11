@@ -153,6 +153,17 @@ module.exports = (app) => {
     }
   })
 
+  app.get('/horoof', async (req, res) => {
+    const horoof = await db.harf.find({})   
+    if ( horoof ) {
+      console.log("FOUND" )
+      res.json(horoof)
+    } else {
+      res.sendStatus(404);
+    }
+  })
+
+
 }
 
 

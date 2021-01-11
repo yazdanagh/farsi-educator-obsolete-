@@ -100,7 +100,7 @@
    </canvas>
    <div  id="allImages">
      <div v-for="(aG,aIdx) in alphaGroups" :key="aIdx" >
-     <img v-for="alpha in aG" :key="alpha" style="display:none"  v-bind:id="alpha" v-bind:src="`/images2/${alpha}.png`"> 
+     <img v-for="alpha in aG[0]" :key="alpha" style="display:none"  v-bind:id="alpha" v-bind:src="`/images2/${alpha}.png`"> 
       <img id="ear" style="display:none" src="/images2/ear.jpg" > 
      </div>
    </div>
@@ -131,6 +131,7 @@ export default {
     return {
       darsId: 1,
       dars: null,
+      horoof: null,
       selectedDarsId: '',
       darsDone: false,
       student: '',
@@ -161,6 +162,8 @@ export default {
     this.student = res.data
     res = await axios.get(`${this.backendHost}/darses/${this.darsId}`)
     this.dars = res.data
+    res = await axios.get(`${this.backendHost}/horoof`)
+    this.horoof = res.data
     console.log("this")
     console.log(this)
     this.initCanvas()
@@ -180,7 +183,7 @@ export default {
       return '/audios/' + this.darsKalameh + '.m4a'
     },
     audioDarsId() {
-      return cons.darses[this.darsId][1]
+      return this.darsKalameh
     },
    darsHoroof() {  
      return this.dars ? this.dars['horoof'].split(' ') : [] 
@@ -194,9 +197,12 @@ export default {
       const kalamehUnique = this.darsHoroof.filter((value, index, self) => {return self.indexOf(value) === index; })
       let alphaGrps = kalamehUnique.reduce((tot,harf) => { 
         if ( harfHash[harf] ) return tot 
-        let alphaGroup = cons.alphaGroups.find( g => g.includes(harf))
+        if (!this.horoof ) return tot
+        //let alphaGroup = cons.alphaGroups.find( g => g.includes(harf))
+        let horoof = this.horoof.find( g => g.harfGroup.includes(harf))
+        let alphaGroup = [ horoof['harfGroup'].split(' '), horoof['harf'] ] 
         tot.push(alphaGroup)
-        for ( let harf of alphaGroup ) {
+        for ( let harf of alphaGroup[0] ) {
           harfHash[harf] = 1
         }
         return tot
@@ -275,10 +281,10 @@ export default {
 
     },
     audioAlph(aG) {
-      return '/audios/' + aG[0].match(/([a-z]*)_/).[1] + '.m4a'
+      return '/audios/' + aG[1] + '.m4a'
     },
     audioAlphId(aG) {
-      return aG[0].match(/([a-z]*)_/).[1]
+      return aG[1]
     },
 
     async updateCanvas() {
@@ -327,9 +333,9 @@ export default {
         //  const audio = harf.match(/([a-z]*)_/).[1]
         //  createEar(topRight.add( atp.atpSpacing + atp.atiSide/4  , atp.atpSpacing + atp.atiSide/2   ) ,audio)
         //}
-        let atPane = new atp( topRight, alphaGroup.length  )
+        let atPane = new atp( topRight, alphaGroup[0].length  )
         let idx2=1
-        for ( let harf of alphaGroup ) {
+        for ( let harf of alphaGroup[0] ) {
           const audio = harf.match(/([a-z]*)_/).[1]
           createEar(topRight.add( atp.atpSpacing + atp.atiSide/4  , atp.atpSpacing + atp.atiSide/2   ) ,audio)
           const occurances = this.darsHoroof.reduce( (tot,elem,harfIndex) => { 
