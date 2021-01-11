@@ -1,7 +1,7 @@
 
 
-export const canvasWidth = 800;
-export const canvasHeight = 800;
+export const canvasWidth = 600;
+export const canvasHeight =300;
 export const alphaGroups = [
   [ "aa_chasban" ,  "aa_bakola" , "aa_bikola"] ,
   [ "be_koochik_chap" ,  "be_koochik_dovar",  "be_bozorg_chasban" , "be_bozorg_tanha" ],

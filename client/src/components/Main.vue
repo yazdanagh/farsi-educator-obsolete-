@@ -13,7 +13,7 @@
   >
 
     <v-img
-      height="250"
+      height="200"
       :src='"/images2/" + student.name + ".jpg"'
     ></v-img>
 
@@ -59,24 +59,24 @@
    <br/>
    ۱۰۰ از {{ this.pn(this.darsId) }} درس 
    -->
-   <v-btn style="width:100%" x-large @click="goToUsers" large class="disable-btn mt-5" color="blue lighten-1" > الفبا ( بزودی ) 
+   <v-btn style="width:100%" @click="goToUsers" large class="disable-btn mt-5" color="blue lighten-1" > الفبا ( بزودی ) 
 <v-icon large>  {{ mdiHome }} </v-icon>
 </v-btn>
 </div>
 <div>
-  <v-btn x-large style="width:100%"  @click="goToNextDars" large :class="{'disable-btn': darsId > student.darsId && !darsDone}" class="mt-5" v-bind:color=" darsDone ? 'blue lighten-1' : 'blue lighten-1'" >  درس بعد 
+  <v-btn style="width:100%"  @click="goToNextDars" large :class="{'disable-btn': darsId > student.darsId && !darsDone}" class="mt-5" v-bind:color=" darsDone ? 'blue lighten-1' : 'blue lighten-1'" >  درس بعد 
 <v-icon large>  {{ mdiArrowLeftBold }} </v-icon>
 </v-btn>
 </div>
 
 <div>
-<v-btn x-large style="width:100%" @click="goToPrevDars" large class="mt-5" color="blue lighten-1" >  درس قبل 
+<v-btn style="width:100%" @click="goToPrevDars" large class="mt-5" color="blue lighten-1" >  درس قبل 
 <v-icon large>  {{ mdiArrowRightBold }} </v-icon>
 </v-btn>
 </div>
 <div>
+  <!--
   <v-row>
-
   <v-col cols="1">
   </v-col>
   <v-col cols="6">
@@ -90,6 +90,14 @@
   </v-btn>
   </v-col>
   </v-row>
+  -->
+  <v-select class="mt-5"
+  :items="goToDarses"
+  color="blue lighten-1"
+  outlined
+  v-model="selectedDarsId"
+  label="برو به درس"
+  ></v-select>
 </div>
 </v-col>
 
@@ -139,10 +147,14 @@ export default {
       mdiArrowLeftBold,
       mdiHome,
       canvas: null,
+      goToDarses: [], 
       backendHost: process.env.NODE_ENV === 'development' ? 'http://localhost:3085'  : ''
     }
   },
   watch: {
+    async selectedDarsId(newVal) {
+      await this.goToDars(newVal)
+    },
     async darsId(newVal) {
       let res = await axios.get(`${this.backendHost}/darses/${newVal}`)
       this.dars = res.data
@@ -166,6 +178,9 @@ export default {
     this.horoof = res.data
     console.log("this")
     console.log(this)
+    this.goToDarses = Array.from(Array(20).keys()).map( a => { 
+     return `درس شماره  ${this.pn(a)}`
+    })
     this.initCanvas()
       this.$emit('darsId', this.darsId )
     //this.student = this.$route.query.student
@@ -179,6 +194,9 @@ export default {
     }
   },
   computed: { 
+   //goToDarses() {
+   //  return 
+   //},
     audioDars() {
       return '/audios/' + this.darsKalameh + '.m4a'
     },
@@ -235,6 +253,7 @@ export default {
       this.canvas = document.getElementById('myCanvas');
       //this.canvas.width =   cons.canvasWidth; // window.innerWidth
       this.canvas.height = cons.canvasHeight; // window.innerHeight
+      console.log(cons)
       await paper.setup(this.canvas);
       // scalaing like this wont fix RtoL issue
       // const canvasContext = canvas.getContext('2d');
@@ -305,10 +324,11 @@ export default {
       paper.view.draw();
       //document.getElementById("myCanvas").style.opacity = 0.2;
 
+      window.paper = paper
       const paneTopMargin = 50
       const paneRightMargin = 50
       const topRight = new paper.Point( 
-      cons.canvasWidth - paneTopMargin, paneRightMargin );
+      paper.view.size._width - paneTopMargin, paneRightMargin );
       var phPane = new php( topRight, this.darsHoroof.length + 2)
       const earPosition = topRight.add( php.phiSpacing + php.phiSide/4 , php.phiSpacing + php.phiSide/2 ) 
       createEar(earPosition, this.darsKalameh);
