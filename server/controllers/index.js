@@ -92,21 +92,23 @@ module.exports = (app) => {
 
     const email = req.query.email
     const code = req.params.code
-    const stConf = await fs.readFile(configFile,"utf-8")
-    const students = JSON.parse(stConf)
+    const student = await db.student.findOne({code,email})   
+    //const stConf = await fs.readFile(configFile,"utf-8")
+    //const students = JSON.parse(stConf)
     //console.log(students)
-    const student = doAuth(code,email,students.students)
-    console.log(student)
+    //const student = doAuth(code,email,students.students)
+    //console.log(student)
     if ( student ) {
     student['darsId'] = req.body.darsId 
     //console.log(JSON.stringify(students,null,2))
-    await fs.writeFile(configFile,JSON.stringify(students,null,2))
+    //await fs.writeFile(configFile,JSON.stringify(students,null,2))
+    await student.save()
     res.json({success:true})
 
-      } else {
-         res.sendStatus(404);
-      }
-    
+    } else {
+      res.sendStatus(404);
+    }
+
   });
 
   app.get('/users', async (req, res) => {

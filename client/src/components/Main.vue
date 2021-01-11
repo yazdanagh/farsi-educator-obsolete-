@@ -64,7 +64,7 @@
 </v-btn>
 </div>
 <div>
-  <v-btn x-large style="width:100%"  @click="goToNextDars" large :class="{'disable-btn': darsId > student.darsId && !darsDone}" class="mt-5" v-bind:color=" darsDone ? 'blue lighten-1' : 'blue lighten-1'" >  درس بعد 
+  <v-btn x-large style="width:100%"  @click="goToNextDars" large :class="{'disable-btn': false && darsId > student.darsId && !darsDone}" class="mt-5" v-bind:color=" darsDone ? 'blue lighten-1' : 'blue lighten-1'" >  درس بعد 
 <v-icon large>  {{ mdiArrowLeftBold }} </v-icon>
 </v-btn>
 </div>
@@ -200,7 +200,7 @@ export default {
         if (!this.horoof ) return tot
         //let alphaGroup = cons.alphaGroups.find( g => g.includes(harf))
         let horoof = this.horoof.find( g => g.harfGroup.includes(harf))
-        let alphaGroup = [ horoof['harfGroup'].split(' '), horoof['harf'] ] 
+        let alphaGroup = [ horoof['harfGroup'].split(' '), horoof['harfName'] ] 
         tot.push(alphaGroup)
         for ( let harf of alphaGroup[0] ) {
           harfHash[harf] = 1
@@ -335,9 +335,9 @@ export default {
         //}
         let atPane = new atp( topRight, alphaGroup[0].length  )
         let idx2=1
+        const audio = alphaGroup[1] 
+        createEar(topRight.add( atp.atpSpacing + atp.atiSide/4  , atp.atpSpacing + atp.atiSide/2   ) ,audio)
         for ( let harf of alphaGroup[0] ) {
-          const audio = harf.match(/([a-z]*)_/).[1]
-          createEar(topRight.add( atp.atpSpacing + atp.atiSide/4  , atp.atpSpacing + atp.atiSide/2   ) ,audio)
           const occurances = this.darsHoroof.reduce( (tot,elem,harfIndex) => { 
             if (elem === harf) { 
               tot.push(harfIndex)
