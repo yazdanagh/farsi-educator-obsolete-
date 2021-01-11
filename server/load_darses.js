@@ -32,10 +32,10 @@ const darsesInput = [
 
 
   const harfInput = [
-   "alef aa_bakola aa_chasban aa_bakola aa_bikola"  ,
-   "be be_bozorg_tanha be_koochik_chap  be_koochik_dovar be_bozorg_chasban be_bozorg_tanha" ,
+   "aa aa_bakola aa_chasban aa_bikola",
+   "be be_bozorg_tanha be_koochik_chap be_koochik_dovar be_bozorg_chasban" ,
    "de de_tanha de_chasban" ,
-   "me me_bozorg_tanha me_koochik_chap me_koochik_dovar  me_bozorg_chasban" ,
+   "me me_bozorg_tanha me_koochik_chap me_koochik_dovar me_bozorg_chasban" ,
    "re re_tanha re_chasban" ,
    "ye ye_bozorg_tanha ye_koochik_chap ye_koochik_dovar ye_bozorg_chasban" ,
    "ne ne_bozorg_tanha ne_koochik_rast ne_koochik_dovar ne_bozorg_chasban" ,
