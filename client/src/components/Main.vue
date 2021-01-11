@@ -93,6 +93,8 @@
   -->
   <v-select class="mt-5"
   :items="goToDarses"
+  item-text="text"
+  item-value="value"
   color="blue lighten-1"
   outlined
   v-model="selectedDarsId"
@@ -179,7 +181,11 @@ export default {
     console.log("this")
     console.log(this)
     this.goToDarses = Array.from(Array(20).keys()).map( a => { 
-     return `درس شماره  ${this.pn(a)}`
+      return { 
+        text: `درس شماره  ${this.pn(a+1)}`,
+        value: a
+      }
+
     })
     this.initCanvas()
       this.$emit('darsId', this.darsId )
