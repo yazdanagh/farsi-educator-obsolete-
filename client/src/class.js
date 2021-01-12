@@ -75,8 +75,8 @@ class atp {
   static rightMargin = 50
   //static topMargin = 30
 
-  static atiSide = 80
-  static atpSpacing = 10
+  static atiSide = 60
+  static atpSpacing = 8 
   static atpRow = atp.atiSide + 2 * atp.atpSpacing
   static atiGutter = 10
   constructor (TR , numAlphs ) {

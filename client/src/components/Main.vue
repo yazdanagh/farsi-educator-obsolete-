@@ -60,19 +60,49 @@
    ۱۰۰ از {{ this.pn(this.darsId) }} درس 
    -->
    <v-btn style="width:100%" @click="goToUsers" large class="disable-btn mt-5" color="blue lighten-1" > الفبا ( بزودی ) 
-<v-icon large>  {{ mdiHome }} </v-icon>
+<v-icon >  {{ mdiHome }} </v-icon>
 </v-btn>
 </div>
 <div>
-  <v-btn style="width:100%"  @click="goToNextDars" large :class="{'disable-btn': darsId > student.darsId && !darsDone}" class="mt-5" v-bind:color=" darsDone ? 'blue lighten-1' : 'blue lighten-1'" >  درس بعد 
-<v-icon large>  {{ mdiArrowLeftBold }} </v-icon>
+  <v-row dense >
+<v-col cols="6">
+  <v-btn x-large style="width:100%"   @click="goToNextDars" large :class="{'disable-btn': darsId > student.darsId && !darsDone}" class="mt-5" v-bind:color=" darsDone ? 'blue lighten-1' : 'blue lighten-1'" >  
+  <!-- درس بعد --> 
+  <v-icon large >  
+  {{ mdiChevronLeft }} 
+  </v-icon>
 </v-btn>
-</div>
+</v-col>
+<v-col cols="6">
 
-<div>
-<v-btn style="width:100%" @click="goToPrevDars" large class="mt-5" color="blue lighten-1" >  درس قبل 
-<v-icon large>  {{ mdiArrowRightBold }} </v-icon>
+<v-btn x-large style="width:100%" @click="goToPrevDars" large :class="{'disable-btn': darsId == 0}" class="mt-5" color="blue lighten-1" >  
+<!-- درس قبل  -->
+<v-icon large >  
+{{ mdiChevronRight }} 
+</v-icon>
 </v-btn>
+</v-col>
+</v-row>
+<v-row dense >
+<v-col cols="6">
+  <v-btn x-large style="width:100%"   @click="goToLastDars" large :class="{'disable-btn': darsId > student.darsId && !darsDone}" class="mt-5" v-bind:color=" darsDone ? 'blue lighten-1' : 'blue lighten-1'" >  
+  <!-- درس بعد --> 
+  <v-icon large >  
+  {{ mdiChevronDoubleLeft }} 
+  </v-icon>
+</v-btn>
+</v-col>
+<v-col cols="6">
+
+<v-btn x-large style="width:100%" @click="goToFirstDars" large :class="{'disable-btn': darsId == 0}" class="mt-5" color="blue lighten-1" >  
+<!-- درس قبل  -->
+<v-icon large >  
+{{ mdiChevronDoubleRight }} 
+</v-icon>
+</v-btn>
+</v-col>
+  </v-row>
+
 </div>
 <div>
   <!--
@@ -95,11 +125,12 @@
   :items="goToDarses"
   item-text="text"
   item-value="value"
-  color="blue lighten-1"
-  outlined
+  background-color="blue lighten-1"
   v-model="selectedDarsId"
+  solo
   label="برو به درس"
   ></v-select>
+
 </div>
 </v-col>
 
@@ -130,7 +161,8 @@
 const cons = require('../constants.js');
 const paper =  require('paper');
 import { php, phi, atp, ati }  from '../class';
-import { mdiHome, mdiArrowRightBold, mdiArrowLeftBold } from '@mdi/js';
+//import { mdiHome, mdiChevronLeft, mdiChevronRight, mdiArrowRightBold, mdiArrowLeftBold } from '@mdi/js';
+import { mdiHome, mdiChevronLeft, mdiChevronDoubleLeft, mdiChevronRight, mdiChevronDoubleRight  } from '@mdi/js';
 import axios from 'axios';
 import pn from 'persian-number';
 
@@ -145,8 +177,12 @@ export default {
       selectedDarsId: '',
       darsDone: false,
       student: '',
-      mdiArrowRightBold,
-      mdiArrowLeftBold,
+      //mdiArrowRightBold,
+      //mdiArrowLeftBold,
+      mdiChevronRight,
+      mdiChevronLeft,
+      mdiChevronDoubleRight,
+      mdiChevronDoubleLeft,
       mdiHome,
       canvas: null,
       goToDarses: [], 
@@ -180,7 +216,7 @@ export default {
     this.horoof = res.data
     console.log("this")
     console.log(this)
-    this.goToDarses = Array.from(Array(20).keys()).map( a => { 
+    this.goToDarses = Array.from(Array(this.student.darsId).keys()).map( a => { 
       return { 
         text: `درس شماره  ${this.pn(a+1)}`,
         value: a
@@ -190,6 +226,7 @@ export default {
     this.initCanvas()
       this.$emit('darsId', this.darsId )
     //this.student = this.$route.query.student
+    this.clearCanvas()
     setTimeout ( () => { 
       console.log("WAAIIIITT")
       this.updateCanvas()
@@ -236,14 +273,14 @@ export default {
   },
   //
   methods: {
-    alefba() {
-      if ( this.darsId < 2 ) {
+    alefba(darsId) {
+      if ( darsId < 2 ) {
         return this.pn(2)
-      } else if ( this.darsId < 5 ) {
+      } else if ( darsId < 5 ) {
         return this.pn(3)
-      } else if ( this.darsId < 10 ) {
+      } else if ( darsId < 10 ) {
         return this.pn(4)
-      } else if ( this.darsId < 15 ) {
+      } else if ( darsId < 15 ) {
         return this.pn(5)
       } else {
         return this.pn(6)
@@ -290,6 +327,14 @@ export default {
       this.darsId++;
       await this.fetchDars()
     },
+    async goToFirstDars() {
+      this.darsId = 0
+      await this.fetchDars()
+    },
+    async goToLastDars() {
+      this.darsId = this.student.darsId + 1 
+      await this.fetchDars()
+    },
     async goToPrevDars() {
       this.darsId--;
       await this.fetchDars()
@@ -300,6 +345,7 @@ export default {
     },
     async fetchDars() {
       //await this.$router.push(`/dars/${this.darsId}`)
+      this.clearCanvas()
       setTimeout ( () => { 
         this.updateCanvas()
       }, 1000 )
@@ -312,6 +358,10 @@ export default {
       return aG[1]
     },
 
+    async clearCanvas() {
+      paper.project.activeLayer.removeChildren();
+      paper.view.draw();
+    },
     async updateCanvas() {
 
       const createEar = ( earPosition, audio ) => { 
@@ -326,8 +376,8 @@ export default {
         //console.log("created ear for : " + audio)
       }
 
-      paper.project.activeLayer.removeChildren();
-      paper.view.draw();
+      //paper.project.activeLayer.removeChildren();
+      //paper.view.draw();
       //document.getElementById("myCanvas").style.opacity = 0.2;
 
       window.paper = paper
@@ -335,7 +385,7 @@ export default {
       const paneRightMargin = 50
       const topRight = new paper.Point( 
       paper.view.size._width - paneTopMargin, paneRightMargin );
-      var phPane = new php( topRight, this.darsHoroof.length + 2)
+      var phPane = new php( topRight, this.darsHoroof.length )
       const earPosition = topRight.add( php.phiSpacing + php.phiSide/4 , php.phiSpacing + php.phiSide/2 ) 
       createEar(earPosition, this.darsKalameh);
 
@@ -412,6 +462,7 @@ export default {
   }
 
   paper.view.onFrame = async () => { 
+
     const tile = atInsts.find(t => { 
       return t.resolve || t.resolvingTarg 
     })
