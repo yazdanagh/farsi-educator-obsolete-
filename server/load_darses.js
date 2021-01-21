@@ -14,7 +14,7 @@ const main = async () => {
     const darses = cons.darsesInput.map(a => { 
       idx++
       return { 
-        horoof: a[0], 
+        kalamehHarfForms: a[0].split(' '), 
         kalameh: a[1],
         darsId: idx
       }
@@ -31,7 +31,7 @@ const main = async () => {
         harfName: elems[0],
         harfSound: elems[1],
         harfLead: elems[2],
-        harfForms: elems.slice(2).join(' ')
+        harfForms: elems.slice(2)
       }
     })
     await db.harf.deleteMany()

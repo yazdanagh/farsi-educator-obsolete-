@@ -140,14 +140,14 @@
    <canvas id="myCanvas" resize class="mt-5" style="border: 1px solid black; float: right;width:100%">
    </canvas>
    <div  id="allImages">
-     <div v-for="(aG,aIdx) in alphaGroups" :key="aIdx" >
-     <img v-for="alpha in aG[0]" :key="alpha" style="display:none"  v-bind:id="alpha" v-bind:src="`/images2/${alpha}.png`"> 
+     <div v-for="(aG,aIdx) in darsHoroof" :key="aIdx" >
+     <img v-for="alpha in aG['harfForms']" :key="alpha" style="display:none"  v-bind:id="alpha" v-bind:src="`/images2/${alpha}.png`"> 
       <img id="ear" style="display:none" src="/images2/ear.jpg" > 
      </div>
    </div>
    <div id="allAudios">
      <audio :src="audioDars" :id="audioDarsId"  > </audio>
-     <audio v-for="(aG,aIdx) in alphaGroups" :src="audioAlph(aG)" :id="audioAlphId(aG)" :key="aIdx" >
+     <audio v-for="(aG,aIdx) in darsHoroof" :src="audioAlph(aG)" :id="audioAlphId(aG)" :key="aIdx" >
      </audio>
    </div>
 </v-col>
@@ -173,7 +173,7 @@ export default {
     return {
       darsId: 1,
       dars: null,
-      horoof: null,
+      horoof: [],
       selectedDarsId: '',
       darsDone: false,
       student: '',
@@ -246,30 +246,25 @@ export default {
     audioDarsId() {
       return this.darsKalameh
     },
-   darsHoroof() {  
-     return this.dars ? this.dars['horoof'].split(' ') : [] 
+   darsHarfForms() {  
+     return this.dars ? this.dars['kalamehHarfForms'] : [] 
    },
    darsKalameh() {
      return this.dars ? this.dars['kalameh'] : ''
    },
-    alphaGroups() {
-
-      let harfHash = {}
-      const kalamehUnique = this.darsHoroof.filter((value, index, self) => {return self.indexOf(value) === index; })
-      let alphaGrps = kalamehUnique.reduce((tot,harf) => { 
-        if ( harfHash[harf] ) return tot 
-        if (!this.horoof ) return tot
-        //let alphaGroup = cons.alphaGroups.find( g => g.includes(harf))
-        let horoof = this.horoof.find( g => g.harfForms.includes(harf))
-        let alphaGroup = [ horoof['harfForms'].split(' '), horoof['harfName'] ] 
-        tot.push(alphaGroup)
-        for ( let harf of alphaGroup[0] ) {
-          harfHash[harf] = 1
-        }
-        return tot
-      }, [])
-      return alphaGrps
-    }
+   darsHoroof() {
+     if (this.horoof.length == 0 ) return []
+     let harfHash = {}
+     const darsUniqueHarfForms = this.darsHarfForms.filter((value, index, self) => {return self.indexOf(value) === index; })
+     let darsHarfs = darsUniqueHarfForms.reduce((tot,harfForm) => { 
+       let harf = this.horoof.find( g => g.harfForms.includes(harfForm))
+       if ( harfHash[harf.harfName] ) return tot 
+       tot.push(harf)
+       harfHash[harf.harfName] = 1
+       return tot
+     }, [])
+     return darsHarfs
+   }
   },
   //
   methods: {
@@ -352,10 +347,10 @@ export default {
 
     },
     audioAlph(aG) {
-      return '/audios/' + aG[1] + '.m4a'
+      return '/audios/' + aG['harfSound'] + '.m4a'
     },
     audioAlphId(aG) {
-      return aG[1]
+      return aG['harfSound']
     },
 
     async clearCanvas() {
@@ -385,21 +380,22 @@ export default {
       const paneRightMargin = 50
       const topRight = new paper.Point( 
       paper.view.size._width - paneTopMargin, paneRightMargin );
-      var phPane = new php( topRight, this.darsHoroof.length )
+      var phPane = new php( topRight, this.darsHarfForms.length )
       const earPosition = topRight.add( php.phiSpacing + php.phiSide/4 , php.phiSpacing + php.phiSide/2 ) 
       createEar(earPosition, this.darsKalameh);
 
       let phInsts = []
       const atInsts = [] 
       let idx = 0
-      for ( idx of this.darsHoroof.keys() ) {
+      for ( idx of this.darsHarfForms.keys() ) {
         phInsts.push( new phi(phPane.getPhiTopRight(idx+1), phPane.getPhiBottomLeft(idx+1)))
         idx++
       }
     // iterate twice to make sure all ati are create on top phi
     idx = 0
     //const atPaneCreated = {}
-    for ( let alphaGroup of shuffle(this.alphaGroups) ) {
+        console.log(this.darsHoroof)
+    for ( let harf of shuffle(this.darsHoroof) ) {
 
       //console.log(cons)
       let topRight = phPane.phpRect.bounds.bottomRight.add(0, 20 ) 
@@ -409,12 +405,13 @@ export default {
         //  const audio = harf.match(/([a-z]*)_/).[1]
         //  createEar(topRight.add( atp.atpSpacing + atp.atiSide/4  , atp.atpSpacing + atp.atiSide/2   ) ,audio)
         //}
-        let atPane = new atp( topRight, alphaGroup[0].length  )
+        let atPane = new atp( topRight, harf['harfForms'].length  )
         let idx2=1
-        const audio = alphaGroup[1] 
+        const audio = harf['harfSound'] 
+        console.log(harf['harfSound'])
         createEar(topRight.add( atp.atpSpacing + atp.atiSide/4  , atp.atpSpacing + atp.atiSide/2   ) ,audio)
-        for ( let harf of alphaGroup[0] ) {
-          const occurances = this.darsHoroof.reduce( (tot,elem,harfIndex) => { 
+        for ( let harf of harf['harfForms'] ) {
+          const occurances = this.darsHarfForms.reduce( (tot,elem,harfIndex) => { 
             if (elem === harf) { 
               tot.push(harfIndex)
             } 

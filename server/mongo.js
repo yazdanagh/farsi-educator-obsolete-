@@ -11,13 +11,13 @@ const studentSchema = new Schema({
 });
 const darsSchema = new Schema({
 	kalameh: String,
-  horoof: String, 
+  kalamehHarfForms: [String], 
   darsId: Number 
 });
 const harfSchema = new Schema({
 	harfName: String,
 	harfSound: String,
-  harfForms: String,
+  harfForms: [String],
   harfLead: String,
 });
 const Student = mongoose.model("student", studentSchema);

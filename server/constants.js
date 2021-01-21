@@ -30,7 +30,7 @@ const harfInput = [
   "re re re_tanha re_chasban" ,
   "ye ye ye_bozorg_tanha ye_koochik_chap ye_koochik_dovar ye_bozorg_chasban" ,
   "noon ne ne_bozorg_tanha ne_koochik_rast ne_koochik_dovar ne_bozorg_chasban" ,
-  "sin sine_chasban_chap sine_chasban_dovar sine_bozorg_chasban sine_bozorg_tanha" ,
+  "sin se sine_chasban_chap sine_chasban_dovar sine_bozorg_chasban sine_bozorg_tanha" ,
   //[ faseleh ] 
 ]
 
