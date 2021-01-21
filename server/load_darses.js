@@ -25,18 +25,19 @@ const main = async () => {
     console.log(darsesDB)
 
     
-    const harves = cons.harfInput.map( a => { 
+    const harfs = cons.harfInput.map( a => { 
       const elems = a.split(' ')
       return { 
         harfName: elems[0],
-        harf: elems[1],
-        harfGroup: elems.slice(1).join(' ')
+        harfSound: elems[1],
+        harfLead: elems[2],
+        harfForms: elems.slice(2).join(' ')
       }
     })
     await db.harf.deleteMany()
-    await db.harf.create(harves)
-    const harvesDB = await db.harf.find({})
-    console.log(harvesDB)
+    await db.harf.create(harfs)
+    const harfsDB = await db.harf.find({})
+    console.log(harfsDB)
        
     process.exit()
   }

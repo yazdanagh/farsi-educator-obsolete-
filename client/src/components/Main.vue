@@ -260,8 +260,8 @@ export default {
         if ( harfHash[harf] ) return tot 
         if (!this.horoof ) return tot
         //let alphaGroup = cons.alphaGroups.find( g => g.includes(harf))
-        let horoof = this.horoof.find( g => g.harfGroup.includes(harf))
-        let alphaGroup = [ horoof['harfGroup'].split(' '), horoof['harfName'] ] 
+        let horoof = this.horoof.find( g => g.harfForms.includes(harf))
+        let alphaGroup = [ horoof['harfForms'].split(' '), horoof['harfName'] ] 
         tot.push(alphaGroup)
         for ( let harf of alphaGroup[0] ) {
           harfHash[harf] = 1

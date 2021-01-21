@@ -16,8 +16,9 @@ const darsSchema = new Schema({
 });
 const harfSchema = new Schema({
 	harfName: String,
-	harf: String,
-  harfGroup: String 
+	harfSound: String,
+  harfForms: String,
+  harfLead: String,
 });
 const Student = mongoose.model("student", studentSchema);
 const Dars = mongoose.model("dars", darsSchema);
