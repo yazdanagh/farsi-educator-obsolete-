@@ -25,7 +25,7 @@
     <v-card-text class="d-flex flex-row-reverse">
           {{ pn(this.student.darsId) }} درس را خوانده است 
           <br>
-          {{ alefba(this.student.darsId) }} تا از الفبا را آموخته است 
+          {{ this.pn(this.dars.numHarfLearned) }} تا از الفبا را آموخته است 
           <!--
       <v-row
         class="mx-0"
@@ -75,7 +75,7 @@
 </v-col>
 <v-col cols="6">
 
-<v-btn x-large style="width:100%" @click="goToPrevDars" large :class="{'disable-btn': darsId == 0}" class="mt-5" color="blue lighten-1" >  
+<v-btn x-large style="width:100%" @click="goToPrevDars" large :class="{'disable-btn': darsId == 1}" class="mt-5" color="blue lighten-1" >  
 <!-- درس قبل  -->
 <v-icon large >  
 {{ mdiChevronRight }} 
@@ -94,7 +94,7 @@
 </v-col>
 <v-col cols="6">
 
-<v-btn x-large style="width:100%" @click="goToFirstDars" large :class="{'disable-btn': darsId == 0}" class="mt-5" color="blue lighten-1" >  
+<v-btn x-large style="width:100%" @click="goToFirstDars" large :class="{'disable-btn': darsId == 1}" class="mt-5" color="blue lighten-1" >  
 <!-- درس قبل  -->
 <v-icon large >  
 {{ mdiChevronDoubleRight }} 
@@ -208,7 +208,7 @@ export default {
     this.code = this.$route.params.code
     let res = await axios.get(`${this.backendHost}/students/${this.code}?email=${this.email}`)
     console.log(res.data)
-    this.darsId = parseInt(res.data['darsId']) + 1 
+    this.darsId = parseInt(res.data['darsId']) 
     this.student = res.data
     res = await axios.get(`${this.backendHost}/darses/${this.darsId}`)
     this.dars = res.data
@@ -268,6 +268,187 @@ export default {
   },
   //
   methods: {
+    shuffle(array) {
+        var currentIndex = array.length, temporaryValue, randomIndex;
+
+        // While there remain elements to shuffle...
+        while (0 !== currentIndex) {
+
+          // Pick a remaining element...
+          randomIndex = Math.floor(Math.random() * currentIndex);
+          currentIndex -= 1;
+
+          // And swap it with the current element.
+          temporaryValue = array[currentIndex];
+          array[currentIndex] = array[randomIndex];
+          array[randomIndex] = temporaryValue;
+        }
+        return array;
+      },
+    installTileAnimator(paper,phPane, phInsts,atInsts) {
+      paper.view.onFrame = async () => { 
+
+        const tile = atInsts.find(t => { 
+          return t.resolve || t.resolvingTarg 
+        })
+        if ( !tile ) return
+        console.log("Found tile: " + tile)
+        if ( tile.resolve ) {
+          tile.resolve = false
+          for ( let ph of tile.ph ) {
+            if ( ph.aTile ) { 
+              continue
+            }
+            if ( ph.phiRect.contains(tile.group.position)) {
+              tile.resolvingTarg = ph.phiRect.position 
+              tile.resolvingPhi = ph 
+              console.log("then here ")
+              //window.ph = ph
+              break
+            } 
+          }
+          tile.resolvingTarg = tile.resolvingTarg || tile.origin
+        }
+
+        let vector = tile.resolvingTarg.subtract(tile.group.position) 
+        let step = vector  
+        console.log('vector length: ' + vector.length )
+        if ( vector.length > 20 ) {
+          //console.log( 'step is: ' +step)
+          step = step.divide(10)
+          //console.log( 'step is: ' +step)
+          step = step.floor()
+          //console.log( 'step is: ' +step)
+        } else { 
+          step = vector
+        }
+        tile.group.position = tile.group.position.add(step)
+        if ( tile.group.position.equals(tile.resolvingTarg) ) {
+          tile.resolvingTarg = null
+        }
+        if ( tile.resolvingPhi && tile.group.position.equals(tile.resolvingPhi.phiRect.position) ) {
+          tile.resolved = true
+          tile.group.firstChild.visible = false
+          tile.resolvingPhi.aTile = tile
+          //tile.ph.group.bounds = tile.group.lastChild.bounds 
+          tile.resolvingPhi.phiRect.visible = false
+          console.log("resolved")
+          console.log(tile)
+          this.renderPlaceHolderInsts(paper,phPane,phInsts)
+          this.darsDone = await checkFinished()
+        } else if ( tile.group.position.equals(tile.origin))  {
+          tile.group.firstChild.visible = true
+          tile.resolved = false
+          if ( tile.resolvingPhi ) {
+            tile.resolvingPhi.aTile = null
+            tile.resolvingPhi.phiRect.visible = true
+          }
+          console.log(" non resolved")
+          //console.log(tile.group)
+          console.log(tile.ph.phiRect)
+          tile.resolvingPhi = null
+          //tile.ph.group.bounds = tile.ph.origBound
+          this.renderPlaceHolderInsts(paper,phPane,phInsts)
+          this.darsDone = await checkFinished()
+        }
+      }
+
+      const checkFinished = async () => {
+        //let done = true
+        for ( let phInst of phInsts ) {  
+          if ( !phInst.aTile ) {
+            return false
+          }
+        }
+        return true
+      }
+
+      
+      //document.getElementById("myCanvas").style.opacity =  1 
+    },
+    renderPlaceHolderInsts (paper,phPane,phInsts) {
+      let startingTopRight = phPane.phiRowTR
+      for ( let [idx,plh] of phInsts.entries() ) {
+        console.log("--------" + idx)
+        if ( plh.aTile === null ) {
+          const newBound = new paper.Rectangle(startingTopRight, startingTopRight.subtract(php.phiSide, -php.phiSide ))
+          console.log(plh.phiRect.bounds)
+          console.log(newBound)
+          plh.phiRect.bounds = newBound
+          startingTopRight = startingTopRight.subtract(php.phiSide, 0) 
+        } else { 
+          const tile = plh.aTile.group
+          //window.tile = tile
+          console.log("HERE")
+          console.log(tile.bounds)
+          console.log(tile.firstChild.bounds)
+          console.log(tile.lastChild.bounds)
+          const newBound = new paper.Rectangle(startingTopRight, startingTopRight.subtract(tile.lastChild.bounds.width, -tile.lastChild.bounds.height ))
+          console.log(newBound)
+          tile.bounds = newBound 
+          startingTopRight = startingTopRight.subtract(tile.bounds.width, 0) 
+        }
+
+      }
+    },
+    createAlphatilePane(paper,topRight, harf, atInsts, phInsts) {
+
+      //if ( harf != "faseleh" ) {
+        //  const audio = harf.match(/([a-z]*)_/).[1]
+        //  createEar(topRight.add( atp.atpSpacing + atp.atiSide/4  , atp.atpSpacing + atp.atiSide/2   ) ,audio)
+        //}
+        let atPane = new atp( topRight, harf['harfForms'].length  )
+        let idx2=1
+        const audio = harf['harfSound'] 
+        console.log(harf['harfSound'])
+        this.createEar(topRight.add( atp.atpSpacing + atp.atiSide/4  , atp.atpSpacing + atp.atiSide/2   ) ,audio)
+        for ( let harf of harf['harfForms'] ) {
+          const occurances = this.darsHarfForms.reduce( (tot,elem,harfIndex) => { 
+            if (elem === harf) { 
+              tot.push(harfIndex)
+            } 
+            return tot 
+          } , [] )
+          //console.log( harf + " Occurs:" ) 
+          //console.log( occurances)
+          const plHoldersArray = occurances.map( a => phInsts[a] )
+
+          let atInst
+          atInst = new ati( atPane.getAtiTopRight(idx2) , atPane.getAtiBottomLeft(idx2), plHoldersArray, harf  )
+          atInsts.push(atInst)
+          atInst = new ati( atPane.getAtiTopRight(idx2) , atPane.getAtiBottomLeft(idx2), plHoldersArray, harf  )
+          atInsts.push(atInst)
+          idx2++
+        }
+      },
+    createPlaceHolderPane(paper) {
+      const paneTopMargin = 50
+      const paneRightMargin = 50
+      const topRight = new paper.Point( 
+      paper.view.size._width - paneRightMargin, paneTopMargin );
+      var phPane = new php( topRight, this.darsHarfForms.length )
+      const earPosition = topRight.add( php.phiSpacing + php.phiSide/4 , php.phiSpacing + php.phiSide/2 ) 
+      this.createEar(earPosition, this.darsKalameh);
+
+      let phInsts = []
+      let idx = 0
+      for ( idx of this.darsHarfForms.keys() ) {
+        phInsts.push( new phi(phPane.getPhiTopRight(idx+1), phPane.getPhiBottomLeft(idx+1)))
+        idx++
+      }
+      return [ phPane , phInsts ]
+    },
+    createEar( earPosition, audio ) { 
+      let ear = document.getElementById("ear")
+      let earRaster = new paper.Raster(ear)  
+      earRaster.position = earPosition  
+      earRaster.strokeColor = "yellow"
+      //window.earRaster = earRaster
+      earRaster.onMouseDown= ( ) => {
+        document.getElementById(audio).play()
+      }
+      //console.log("created ear for : " + audio)
+    },
     alefba(darsId) {
       if ( darsId < 2 ) {
         return this.pn(2)
@@ -323,11 +504,11 @@ export default {
       await this.fetchDars()
     },
     async goToFirstDars() {
-      this.darsId = 0
+      this.darsId = 1
       await this.fetchDars()
     },
     async goToLastDars() {
-      this.darsId = this.student.darsId + 1 
+      this.darsId = this.student.darsId 
       await this.fetchDars()
     },
     async goToPrevDars() {
@@ -359,201 +540,39 @@ export default {
     },
     async updateCanvas() {
 
-      const createEar = ( earPosition, audio ) => { 
-        let ear = document.getElementById("ear")
-        let earRaster = new paper.Raster(ear)  
-        earRaster.position = earPosition  
-        earRaster.strokeColor = "yellow"
-        //window.earRaster = earRaster
-        earRaster.onMouseDown= ( ) => {
-          document.getElementById(audio).play()
-        }
-        //console.log("created ear for : " + audio)
-      }
+      
 
       //paper.project.activeLayer.removeChildren();
       //paper.view.draw();
       //document.getElementById("myCanvas").style.opacity = 0.2;
 
       window.paper = paper
-      const paneTopMargin = 50
-      const paneRightMargin = 50
-      const topRight = new paper.Point( 
-      paper.view.size._width - paneTopMargin, paneRightMargin );
-      var phPane = new php( topRight, this.darsHarfForms.length )
-      const earPosition = topRight.add( php.phiSpacing + php.phiSide/4 , php.phiSpacing + php.phiSide/2 ) 
-      createEar(earPosition, this.darsKalameh);
+      const [phPane, phInsts] = this.createPlaceHolderPane(paper)
 
-      let phInsts = []
-      const atInsts = [] 
-      let idx = 0
-      for ( idx of this.darsHarfForms.keys() ) {
-        phInsts.push( new phi(phPane.getPhiTopRight(idx+1), phPane.getPhiBottomLeft(idx+1)))
-        idx++
-      }
+      let atInsts = [] 
+      let idx
+      
     // iterate twice to make sure all ati are create on top phi
     idx = 0
     //const atPaneCreated = {}
         console.log(this.darsHoroof)
-    for ( let harf of shuffle(this.darsHoroof) ) {
+    for ( let harf of this.shuffle(this.darsHoroof) ) {
 
       //console.log(cons)
       let topRight = phPane.phpRect.bounds.bottomRight.add(0, 20 ) 
       topRight = topRight.add(0,  idx*(atp.atpRow+10))
 
-      //if ( harf != "faseleh" ) {
-        //  const audio = harf.match(/([a-z]*)_/).[1]
-        //  createEar(topRight.add( atp.atpSpacing + atp.atiSide/4  , atp.atpSpacing + atp.atiSide/2   ) ,audio)
-        //}
-        let atPane = new atp( topRight, harf['harfForms'].length  )
-        let idx2=1
-        const audio = harf['harfSound'] 
-        console.log(harf['harfSound'])
-        createEar(topRight.add( atp.atpSpacing + atp.atiSide/4  , atp.atpSpacing + atp.atiSide/2   ) ,audio)
-        for ( let harf of harf['harfForms'] ) {
-          const occurances = this.darsHarfForms.reduce( (tot,elem,harfIndex) => { 
-            if (elem === harf) { 
-              tot.push(harfIndex)
-            } 
-            return tot 
-          } , [] )
-          //console.log( harf + " Occurs:" ) 
-          //console.log( occurances)
-          const plHoldersArray = occurances.map( a => phInsts[a] )
-
-          let atInst
-          atInst = new ati( atPane.getAtiTopRight(idx2) , atPane.getAtiBottomLeft(idx2), plHoldersArray, harf  )
-          atInsts.push(atInst)
-          atInst = new ati( atPane.getAtiTopRight(idx2) , atPane.getAtiBottomLeft(idx2), plHoldersArray, harf  )
-          atInsts.push(atInst)
-          idx2++
-        }
+      this.createAlphatilePane(paper,topRight,harf,atInsts,phInsts) 
+      
       //window.at = atInst1
       //window.atp = atPane
       idx++
     }
-  const renderLine = () => {
-    let startingTopRight = phPane.phiRowTR
-    for ( let [idx,plh] of phInsts.entries() ) {
-      console.log("--------" + idx)
-      if ( plh.aTile === null ) {
-        const newBound = new paper.Rectangle(startingTopRight, startingTopRight.subtract(php.phiSide, -php.phiSide ))
-        console.log(plh.phiRect.bounds)
-        console.log(newBound)
-        plh.phiRect.bounds = newBound
-        startingTopRight = startingTopRight.subtract(php.phiSide, 0) 
-      } else { 
-        const tile = plh.aTile.group
-        //window.tile = tile
-        console.log("HERE")
-        console.log(tile.bounds)
-        console.log(tile.firstChild.bounds)
-        console.log(tile.lastChild.bounds)
-        const newBound = new paper.Rectangle(startingTopRight, startingTopRight.subtract(tile.lastChild.bounds.width, -tile.lastChild.bounds.height ))
-        console.log(newBound)
-        tile.bounds = newBound 
-        startingTopRight = startingTopRight.subtract(tile.bounds.width, 0) 
-      }
-
+  
+    
+    this.installTileAnimator(paper,phPane, phInsts,atInsts) 
     }
-  }
-
-  paper.view.onFrame = async () => { 
-
-    const tile = atInsts.find(t => { 
-      return t.resolve || t.resolvingTarg 
-    })
-    if ( !tile ) return
-    console.log("Found tile: " + tile)
-    if ( tile.resolve ) {
-      tile.resolve = false
-      for ( let ph of tile.ph ) {
-        if ( ph.aTile ) { 
-          continue
-        }
-        if ( ph.phiRect.contains(tile.group.position)) {
-          tile.resolvingTarg = ph.phiRect.position 
-          tile.resolvingPhi = ph 
-          console.log("then here ")
-          //window.ph = ph
-          break
-        } 
-      }
-      tile.resolvingTarg = tile.resolvingTarg || tile.origin
-    }
-
-    let vector = tile.resolvingTarg.subtract(tile.group.position) 
-    let step = vector  
-    console.log('vector length: ' + vector.length )
-    if ( vector.length > 20 ) {
-      //console.log( 'step is: ' +step)
-      step = step.divide(10)
-      //console.log( 'step is: ' +step)
-      step = step.floor()
-      //console.log( 'step is: ' +step)
-    } else { 
-      step = vector
-    }
-    tile.group.position = tile.group.position.add(step)
-    if ( tile.group.position.equals(tile.resolvingTarg) ) {
-      tile.resolvingTarg = null
-    }
-    if ( tile.resolvingPhi && tile.group.position.equals(tile.resolvingPhi.phiRect.position) ) {
-      tile.resolved = true
-      tile.group.firstChild.visible = false
-      tile.resolvingPhi.aTile = tile
-      //tile.ph.group.bounds = tile.group.lastChild.bounds 
-      tile.resolvingPhi.phiRect.visible = false
-      console.log("resolved")
-      console.log(tile)
-      renderLine()
-      this.darsDone = await checkFinished()
-    } else if ( tile.group.position.equals(tile.origin))  {
-      tile.group.firstChild.visible = true
-      tile.resolved = false
-      if ( tile.resolvingPhi ) {
-        tile.resolvingPhi.aTile = null
-        tile.resolvingPhi.phiRect.visible = true
-      }
-      console.log(" non resolved")
-      //console.log(tile.group)
-      console.log(tile.ph.phiRect)
-      tile.resolvingPhi = null
-      //tile.ph.group.bounds = tile.ph.origBound
-      renderLine()
-      this.darsDone = await checkFinished()
-    }
-  }
-
-  const checkFinished = async () => {
-    //let done = true
-    for ( let phInst of phInsts ) {  
-      if ( !phInst.aTile ) {
-        return false
-      }
-    }
-    return true
-  }
-
-  function shuffle(array) {
-    var currentIndex = array.length, temporaryValue, randomIndex;
-
-    // While there remain elements to shuffle...
-    while (0 !== currentIndex) {
-
-      // Pick a remaining element...
-      randomIndex = Math.floor(Math.random() * currentIndex);
-      currentIndex -= 1;
-
-      // And swap it with the current element.
-      temporaryValue = array[currentIndex];
-      array[currentIndex] = array[randomIndex];
-      array[randomIndex] = temporaryValue;
-    }
-    return array;
-  }
-  //document.getElementById("myCanvas").style.opacity =  1 
-    }
+  
   }
 }
 </script>
