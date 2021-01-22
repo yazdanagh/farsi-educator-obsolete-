@@ -10,13 +10,14 @@ const cons = require('./constants');
 
 const main = async () => {
 
-    let idx = -1
+    let idx = 0 
     const darses = cons.darsesInput.map(a => { 
       idx++
       return { 
         kalamehHarfForms: a[0].split(' '), 
         kalameh: a[1],
-        darsId: idx
+        darsId: idx,
+        numHarfLearned: 0
       }
     })
     await db.dars.deleteMany()

@@ -148,8 +148,16 @@ module.exports = (app) => {
     const darsId = req.params.darsId
     const dars = await db.dars.findOne({darsId})   
     if ( dars ) {
-      console.log("FOUND" + dars)
       res.json(dars)
+    } else {
+      res.sendStatus(404);
+    }
+  })
+
+  app.get('/darses', async (req, res) => {
+    const darses = await db.dars.find({})   
+    if ( darses ) {
+      res.json(darses)
     } else {
       res.sendStatus(404);
     }
