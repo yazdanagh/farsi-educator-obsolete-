@@ -37,21 +37,22 @@ class php {
     static phiGutter = 4 
 
     constructor ( paneTopRight, numTiles ) {
-       window.ptr = paneTopRight
-       let tilesPerRow = (paneTopRight.x - php.minLeftMargin) 
-       tilesPerRow -= (numTiles -1)*php.phiGutter  
-       tilesPerRow = tilesPerRow/ php.phiSide  
-       tilesPerRow = Math.floor(tilesPerRow)
+      window.ptr = paneTopRight
+      let tilesPerRow = (paneTopRight.x - php.minLeftMargin) 
+      tilesPerRow -= (numTiles -1)*php.phiGutter  
+      tilesPerRow = tilesPerRow/ php.phiSide  
+      tilesPerRow = Math.floor(tilesPerRow)
 
-       const numRows = Math.ceil(numTiles / tilesPerRow) 
-       console.log(`${numRows} rows with ${tilesPerRow} tiles in each row`)
-       const topRight = paneTopRight 
-       const bottomLeft = topRight.subtract( tilesPerRow * php.phiSide + ( tilesPerRow -1 ) * php.phiGutter , -numRows * php.phpRow )
-       this.phpRect = paper.Path.Rectangle(
-           topRight, bottomLeft
-         )
-       this.phiRowTR = topRight.subtract ( php.phiSpacing, -php.phiSpacing )
-       this.phpRect.fillColor = '#d3d3d3'
+      const numRows = Math.ceil(numTiles / tilesPerRow) 
+      console.log(`${numRows} rows with ${tilesPerRow} tiles in each row`)
+      const topRight = paneTopRight 
+      const bottomLeft = topRight.subtract( tilesPerRow * php.phiSide + ( tilesPerRow -1 ) * php.phiGutter , -numRows * php.phpRow )
+      this.phpRect = paper.Path.Rectangle(
+        topRight, bottomLeft
+      )
+      this.phiRowTR = topRight.subtract ( php.phiSpacing, -php.phiSpacing )
+      this.phpRect.fillColor = '#d3d3d3'
+      this.phInsts = []
     }
     getPhiTopRight(loc) { // todo: add row 
       // TODO : implement Row
@@ -60,6 +61,9 @@ class php {
     getPhiBottomLeft(loc)  { // todo : add row
       // TODO : implement Row
       return this.phiRowTR.subtract( (loc)* ( php.phiSide + php.phiGutter) -php.phiGutter,  -php.phiSide )
+    }
+    addPhInsts(phInsts ) {
+      this.phInsts = this.phInsts.concat(phInsts)
     }
 }
 
@@ -90,13 +94,17 @@ class atp {
     this.atpRect.strokeColor = 'red'
     this.atpRect.fillColor = '#ea3c53'
     this.atiRowTR = topRight.subtract ( atp.atpSpacing, -atp.atpSpacing )
+    this.atInsts = []
   }
   getAtiTopRight(loc) { 
     return this.atiRowTR.subtract( (loc-1)* ( atp.atiSide + atp.atiGutter), 0 )
   }
   getAtiBottomLeft(loc)  {
     return this.atiRowTR.subtract( (loc)* ( atp.atiSide + atp.atiGutter) - atp.atiGutter,  -atp.atiSide )
-    }
+  }
+  addAtInsts(atInsts ) {
+    this.atInsts = this.atInsts.concat(atInsts)
+  }
 }
 
 // alphabet tile instance

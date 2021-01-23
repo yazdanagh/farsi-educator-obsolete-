@@ -25,7 +25,7 @@
     <v-card-text class="d-flex flex-row-reverse">
           {{ pn(this.student.darsId) }} درس را خوانده است 
           <br>
-          {{ this.pn(this.dars.numHarfLearned) }} تا از الفبا را آموخته است 
+          {{ this.pn(this.numHarfLearned) }} تا از الفبا را آموخته است 
           <!--
       <v-row
         class="mx-0"
@@ -164,6 +164,7 @@ import { php, phi, atp, ati }  from '../class';
 //import { mdiHome, mdiChevronLeft, mdiChevronRight, mdiArrowRightBold, mdiArrowLeftBold } from '@mdi/js';
 import { mdiHome, mdiChevronLeft, mdiChevronDoubleLeft, mdiChevronRight, mdiChevronDoubleRight  } from '@mdi/js';
 import axios from 'axios';
+import lodash from 'lodash'
 import pn from 'persian-number';
 
 
@@ -240,6 +241,13 @@ export default {
    //goToDarses() {
    //  return 
    //},
+   numHarfLearned () {
+     if ( this.dars ) { 
+       return this.dars.numHarfLearned 
+     } else {
+       return ""
+     }
+   },
     audioDars() {
       return '/audios/' + this.darsKalameh + '.m4a'
     },
@@ -285,9 +293,10 @@ export default {
         }
         return array;
       },
-    installTileAnimator(paper,phPane, phInsts,atInsts) {
+    installTileAnimator(paper,phPane, atPanes) {
       paper.view.onFrame = async () => { 
 
+        const atInsts = lodash.flatten(atPanes.map(a => a.atInsts) )
         const tile = atInsts.find(t => { 
           return t.resolve || t.resolvingTarg 
         })
@@ -334,7 +343,7 @@ export default {
           tile.resolvingPhi.phiRect.visible = false
           console.log("resolved")
           console.log(tile)
-          this.renderPlaceHolderInsts(paper,phPane,phInsts)
+          this.renderPlaceHolderInsts(paper,phPane,phPane.phInsts)
           this.darsDone = await checkFinished()
         } else if ( tile.group.position.equals(tile.origin))  {
           tile.group.firstChild.visible = true
@@ -348,14 +357,14 @@ export default {
           console.log(tile.ph.phiRect)
           tile.resolvingPhi = null
           //tile.ph.group.bounds = tile.ph.origBound
-          this.renderPlaceHolderInsts(paper,phPane,phInsts)
+          this.renderPlaceHolderInsts(paper,phPane,phPane.phInsts)
           this.darsDone = await checkFinished()
         }
       }
 
       const checkFinished = async () => {
         //let done = true
-        for ( let phInst of phInsts ) {  
+        for ( let phInst of phPane.phInsts ) {  
           if ( !phInst.aTile ) {
             return false
           }
@@ -391,7 +400,7 @@ export default {
 
       }
     },
-    createAlphatilePane(paper,topRight, harf, atInsts, phInsts) {
+    createAlphatilePane(paper,topRight, harf, phPane) {
 
       //if ( harf != "faseleh" ) {
         //  const audio = harf.match(/([a-z]*)_/).[1]
@@ -411,33 +420,35 @@ export default {
           } , [] )
           //console.log( harf + " Occurs:" ) 
           //console.log( occurances)
-          const plHoldersArray = occurances.map( a => phInsts[a] )
+          const plHoldersArray = occurances.map( a => phPane.phInsts[a] )
 
           let atInst
           atInst = new ati( atPane.getAtiTopRight(idx2) , atPane.getAtiBottomLeft(idx2), plHoldersArray, harf  )
-          atInsts.push(atInst)
+          atPane.addAtInsts([atInst])
           atInst = new ati( atPane.getAtiTopRight(idx2) , atPane.getAtiBottomLeft(idx2), plHoldersArray, harf  )
-          atInsts.push(atInst)
+          atPane.addAtInsts([atInst])
           idx2++
         }
+        return atPane
       },
-    createPlaceHolderPane(paper) {
-      const paneTopMargin = 50
-      const paneRightMargin = 50
-      const topRight = new paper.Point( 
-      paper.view.size._width - paneRightMargin, paneTopMargin );
-      var phPane = new php( topRight, this.darsHarfForms.length )
-      const earPosition = topRight.add( php.phiSpacing + php.phiSide/4 , php.phiSpacing + php.phiSide/2 ) 
-      this.createEar(earPosition, this.darsKalameh);
+      createPlaceHolderPane(paper) {
+        const paneTopMargin = 50
+        const paneRightMargin = 50
+        const topRight = new paper.Point( 
+        paper.view.size._width - paneRightMargin, paneTopMargin );
+        var phPane = new php( topRight, this.darsHarfForms.length )
+        const earPosition = topRight.add( php.phiSpacing + php.phiSide/4 , php.phiSpacing + php.phiSide/2 ) 
+        this.createEar(earPosition, this.darsKalameh);
 
-      let phInsts = []
-      let idx = 0
-      for ( idx of this.darsHarfForms.keys() ) {
-        phInsts.push( new phi(phPane.getPhiTopRight(idx+1), phPane.getPhiBottomLeft(idx+1)))
-        idx++
-      }
-      return [ phPane , phInsts ]
-    },
+        let phInsts = []
+        let idx = 0
+        for ( idx of this.darsHarfForms.keys() ) {
+          phInsts.push( new phi(phPane.getPhiTopRight(idx+1), phPane.getPhiBottomLeft(idx+1)))
+          idx++
+        }
+      phPane.addPhInsts(phInsts)
+      return phPane 
+      },
     createEar( earPosition, audio ) { 
       let ear = document.getElementById("ear")
       let earRaster = new paper.Raster(ear)  
@@ -547,9 +558,9 @@ export default {
       //document.getElementById("myCanvas").style.opacity = 0.2;
 
       window.paper = paper
-      const [phPane, phInsts] = this.createPlaceHolderPane(paper)
+      const phPane = this.createPlaceHolderPane(paper)
 
-      let atInsts = [] 
+      let atPanes = [] 
       let idx
       
     // iterate twice to make sure all ati are create on top phi
@@ -562,7 +573,8 @@ export default {
       let topRight = phPane.phpRect.bounds.bottomRight.add(0, 20 ) 
       topRight = topRight.add(0,  idx*(atp.atpRow+10))
 
-      this.createAlphatilePane(paper,topRight,harf,atInsts,phInsts) 
+      let atPane = this.createAlphatilePane(paper, topRight, harf, phPane) 
+      atPanes.push(atPane)
       
       //window.at = atInst1
       //window.atp = atPane
@@ -570,7 +582,8 @@ export default {
     }
   
     
-    this.installTileAnimator(paper,phPane, phInsts,atInsts) 
+    window.atPanes = atPanes
+    this.installTileAnimator(paper,phPane,atPanes) 
     }
   
   }
