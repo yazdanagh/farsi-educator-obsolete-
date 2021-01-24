@@ -65,6 +65,31 @@ class php {
     addPhInsts(phInsts ) {
       this.phInsts = this.phInsts.concat(phInsts)
     }
+    renderPlaceHolderInsts () {
+      let startingTopRight = this.phiRowTR
+      for ( let [idx,plh] of this.phInsts.entries() ) {
+        console.log("--------" + idx)
+        if ( plh.aTile === null ) {
+          const newBound = new paper.Rectangle(startingTopRight, startingTopRight.subtract(php.phiSide, -php.phiSide ))
+          console.log(plh.phiRect.bounds)
+          console.log(newBound)
+          plh.phiRect.bounds = newBound
+          startingTopRight = startingTopRight.subtract(php.phiSide, 0) 
+        } else { 
+          const tile = plh.aTile.group
+          //window.tile = tile
+          console.log("HERE")
+          console.log(tile.bounds)
+          console.log(tile.firstChild.bounds)
+          console.log(tile.lastChild.bounds)
+          const newBound = new paper.Rectangle(startingTopRight, startingTopRight.subtract(tile.lastChild.bounds.width, -tile.lastChild.bounds.height ))
+          console.log(newBound)
+          tile.bounds = newBound 
+          startingTopRight = startingTopRight.subtract(tile.bounds.width, 0) 
+        }
+
+      }
+    }
 }
 
 
@@ -105,6 +130,7 @@ class atp {
   addAtInsts(atInsts ) {
     this.atInsts = this.atInsts.concat(atInsts)
   }
+  
 }
 
 // alphabet tile instance
@@ -141,6 +167,62 @@ class ati {
        this.resolvingPhi = null
        this.ph = phList
        this.group = group
+  }
+  animate() {
+    if ( this.resolve ) {
+      this.resolve = false
+      for ( let ph of this.ph ) {
+        if ( ph.aTile ) { 
+          continue
+        }
+        if ( ph.phiRect.contains(this.group.position)) {
+          this.resolvingTarg = ph.phiRect.position 
+          this.resolvingPhi = ph 
+          console.log("then here ")
+          //window.ph = ph
+          break
+        } 
+      }
+      this.resolvingTarg = this.resolvingTarg || this.origin
+    }
+
+    let vector = this.resolvingTarg.subtract(this.group.position) 
+    let step = vector  
+    console.log('vector length: ' + vector.length )
+    if ( vector.length > 20 ) {
+      //console.log( 'step is: ' +step)
+      step = step.divide(10)
+      //console.log( 'step is: ' +step)
+      step = step.floor()
+      //console.log( 'step is: ' +step)
+    } else { 
+      step = vector
+    }
+    this.group.position = this.group.position.add(step)
+    if ( this.group.position.equals(this.resolvingTarg) ) {
+      this.resolvingTarg = null
+    }
+    if ( this.resolvingPhi && this.group.position.equals(this.resolvingPhi.phiRect.position) ) {
+      this.resolved = true
+      this.group.firstChild.visible = false
+      this.resolvingPhi.aTile = this
+      //this.ph.group.bounds = this.group.lastChild.bounds 
+      this.resolvingPhi.phiRect.visible = false
+      console.log("resolved")
+      console.log(this)
+    } else if ( this.group.position.equals(this.origin))  {
+      this.group.firstChild.visible = true
+      this.resolved = false
+      if ( this.resolvingPhi ) {
+        this.resolvingPhi.aTile = null
+        this.resolvingPhi.phiRect.visible = true
+      }
+      console.log(" non resolved")
+      //console.log(this.group)
+      console.log(this.ph.phiRect)
+      this.resolvingPhi = null
+      //this.ph.group.bounds = this.ph.origBound
+    }
   }
 }
 

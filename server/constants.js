@@ -1,7 +1,8 @@
 const darsesInput = [ 
-  [ "be_koochik_chap aa_chasban be_koochik_chap aa_chasban", "baabaa" ],                                         
   [ "aa_bakola be_bozorg_tanha", "aab" ],
+  [ "be_koochik_chap aa_chasban be_koochik_chap aa_chasban", "baabaa" ],                                         
   [ "be_koochik_chap aa_chasban de_tanha" , "baad" ],
+  [ "de_tanha aa_bikola de_tanha" , "daad" ],
   [ "be_koochik_chap aa_chasban me_bozorg_tanha" , "baam" ],
   [ "de_tanha aa_bikola me_bozorg_tanha" , "daam" ],
   [ "be_koochik_chap aa_chasban de_tanha aa_bikola me_bozorg_tanha" , "baadaam" ],
@@ -10,6 +11,8 @@ const darsesInput = [
   [ "aa_bakola re_tanha de_tanha" , "aard" ],
   [ "de_tanha aa_bikola re_tanha aa_bikola" , "daaraa" ],
   [ "me_koochik_chap aa_chasban de_tanha re_tanha" , "maadar" ], 
+  [ "de_tanha aa_bikola re_tanha me_bozorg_tanha" , "daaram" ], 
+  [ "aa_bakola me_koochik_chap de_chasban" , "aamad" ], 
   [ "ye_koochik_chap aa_chasban re_tanha aa_bikola" , "yaara" ], 
   [ "de_tanha ye_koochik_chap de_chasban"  , "deed" ] , 
   [ "ne_koochik_rast aa_chasban ne_bozorg_tanha"  , "naan" ] , 

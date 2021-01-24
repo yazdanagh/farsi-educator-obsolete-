@@ -302,62 +302,13 @@ export default {
         })
         if ( !tile ) return
         console.log("Found tile: " + tile)
-        if ( tile.resolve ) {
-          tile.resolve = false
-          for ( let ph of tile.ph ) {
-            if ( ph.aTile ) { 
-              continue
-            }
-            if ( ph.phiRect.contains(tile.group.position)) {
-              tile.resolvingTarg = ph.phiRect.position 
-              tile.resolvingPhi = ph 
-              console.log("then here ")
-              //window.ph = ph
-              break
-            } 
-          }
-          tile.resolvingTarg = tile.resolvingTarg || tile.origin
-        }
+        tile.animate()
 
-        let vector = tile.resolvingTarg.subtract(tile.group.position) 
-        let step = vector  
-        console.log('vector length: ' + vector.length )
-        if ( vector.length > 20 ) {
-          //console.log( 'step is: ' +step)
-          step = step.divide(10)
-          //console.log( 'step is: ' +step)
-          step = step.floor()
-          //console.log( 'step is: ' +step)
-        } else { 
-          step = vector
-        }
-        tile.group.position = tile.group.position.add(step)
-        if ( tile.group.position.equals(tile.resolvingTarg) ) {
-          tile.resolvingTarg = null
-        }
         if ( tile.resolvingPhi && tile.group.position.equals(tile.resolvingPhi.phiRect.position) ) {
-          tile.resolved = true
-          tile.group.firstChild.visible = false
-          tile.resolvingPhi.aTile = tile
-          //tile.ph.group.bounds = tile.group.lastChild.bounds 
-          tile.resolvingPhi.phiRect.visible = false
-          console.log("resolved")
-          console.log(tile)
-          this.renderPlaceHolderInsts(paper,phPane,phPane.phInsts)
+          phPane.renderPlaceHolderInsts()
           this.darsDone = await checkFinished()
         } else if ( tile.group.position.equals(tile.origin))  {
-          tile.group.firstChild.visible = true
-          tile.resolved = false
-          if ( tile.resolvingPhi ) {
-            tile.resolvingPhi.aTile = null
-            tile.resolvingPhi.phiRect.visible = true
-          }
-          console.log(" non resolved")
-          //console.log(tile.group)
-          console.log(tile.ph.phiRect)
-          tile.resolvingPhi = null
-          //tile.ph.group.bounds = tile.ph.origBound
-          this.renderPlaceHolderInsts(paper,phPane,phPane.phInsts)
+          phPane.renderPlaceHolderInsts()
           this.darsDone = await checkFinished()
         }
       }
@@ -375,31 +326,7 @@ export default {
       
       //document.getElementById("myCanvas").style.opacity =  1 
     },
-    renderPlaceHolderInsts (paper,phPane,phInsts) {
-      let startingTopRight = phPane.phiRowTR
-      for ( let [idx,plh] of phInsts.entries() ) {
-        console.log("--------" + idx)
-        if ( plh.aTile === null ) {
-          const newBound = new paper.Rectangle(startingTopRight, startingTopRight.subtract(php.phiSide, -php.phiSide ))
-          console.log(plh.phiRect.bounds)
-          console.log(newBound)
-          plh.phiRect.bounds = newBound
-          startingTopRight = startingTopRight.subtract(php.phiSide, 0) 
-        } else { 
-          const tile = plh.aTile.group
-          //window.tile = tile
-          console.log("HERE")
-          console.log(tile.bounds)
-          console.log(tile.firstChild.bounds)
-          console.log(tile.lastChild.bounds)
-          const newBound = new paper.Rectangle(startingTopRight, startingTopRight.subtract(tile.lastChild.bounds.width, -tile.lastChild.bounds.height ))
-          console.log(newBound)
-          tile.bounds = newBound 
-          startingTopRight = startingTopRight.subtract(tile.bounds.width, 0) 
-        }
-
-      }
-    },
+    
     createAlphatilePane(paper,topRight, harf, phPane) {
 
       //if ( harf != "faseleh" ) {
@@ -581,8 +508,6 @@ export default {
       idx++
     }
   
-    
-    window.atPanes = atPanes
     this.installTileAnimator(paper,phPane,atPanes) 
     }
   
