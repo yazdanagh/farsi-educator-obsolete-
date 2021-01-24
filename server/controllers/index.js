@@ -158,9 +158,11 @@ module.exports = (app) => {
     const email = req.query.email
     const code = req.params.code
     const student = await db.student.findOne({code,email})   
-    console.log('+++++++++++' + student + code + email)
+    const totDarses = await db.dars.count({})   
+    const numDarses = student.name === 'test' ? totDarses + 1 : student.darsId + 1   
+    console.log('+++++++++++' + totDarses + student + code + email)
     //const dars = await db.dars.findOne({darsId: student.darsId})   
-    const darses = await db.dars.find({darsId: { $in:  Array.from(Array(student.darsId + 1).keys())  }})   
+    const darses = await db.dars.find({darsId: { $in:  Array.from(Array(numDarses).keys())  }})   
     if ( darses ) {
       res.json(darses)
     } else {

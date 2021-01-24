@@ -218,7 +218,7 @@ export default {
       window.paper = paper
       let phPanes = []
 
-      for ( let darsIdLoc of Array.from(Array(10).keys())) {
+      for ( let darsIdLoc of Array.from(Array(this.darses.length).keys())) {
         this.dars = this.darses[darsIdLoc]
         this.darsId = this.dars['darsId']
       const paneTopMargin = 50 + darsIdLoc*100
