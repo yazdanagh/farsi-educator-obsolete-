@@ -238,11 +238,7 @@ const createEar = ( earPosition, audio ) => {
   console.log("created ear for : " + audio)
 }
 
-const createPlaceHolderPane = (paper , harfForms, darsKalameh) => {
-  const paneTopMargin = 50
-  const paneRightMargin = 50
-  const topRight = new paper.Point( 
-  paper.view.size._width - paneRightMargin, paneTopMargin );
+const createPlaceHolderPane = ( topRight, harfForms, darsKalameh) => {
   var phPane = new php( topRight, harfForms.length )
   const earPosition = topRight.add( php.phiSpacing + php.phiSide/4 , php.phiSpacing + php.phiSide/2 ) 
   createEar(earPosition, darsKalameh);
@@ -257,8 +253,43 @@ const createPlaceHolderPane = (paper , harfForms, darsKalameh) => {
    return phPane 
 }
 
+const createAlphatilePane = (topRight, harf, phPane , harfForms) => {
+
+  //if ( harf != "faseleh" ) {
+    //  const audio = harf.match(/([a-z]*)_/).[1]
+    //  createEar(topRight.add( atp.atpSpacing + atp.atiSide/4  , atp.atpSpacing + atp.atiSide/2   ) ,audio)
+    //}
+    let atPane = new atp( topRight, harf['harfForms'].length  )
+    let idx2=1
+    const audio = harf['harfSound'] 
+    console.log(harf['harfSound'])
+    createEar(topRight.add( atp.atpSpacing + atp.atiSide/4  , atp.atpSpacing + atp.atiSide/2   ) ,audio)
+    for ( let harf of harf['harfForms'] ) {
+      const occurances = harfForms.reduce( (tot,elem,harfIndex) => { 
+        if (elem === harf) { 
+          tot.push(harfIndex)
+        } 
+        return tot 
+      } , [] )
+      //console.log( harf + " Occurs:" ) 
+      //console.log( occurances)
+      const plHoldersArray = occurances.map( a => phPane.phInsts[a] )
+
+      let atInst
+      atInst = new ati( atPane.getAtiTopRight(idx2) , atPane.getAtiBottomLeft(idx2), plHoldersArray, harf  )
+      atPane.addAtInsts([atInst])
+      atInst = new ati( atPane.getAtiTopRight(idx2) , atPane.getAtiBottomLeft(idx2), plHoldersArray, harf  )
+      atPane.addAtInsts([atInst])
+      idx2++
+    }
+  return atPane
+}
+
+
+
 const utils = {
-  createPlaceHolderPane
+  createPlaceHolderPane,
+  createAlphatilePane 
 }
 
 export { 

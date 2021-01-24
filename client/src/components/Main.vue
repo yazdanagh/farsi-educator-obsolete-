@@ -160,7 +160,7 @@
 <script>
 const cons = require('../constants.js');
 const paper =  require('paper');
-import { atp, ati, utils }  from '../class';
+import { atp, utils }  from '../class';
 //import { mdiHome, mdiChevronLeft, mdiChevronRight, mdiArrowRightBold, mdiArrowLeftBold } from '@mdi/js';
 import { mdiHome, mdiChevronLeft, mdiChevronDoubleLeft, mdiChevronRight, mdiChevronDoubleRight  } from '@mdi/js';
 import axios from 'axios';
@@ -326,39 +326,6 @@ export default {
       
       //document.getElementById("myCanvas").style.opacity =  1 
     },
-    
-    createAlphatilePane(paper,topRight, harf, phPane) {
-
-      //if ( harf != "faseleh" ) {
-        //  const audio = harf.match(/([a-z]*)_/).[1]
-        //  createEar(topRight.add( atp.atpSpacing + atp.atiSide/4  , atp.atpSpacing + atp.atiSide/2   ) ,audio)
-        //}
-        let atPane = new atp( topRight, harf['harfForms'].length  )
-        let idx2=1
-        const audio = harf['harfSound'] 
-        console.log(harf['harfSound'])
-        this.createEar(topRight.add( atp.atpSpacing + atp.atiSide/4  , atp.atpSpacing + atp.atiSide/2   ) ,audio)
-        for ( let harf of harf['harfForms'] ) {
-          const occurances = this.darsHarfForms.reduce( (tot,elem,harfIndex) => { 
-            if (elem === harf) { 
-              tot.push(harfIndex)
-            } 
-            return tot 
-          } , [] )
-          //console.log( harf + " Occurs:" ) 
-          //console.log( occurances)
-          const plHoldersArray = occurances.map( a => phPane.phInsts[a] )
-
-          let atInst
-          atInst = new ati( atPane.getAtiTopRight(idx2) , atPane.getAtiBottomLeft(idx2), plHoldersArray, harf  )
-          atPane.addAtInsts([atInst])
-          atInst = new ati( atPane.getAtiTopRight(idx2) , atPane.getAtiBottomLeft(idx2), plHoldersArray, harf  )
-          atPane.addAtInsts([atInst])
-          idx2++
-        }
-        return atPane
-      },
-      
     createEar( earPosition, audio ) { 
       let ear = document.getElementById("ear")
       let earRaster = new paper.Raster(ear)  
@@ -461,39 +428,31 @@ export default {
     },
     async updateCanvas() {
 
-      
-
-      //paper.project.activeLayer.removeChildren();
-      //paper.view.draw();
-      //document.getElementById("myCanvas").style.opacity = 0.2;
-
-      window.paper = paper
-      const phPane = utils.createPlaceHolderPane(paper, this.darsHarfForms, this.darsKalameh)
+      const paneTopMargin = 50
+      const paneRightMargin = 50
+      const topRight = new paper.Point( 
+      paper.view.size._width - paneRightMargin, paneTopMargin );
+      const phPane = utils.createPlaceHolderPane( topRight, this.darsHarfForms, this.darsKalameh)
 
       let atPanes = [] 
       let idx
-      
-    // iterate twice to make sure all ati are create on top phi
-    idx = 0
-    //const atPaneCreated = {}
-        console.log(this.darsHoroof)
-    for ( let harf of this.shuffle(this.darsHoroof) ) {
 
-      //console.log(cons)
-      let topRight = phPane.phpRect.bounds.bottomRight.add(0, 20 ) 
-      topRight = topRight.add(0,  idx*(atp.atpRow+10))
+      // iterate twice to make sure all ati are create on top phi
+      idx = 0
+      //const atPaneCreated = {}
+      console.log(this.darsHoroof)
+      for ( let harf of this.shuffle(this.darsHoroof) ) {
 
-      let atPane = this.createAlphatilePane(paper, topRight, harf, phPane) 
-      atPanes.push(atPane)
-      
-      //window.at = atInst1
-      //window.atp = atPane
-      idx++
+        let topRight = phPane.phpRect.bounds.bottomRight.add(0, 20 ) 
+        topRight = topRight.add(0,  idx*(atp.atpRow+10))
+
+        let atPane = utils.createAlphatilePane(topRight, harf, phPane, this.darsHarfForms) 
+        atPanes.push(atPane)
+
+        idx++
+      }
+      this.installTileAnimator(paper,phPane,atPanes) 
     }
-  
-    this.installTileAnimator(paper,phPane,atPanes) 
-    }
-  
   }
 }
 </script>
