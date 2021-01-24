@@ -3,7 +3,6 @@
 <v-spacer> </v-spacer>
 
 <v-row>
-<v-col cols="9" class="mb-4">
 <!--<img id="ear" style="display:none" src="images2/ear.jpg" >  -->
    <canvas id="myCanvas" resize class="mt-5" style="border: 1px solid black; float: right;width:100%">
    </canvas>
@@ -14,11 +13,8 @@
      </div>
    </div>
    <div id="allAudios">
-     <audio :src="audioDars" :id="audioDarsId"  > </audio>
-     <audio v-for="(aG,aIdx) in horoof" :src="audioAlph(aG)" :id="audioAlphId(aG)" :key="aIdx" >
-     </audio>
+     <audio v-for="dars in darses" :key="dars.kalameh" :src="audioDars(dars.kalameh)" :id="dars.kalameh"  > </audio>
    </div>
-</v-col>
 
 </v-row>
 
@@ -28,7 +24,7 @@
 <script>
 const cons = require('../constants.js');
 const paper =  require('paper');
-import { php, phi }  from '../class';
+import { ati, utils }  from '../class';
 //import { mdiHome, mdiChevronLeft, mdiChevronRight, mdiArrowRightBold, mdiArrowLeftBold } from '@mdi/js';
 import { mdiHome, mdiChevronLeft, mdiChevronDoubleLeft, mdiChevronRight, mdiChevronDoubleRight  } from '@mdi/js';
 import axios from 'axios';
@@ -36,7 +32,7 @@ import pn from 'persian-number';
 
 
 export default {
-  name: 'Main',
+  name: 'Darses',
   data: function () {
     return {
       darsId: 1,
@@ -71,6 +67,7 @@ export default {
 
   },
   async mounted() {
+    //debugger
     try {
       
       let res
@@ -84,7 +81,7 @@ export default {
     this.clearCanvas()
     setTimeout ( () => { 
       console.log("WAAIIIITT")
-      this.updateCanvas()
+      this.updateCanvasDarses()
     }, 1000) 
     } catch (e) {
       console.log(e)
@@ -95,9 +92,7 @@ export default {
    //goToDarses() {
    //  return 
    //},
-    audioDars() {
-      return '/audios/' + this.darsKalameh + '.m4a'
-    },
+    
     audioDarsId() {
       return this.darsKalameh
     },
@@ -123,16 +118,8 @@ export default {
   },
   //
   methods: {
-    createEar( earPosition, audio ) { 
-      let ear = document.getElementById("ear")
-      let earRaster = new paper.Raster(ear)  
-      earRaster.position = earPosition  
-      earRaster.strokeColor = "yellow"
-      //window.earRaster = earRaster
-      earRaster.onMouseDown= ( ) => {
-        document.getElementById(audio).play()
-      }
-      //console.log("created ear for : " + audio)
+    audioDars(kalameh) {
+      return '/audios/' + kalameh + '.m4a'
     },
     alefba(darsId) {
       if ( darsId < 2 ) {
@@ -208,7 +195,7 @@ export default {
       //await this.$router.push(`/dars/${this.darsId}`)
       this.clearCanvas()
       setTimeout ( () => { 
-        this.updateCanvas()
+        this.updateCanvasDarses()
       }, 1000 )
 
     },
@@ -223,7 +210,7 @@ export default {
       paper.project.activeLayer.removeChildren();
       paper.view.draw();
     },
-    async updateCanvas() {
+    async updateCanvasDarses() {
 
       
 
@@ -237,50 +224,25 @@ export default {
       const paneRightMargin = 50
       const topRight = new paper.Point( 
       paper.view.size._width - paneRightMargin, paneTopMargin );
-      var phPane = new php( topRight, this.darsHarfForms.length )
-      const earPosition = topRight.add( php.phiSpacing + php.phiSide/4 , php.phiSpacing + php.phiSide/2 ) 
-      this.createEar(earPosition, this.darsKalameh);
-      let phInsts = []
-      phPanes.push({phPane,phInsts})
+      const phPane = utils.createPlaceHolderPane( topRight, this.darsHarfForms, this.darsKalameh)
+      let idx=0;
+      for ( let phInst of phPane.phInsts ) {
+        let atInst = new ati( phPane.getPhiTopRight(idx) , phPane.getPhiBottomLeft(idx), phPane.phInsts, this.darsHarfForms[idx]  )
+        atInst.group.position = phInst.phiRect.position
+        phInst.aTile = atInst
+        atInst.resolved = true
+      atInst.group.firstChild.visible = false
+      //this.ph.group.bounds = this.group.lastChild.bounds 
+      phInst.phiRect.visible = false
 
-      let idx = 0
-        for ( idx of this.darsHarfForms.keys() ) {
-          phInsts.push( new phi(phPane.getPhiTopRight(idx+1), phPane.getPhiBottomLeft(idx+1)))
-          idx++
-        }
+        idx++
       }
+      phPane.renderPlaceHolderInsts()
+      phPanes.push(phPane)
+      }
+
     // iterate twice to make sure all ati are create on top phi
     
-  const renderLine = () => {
-    for ( let obj of phPanes ) { 
-      let phPane = obj['phPane' ]
-      let phInsts = obj['phInsts' ]
-    let startingTopRight = phPane.phiRowTR
-    for ( let [idx,plh] of phInsts.entries() ) {
-      console.log("--------" + idx)
-      if ( plh.aTile === null ) {
-        const newBound = new paper.Rectangle(startingTopRight, startingTopRight.subtract(php.phiSide, -php.phiSide ))
-        console.log(plh.phiRect.bounds)
-        console.log(newBound)
-        plh.phiRect.bounds = newBound
-        startingTopRight = startingTopRight.subtract(php.phiSide, 0) 
-      } else { 
-        const tile = plh.aTile.group
-        //window.tile = tile
-        console.log("HERE")
-        console.log(tile.bounds)
-        console.log(tile.firstChild.bounds)
-        console.log(tile.lastChild.bounds)
-        const newBound = new paper.Rectangle(startingTopRight, startingTopRight.subtract(tile.lastChild.bounds.width, -tile.lastChild.bounds.height ))
-        console.log(newBound)
-        tile.bounds = newBound 
-        startingTopRight = startingTopRight.subtract(tile.bounds.width, 0) 
-      }
-
-    }
-    }
-  }
-  renderLine();
 
     }
   }

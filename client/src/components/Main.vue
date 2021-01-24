@@ -22,10 +22,16 @@
     </v-card-title>
 
     <v-divider class="mx-3"></v-divider>
-    <v-card-text class="d-flex flex-row-reverse">
-          {{ pn(this.student.darsId) }} درس را خوانده است 
-          <br>
+    <v-card-text class="">
+    <div>
+    <router-link :to="'/darses'">
+       &nbsp; {{ pn(this.student.darsId) }} 
+    </router-link>
+           درس را خوانده است 
+         </div>
+          <div>
           {{ this.pn(this.numHarfLearned) }} تا از الفبا را آموخته است 
+        </div>
           <!--
       <v-row
         class="mx-0"
@@ -325,17 +331,6 @@ export default {
 
       
       //document.getElementById("myCanvas").style.opacity =  1 
-    },
-    createEar( earPosition, audio ) { 
-      let ear = document.getElementById("ear")
-      let earRaster = new paper.Raster(ear)  
-      earRaster.position = earPosition  
-      earRaster.strokeColor = "yellow"
-      //window.earRaster = earRaster
-      earRaster.onMouseDown= ( ) => {
-        document.getElementById(audio).play()
-      }
-      //console.log("created ear for : " + audio)
     },
     alefba(darsId) {
       if ( darsId < 2 ) {

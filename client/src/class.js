@@ -29,7 +29,7 @@ class phi {
 class php {
     
     // external margins
-    static minLeftMargin = 30
+    static minLeftMargin = 10
 
     static phiSide = 80
     static phiSpacing = 10
