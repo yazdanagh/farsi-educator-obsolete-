@@ -155,14 +155,19 @@ module.exports = (app) => {
   })
 
   app.get('/darses', async (req, res) => {
-    const darses = await db.dars.find({})   
+    const email = req.query.email
+    const code = req.query.code
+    const student = await db.student.findOne({code,email})   
+    console.log('+++++++++++' + student + code + email)
+    //const dars = await db.dars.findOne({darsId: student.darsId})   
+    const darses = await db.dars.find({darsId: { $in:  Array.from(Array(student.darsId + 1).keys())  }})   
     if ( darses ) {
       res.json(darses)
     } else {
       res.sendStatus(404);
     }
   })
-
+  
   app.get('/horoof', async (req, res) => {
     const horoof = await db.harf.find({})   
     if ( horoof ) {

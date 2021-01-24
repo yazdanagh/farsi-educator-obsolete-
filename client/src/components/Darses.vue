@@ -70,9 +70,10 @@ export default {
     //debugger
     try {
       
-      let res
-    //this.code = this.$route.params.code
-    res = await axios.get(`${this.backendHost}/darses`)
+    let res
+    this.code = this.$route.query.code
+    this.email = this.$route.query.email
+    res = await axios.get(`${this.backendHost}/darses?code=${this.code}&email=${this.email}`)
     this.darses = res.data
     res = await axios.get(`${this.backendHost}/horoof`)
     this.horoof = res.data
@@ -143,7 +144,7 @@ export default {
     async initCanvas() {
       this.canvas = document.getElementById('myCanvas');
       this.canvas.width =   cons.canvasWidth; // window.innerWidth
-      this.canvas.height = 2000 // cons.canvasHeight; // window.innerHeight
+      this.canvas.height = 4000 // cons.canvasHeight; // window.innerHeight
       console.log(cons)
       await paper.setup(this.canvas);
       // scalaing like this wont fix RtoL issue

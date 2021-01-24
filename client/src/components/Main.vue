@@ -24,7 +24,7 @@
     <v-divider class="mx-3"></v-divider>
     <v-card-text class="">
     <div>
-    <router-link :to="'/darses'">
+      <router-link :to="{ path: '/darses' , query: {code: this.code , email: this.email }}">
        &nbsp; {{ pn(this.student.darsId) }} 
     </router-link>
            درس را خوانده است 
