@@ -24,7 +24,7 @@
     <v-divider class="mx-3"></v-divider>
     <v-card-text class="">
     <div>
-      <router-link :to="{ path: '/darses' , query: {code: this.code , email: this.email }}">
+      <router-link :to="{ path: '/all_darses/'+this.code , query: { email: this.email }}">
        &nbsp; {{ pn(this.student.darsId) }} 
     </router-link>
            درس را خوانده است 
@@ -179,6 +179,8 @@ export default {
   data: function () {
     return {
       darsId: 1,
+      email: '',
+      code: '',
       dars: null,
       horoof: [],
       selectedDarsId: '',

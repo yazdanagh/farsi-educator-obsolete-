@@ -154,9 +154,9 @@ module.exports = (app) => {
     }
   })
 
-  app.get('/darses', async (req, res) => {
+  app.get('/all_darses/:code', async (req, res) => {
     const email = req.query.email
-    const code = req.query.code
+    const code = req.params.code
     const student = await db.student.findOne({code,email})   
     console.log('+++++++++++' + student + code + email)
     //const dars = await db.dars.findOne({darsId: student.darsId})   

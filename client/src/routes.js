@@ -2,7 +2,7 @@ import Main from './components/Main.vue'
 import User from './components/User.vue'
 import MyKids from './components/MyKids.vue'
 import Students from './components/Students.vue'
-import Darses from './components/Darses.vue'
+import AllDarses from './components/AllDarses.vue'
 //import Login from './components/Login.vue'
 
 const routes = [
@@ -17,9 +17,9 @@ const routes = [
     name: 'mykids' 
   },
   {
-    path: '/darses',
-    component: Darses,
-    name: 'darses' 
+    path: '/all_darses/:code',
+    component: AllDarses,
+    name: 'all_darses' 
   },
   {
     path: '/all_students',

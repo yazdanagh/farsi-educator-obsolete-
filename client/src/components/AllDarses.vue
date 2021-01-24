@@ -32,7 +32,7 @@ import pn from 'persian-number';
 
 
 export default {
-  name: 'Darses',
+  name: 'AllDarses',
   data: function () {
     return {
       darsId: 1,
@@ -71,9 +71,9 @@ export default {
     try {
       
     let res
-    this.code = this.$route.query.code
+    this.code = this.$route.params.code
     this.email = this.$route.query.email
-    res = await axios.get(`${this.backendHost}/darses?code=${this.code}&email=${this.email}`)
+    res = await axios.get(`${this.backendHost}/all_darses/${this.code}?email=${this.email}`)
     this.darses = res.data
     res = await axios.get(`${this.backendHost}/horoof`)
     this.horoof = res.data
