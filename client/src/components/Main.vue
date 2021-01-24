@@ -160,7 +160,7 @@
 <script>
 const cons = require('../constants.js');
 const paper =  require('paper');
-import { php, phi, atp, ati }  from '../class';
+import { atp, ati, utils }  from '../class';
 //import { mdiHome, mdiChevronLeft, mdiChevronRight, mdiArrowRightBold, mdiArrowLeftBold } from '@mdi/js';
 import { mdiHome, mdiChevronLeft, mdiChevronDoubleLeft, mdiChevronRight, mdiChevronDoubleRight  } from '@mdi/js';
 import axios from 'axios';
@@ -358,24 +358,7 @@ export default {
         }
         return atPane
       },
-      createPlaceHolderPane(paper) {
-        const paneTopMargin = 50
-        const paneRightMargin = 50
-        const topRight = new paper.Point( 
-        paper.view.size._width - paneRightMargin, paneTopMargin );
-        var phPane = new php( topRight, this.darsHarfForms.length )
-        const earPosition = topRight.add( php.phiSpacing + php.phiSide/4 , php.phiSpacing + php.phiSide/2 ) 
-        this.createEar(earPosition, this.darsKalameh);
-
-        let phInsts = []
-        let idx = 0
-        for ( idx of this.darsHarfForms.keys() ) {
-          phInsts.push( new phi(phPane.getPhiTopRight(idx+1), phPane.getPhiBottomLeft(idx+1)))
-          idx++
-        }
-      phPane.addPhInsts(phInsts)
-      return phPane 
-      },
+      
     createEar( earPosition, audio ) { 
       let ear = document.getElementById("ear")
       let earRaster = new paper.Raster(ear)  
@@ -485,7 +468,7 @@ export default {
       //document.getElementById("myCanvas").style.opacity = 0.2;
 
       window.paper = paper
-      const phPane = this.createPlaceHolderPane(paper)
+      const phPane = utils.createPlaceHolderPane(paper, this.darsHarfForms, this.darsKalameh)
 
       let atPanes = [] 
       let idx

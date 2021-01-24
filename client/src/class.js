@@ -226,4 +226,46 @@ class ati {
   }
 }
 
- export { php, atp, ati, phi };
+const createEar = ( earPosition, audio ) => { 
+  let ear = document.getElementById("ear")
+  let earRaster = new paper.Raster(ear)  
+  earRaster.position = earPosition  
+  earRaster.strokeColor = "yellow"
+  //window.earRaster = earRaster
+  earRaster.onMouseDown= async ( ) => {
+    await document.getElementById(audio).play()
+  }
+  console.log("created ear for : " + audio)
+}
+
+const createPlaceHolderPane = (paper , harfForms, darsKalameh) => {
+  const paneTopMargin = 50
+  const paneRightMargin = 50
+  const topRight = new paper.Point( 
+  paper.view.size._width - paneRightMargin, paneTopMargin );
+  var phPane = new php( topRight, harfForms.length )
+  const earPosition = topRight.add( php.phiSpacing + php.phiSide/4 , php.phiSpacing + php.phiSide/2 ) 
+  createEar(earPosition, darsKalameh);
+
+  let phInsts = []
+  let idx = 0
+  for ( idx of harfForms.keys() ) {
+    phInsts.push( new phi(phPane.getPhiTopRight(idx+1), phPane.getPhiBottomLeft(idx+1)))
+    idx++
+  }
+   phPane.addPhInsts(phInsts)
+   return phPane 
+}
+
+const utils = {
+  createPlaceHolderPane
+}
+
+export { 
+  php, 
+  atp, 
+  ati, 
+  phi,
+  utils
+};
+
