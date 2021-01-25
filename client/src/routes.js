@@ -17,7 +17,7 @@ const routes = [
     name: 'mykids' 
   },
   {
-    path: '/all_darses/:code',
+    path: '/alldarses/:code',
     component: AllDarses,
     name: 'all_darses' 
   },
