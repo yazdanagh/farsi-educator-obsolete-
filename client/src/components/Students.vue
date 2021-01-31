@@ -13,11 +13,14 @@
    <template v-slot:item.name="{ item }">
       <v-chip
         color="grey lighten-3"
-        dark
+        
       >
+      <!--
 <router-link :to="'/dars/' + item.code + '?email=' + item.email">
         {{ item.name }}
 </router-link>
+-->
+<span @click="goToStudent(item.code,item.email)"> {{ item.name }} </span>
       </v-chip>
     </template>
   <template v-slot:top>
@@ -217,9 +220,28 @@ export default {
   computed: { 
     formTitle () {
         return this.editedIndex === -1 ? 'New Item' : 'Edit Item'
+    },
+    accessToken:{
+      get: function(){
+        return this.$store.state.accessToken;
       },
+      set: function(newToken){
+        this.$store.commit('accessToken',newToken);
+      }
+    }
   },
   methods: { 
+    async goToStudent(code,email) {
+      const headers = {
+        'Content-Type': 'application/json',
+      }
+      const res = (await axios.post(`${this.backendHost}/login`, {email,code}, {headers}))
+      const accessToken= res.data.accessToken
+      this.accessToken = accessToken
+      //this.$router.push({ name: 'main', params: {code}, query: {email }})
+      this.$router.push({name: 'main',params: {darsId:'latest'}})
+
+    },
     editItem (item) {
         this.editedIndex = this.students.indexOf(item)
         this.editedItem = Object.assign({}, item)
