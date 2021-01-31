@@ -122,7 +122,7 @@ solo
 
 <script>
 
-//import axios from 'axios'
+import axios from 'axios'
 
 export default {
   name: 'User',
@@ -130,6 +130,7 @@ export default {
     return {
       email: '',
       accessCode: '',
+      backendHost: process.env.NODE_ENV === 'development' ? 'http://localhost:3085'  : ''
     }
   },
   watch: {
@@ -142,14 +143,29 @@ export default {
    //console.log(res['data'])
 
   },
-  computed: { 
+  computed: {
+    accessToken:{
+      get: function(){
+        return this.$store.state.accessToken;
+      },
+      set: function(newToken){
+        this.$store.commit('accessToken',newToken);
+      }
+    }
   },
   methods: { 
-    goToSchool() {
+    async goToSchool() {
       const email = this.email
       const code = this.accessCode
       //this.$router.push(`/dars/${this.students[student]}?student=${student}&code=${code}`)
-      this.$router.push({ name: 'main', params: {code}, query: {email }})
+      const headers = {
+        'Content-Type': 'application/json',
+      }
+      const res = (await axios.post(`${this.backendHost}/login`, {email,code}, {headers}))
+      const accessToken= res.data.accessToken
+      this.accessToken = accessToken
+      //this.$router.push({ name: 'main', params: {code}, query: {email }})
+      this.$router.push({name: 'main',params: {darsId:'latest'}})
 
     },
     studentRoute(student) {

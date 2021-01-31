@@ -1,8 +1,147 @@
 <template>
 <v-container>
-<v-spacer> </v-spacer>
+<v-row class="text-center">
 
-<v-row>
+<v-col cols="3">
+<v-spacer> </v-spacer>
+<div class="mt-5">
+
+
+  <v-card
+    class="mx-auto mt-5"
+    max-width="374"
+  >
+
+    <v-img
+      height="200"
+      :src='"/images2/" + student.name + ".jpg"'
+    ></v-img>
+
+    <v-card-title class="d-flex flex-row-reverse">
+   {{ this.student.naam }}
+    </v-card-title>
+
+    <v-divider class="mx-3"></v-divider>
+    <v-card-text class="">
+    <div>
+      <router-link :to="{ path: '/alldarses/'+this.code , query: { email: this.email }}">
+       &nbsp; {{ pn(this.student.darsId) }} 
+    </router-link>
+           درس را خوانده است 
+         </div>
+          <div>
+          {{ this.pn(this.numHarfLearned) }} تا از الفبا را آموخته است 
+        </div>
+          <!--
+      <v-row
+        class="mx-0"
+        >
+        <div >
+        </div>
+        <div>
+          {{ pn(this.darsId/2) }} تا از الفبا را آموخته است 
+        </div>
+
+      </v-row>
+      -->
+    </v-card-text>
+
+  </v-card>
+
+  <!--
+  <v-card-text>
+  Name: {{ this.student.name }}
+   <br/>
+  Studied {{ this.darsId }} of 100 lessons
+   <br/>
+  Learned: 6 out of 28 alphabets
+  </v-card-text>
+  -->
+
+  <!--
+  
+   {{ this.student.naam }}
+   <br/>
+   <br/>
+   ۱۰۰ از {{ this.pn(this.darsId) }} درس 
+   -->
+   <v-btn style="width:100%" @click="goToUsers" large class="disable-btn mt-5" color="blue lighten-1" > الفبا ( بزودی ) 
+<v-icon >  {{ mdiHome }} </v-icon>
+</v-btn>
+</div>
+<div>
+  <v-row dense >
+<v-col cols="6">
+  <v-btn x-large style="width:100%"   @click="goToNextDars" large :class="{'disable-btn': darsId > student.darsId && !darsDone}" class="mt-5" v-bind:color=" darsDone ? 'blue lighten-1' : 'blue lighten-1'" >  
+  <!-- درس بعد --> 
+  <v-icon large >  
+  {{ mdiChevronLeft }} 
+  </v-icon>
+</v-btn>
+</v-col>
+<v-col cols="6">
+
+<v-btn x-large style="width:100%" @click="goToPrevDars" large :class="{'disable-btn': darsId == 1}" class="mt-5" color="blue lighten-1" >  
+<!-- درس قبل  -->
+<v-icon large >  
+{{ mdiChevronRight }} 
+</v-icon>
+</v-btn>
+</v-col>
+</v-row>
+<v-row dense >
+<v-col cols="6">
+  <v-btn x-large style="width:100%"   @click="goToLastDars" large :class="{'disable-btn': darsId > student.darsId && !darsDone}" class="mt-5" v-bind:color=" darsDone ? 'blue lighten-1' : 'blue lighten-1'" >  
+  <!-- درس بعد --> 
+  <v-icon large >  
+  {{ mdiChevronDoubleLeft }} 
+  </v-icon>
+</v-btn>
+</v-col>
+<v-col cols="6">
+
+<v-btn x-large style="width:100%" @click="goToFirstDars" large :class="{'disable-btn': darsId == 1}" class="mt-5" color="blue lighten-1" >  
+<!-- درس قبل  -->
+<v-icon large >  
+{{ mdiChevronDoubleRight }} 
+</v-icon>
+</v-btn>
+</v-col>
+  </v-row>
+
+</div>
+<div>
+  <!--
+  <v-row>
+  <v-col cols="1">
+  </v-col>
+  <v-col cols="6">
+  <v-text-field class="mt-5"
+  v-model="selectedDarsId"
+  label="شماره درس"
+  ></v-text-field>
+  </v-col>
+  <v-col cols="5">
+  <v-btn x-large  style="width:100%" @click="goToDars(selectedDarsId)" large class="mt-5" color="blue lighten-1" > برو به درس
+  </v-btn>
+  </v-col>
+  </v-row>
+  -->
+  <v-select class="mt-5"
+  :items="goToDarses"
+  item-text="text"
+  item-value="value"
+  background-color="blue lighten-1"
+  v-model="selectedDarsId"
+  solo
+  label="برو به درس"
+  ></v-select>
+
+</div>
+</v-col>
+
+
+<v-col cols="9" class="mb-4">
 <!--<img id="ear" style="display:none" src="images2/ear.jpg" >  -->
    <canvas id="myCanvas" resize class="mt-5" style="border: 1px solid black; float: right;width:100%">
    </canvas>
@@ -15,6 +154,7 @@
    <div id="allAudios">
      <audio v-for="dars in darses" :key="dars.kalameh" :src="audioDars(dars.kalameh)" :id="dars.kalameh"  > </audio>
    </div>
+   </v-col>
 
 </v-row>
 

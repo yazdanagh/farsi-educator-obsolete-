@@ -172,6 +172,7 @@ import { mdiHome, mdiChevronLeft, mdiChevronDoubleLeft, mdiChevronRight, mdiChev
 import axios from 'axios';
 import lodash from 'lodash'
 import pn from 'persian-number';
+import Vuex from 'vuex'
 
 
 export default {
@@ -211,15 +212,27 @@ export default {
 
   },
   async mounted() {
-    try {
       
-    this.email = this.$route.query.email
-    this.code = this.$route.params.code
-    let res = await axios.get(`${this.backendHost}/students/${this.code}?email=${this.email}`)
+    //try {
+    //this.email = this.$route.query.email
+    //this.code = this.$route.params.code
+    this.darsId = this.$route.params.darsId
+    //let res = await axios.get(`${this.backendHost}/students/${this.code}?email=${this.email}`)
+    const config = {
+      headers: { Authorization: `Bearer ${this.accessToken}` }
+    };
+    let res = await axios.get(`${this.backendHost}/main`, config)
     console.log(res.data)
-    this.darsId = parseInt(res.data['darsId']) 
+    const studentDarsId = parseInt(res.data['darsId']) 
+    if ( this.darsId === 'latest' ) {
+      this.darsId = studentDarsId 
+    } else {
+      //
+      //TODO
+      // Need to check if darsId is less than student DarsId
+    }
     this.student = res.data
-    res = await axios.get(`${this.backendHost}/darses/${this.darsId}`)
+    res = await axios.get(`${this.backendHost}/darses/${this.darsId}`,config)
     this.dars = res.data
     res = await axios.get(`${this.backendHost}/horoof`)
     this.horoof = res.data
@@ -240,12 +253,16 @@ export default {
       console.log("WAAIIIITT")
       this.updateCanvas()
     }, 1000) 
-    } catch (e) {
-      console.log(e)
-      this.$router.push('/')
-    }
+   // } catch (e) {
+   //   console.log(e)
+   //   this.$router.push('/')
+   // }
   },
   computed: { 
+
+    ...Vuex.mapState({ 
+      accessToken: state => state.accessToken
+    }),
    //goToDarses() {
    //  return 
    //},

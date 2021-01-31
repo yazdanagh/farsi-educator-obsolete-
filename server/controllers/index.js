@@ -3,16 +3,14 @@
 //const defines = require("../../common/defines.js");
 
 const util = require("util")
+require("dotenv").config()
 const bluebird = require("bluebird")
 const exec = util.promisify(require('child_process').exec);
-//const moment = require("moment")
-//const cronParser = require("cron-parser");
-//const cronstrue = require('cronstrue');
-//const reshape = require('mathjs').reshape
 const fs = bluebird.promisifyAll(require("fs-extra"))
 const _= require("lodash")
 //const dJSON = require('dirty-json');
 const db = require("../mongo.js")
+const jwt = require("jsonwebtoken");
 
 
 const configFile = './students_new.config'
@@ -20,36 +18,48 @@ const configFile = './students_new.config'
 const middleware  = require('./middleware');
 
 
-const doAuth = (code,email,students) => {
-  const student = students.find( st => { 
-    return st.email === email && st.code == code 
-  })
-  return student 
-}
+const authToken = async (req,res,next) => {
 
-//const cronMachines = defines.cronMachines 
+  const authHeader = req.headers['authorization']
+  const token = authHeader && authHeader.split(' ')[1]
+  if ( token == null ) return res.sendStatus(401)
+    try {
+      const code = await jwt.verify(token,process.env.ACCESS_TOKEN_SECRET)
+      req.code = code
+      next()
+    } catch (err) {
+      res.sendStatus(403)
+    }
+}
 
 module.exports = (app) => {
 
 
-  //app.use('/api', [middleware.assignCurrentUser, middleware.requireCurrentUser], require('./api'));
-  //app.use( '/jobs', [middleware.assignCurrentUser ]); //, middleware.requireCurrentUser]);
+  app.post('/login', async (req, res) => {
+     // Auth
+     console.log("Hi")
+     try {
+       const code = req.body.code
+       const email = req.body.email
+       const student = await db.student.find({code,email}) 
+       const accessToken = jwt.sign(code, process.env.ACCESS_TOKEN_SECRET )
+       res.json({accessToken})
+     } catch {
+       res.sendStatus(403)
+     }
+  })
 
 
-  app.get('/students/:code', async (req, res) => {
-    const email = req.query.email
-    const code = req.params.code
-    //const stConf = await fs.readFile(configFile,"utf-8")
-    //const students = JSON.parse(stConf)
-    const students = await db.student.find({code,email})   
+  app.get('/main', authToken, async (req, res) => {
+    const code = req.code
+    const students = await db.student.find({code})   
 	  const student = students[0]
     console.log(student)
-    //console.log(students)
     //console.log(req.params)
     //const student = doAuth(code,email,students.students)
     //    console.log(student)
     if ( student ) {
-      console.log("FOUND")
+      console.log("FOUND" + student)
       res.json(student)
     } else {
       res.sendStatus(404);

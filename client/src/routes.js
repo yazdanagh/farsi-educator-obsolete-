@@ -27,7 +27,7 @@ const routes = [
     name: 'admin_students' 
   },
   {
-    path: '/dars/:code',
+    path: '/dars/:darsId',
     component: Main,
     name: 'main'
   }
