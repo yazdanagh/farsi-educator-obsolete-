@@ -24,14 +24,19 @@
     <v-divider class="mx-3"></v-divider>
     <v-card-text class="">
     <div>
+      .
       <router-link :to="{ path: '/ui/all_darses' , query: { page: 1 }}">
-       &nbsp; {{ pn(this.student.darsId) }} 
+      {{ pn(this.student.darsId) }} 
     </router-link>
-           درس را خوانده است 
-         </div>
-          <div>
-          {{ this.pn(this.numHarfLearned) }} تا از الفبا را آموخته است 
-        </div>
+    درس را خوانده است
+  </div>
+  <div>
+      .
+      <router-link :to="{ path: '/ui/dars/latest' }">
+       {{ this.pn(this.numHarfLearned) }}
+      </router-link>
+     تا از الفبا را آموخته است  
+    </div>
     </v-card-text>
 
   </v-card>
@@ -184,6 +189,9 @@ export default {
       res = await axios.get(`${this.backendHost}/horoof`)
       this.horoof = res.data
 
+    const studentDarsId = this.student['darsId']
+    res = await axios.get(`${this.backendHost}/darses/${studentDarsId}`,this.headerConfig)
+    this.dars = res.data
       const numPages = Math.floor(this.student.darsId/10)  
       this.goToPages = Array.from(Array(numPages).keys()).map( a => { 
         return { 
@@ -209,7 +217,7 @@ export default {
     ...Vuex.mapState({ 
       accessToken: state => state.accessToken
     }),
-    numHarfLearned () {
+   numHarfLearned() {
      if ( this.dars ) { 
        return this.dars.numHarfLearned 
      } else {
@@ -287,16 +295,15 @@ export default {
       let phPanes = []
 
       for ( let darsIdLoc of Array.from(Array(this.darses.length).keys())) {
-        this.dars = this.darses[darsIdLoc]
-        this.darsId = this.dars['darsId']
+        const dars = this.darses[darsIdLoc]
         const paneTopMargin = 50 + darsIdLoc*100
         const paneRightMargin = 50
         const topRight = new paper.Point( 
         paper.view.size._width - paneRightMargin, paneTopMargin );
-        const phPane = utils.createPlaceHolderPane( topRight, this.darsHarfForms, this.darsKalameh)
+        const phPane = utils.createPlaceHolderPane( topRight, dars['kalamehHarfForms'] , this.darsKalameh)
         let idx=0;
         for ( let phInst of phPane.phInsts ) {
-          let atInst = new ati( phPane.getPhiTopRight(idx) , phPane.getPhiBottomLeft(idx), phPane.phInsts, this.darsHarfForms[idx]  )
+          let atInst = new ati( phPane.getPhiTopRight(idx) , phPane.getPhiBottomLeft(idx), phPane.phInsts, dars['kalamehHarfForms'][idx]  )
           atInst.group.position = phInst.phiRect.position
           phInst.aTile = atInst
           atInst.resolved = true

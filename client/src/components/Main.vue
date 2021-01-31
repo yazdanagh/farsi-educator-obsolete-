@@ -24,14 +24,19 @@
     <v-divider class="mx-3"></v-divider>
     <v-card-text class="">
     <div>
+      .
       <router-link :to="{ path: '/ui/all_darses' , query: { page: 1 }}">
-       &nbsp; {{ pn(this.student.darsId) }} 
-    </router-link>
-           درس را خوانده است 
-         </div>
-          <div>
-          {{ this.pn(this.numHarfLearned) }} تا از الفبا را آموخته است 
-        </div>
+      {{ pn(this.student.darsId) }} 
+      </router-link>
+      درس را خوانده است
+    </div>
+    <div>
+      .
+      <router-link :to="{ path: '/ui/dars/latest' }">
+       {{ this.pn(this.numHarfLearned) }}
+      </router-link>
+     تا از الفبا را آموخته است  
+    </div>
           <!--
       <v-row
         class="mx-0"
