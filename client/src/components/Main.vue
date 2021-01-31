@@ -24,7 +24,7 @@
     <v-divider class="mx-3"></v-divider>
     <v-card-text class="">
     <div>
-      <router-link :to="{ path: '/alldarses/'+this.code , query: { email: this.email }}">
+      <router-link :to="{ path: '/ui/all_darses' , query: { page: 1 }}">
        &nbsp; {{ pn(this.student.darsId) }} 
     </router-link>
            درس را خوانده است 
@@ -204,7 +204,7 @@ export default {
       await this.goToDars(newVal)
     },
     async darsId(newVal) {
-      let res = await axios.get(`${this.backendHost}/darses/${newVal}`)
+      let res = await axios.get(`${this.backendHost}/darses/${newVal}`, this.headerConfig)
       this.dars = res.data
       //  //await this.updateCanvas(newVal)
       this.$emit('darsId', newVal )
@@ -218,21 +218,18 @@ export default {
     //this.code = this.$route.params.code
     this.darsId = this.$route.params.darsId
     //let res = await axios.get(`${this.backendHost}/students/${this.code}?email=${this.email}`)
-    const config = {
-      headers: { Authorization: `Bearer ${this.accessToken}` }
-    };
-    let res = await axios.get(`${this.backendHost}/main`, config)
+    let res = await axios.get(`${this.backendHost}/main`, this.headerConfig)
     console.log(res.data)
     const studentDarsId = parseInt(res.data['darsId']) 
     if ( this.darsId === 'latest' ) {
-      this.darsId = studentDarsId 
+      this.darsId = studentDarsId + 1 
     } else {
       //
       //TODO
       // Need to check if darsId is less than student DarsId
     }
     this.student = res.data
-    res = await axios.get(`${this.backendHost}/darses/${this.darsId}`,config)
+    res = await axios.get(`${this.backendHost}/darses/${this.darsId}`,this.headerConfig)
     this.dars = res.data
     res = await axios.get(`${this.backendHost}/horoof`)
     this.horoof = res.data
@@ -246,13 +243,14 @@ export default {
 
     })
     this.initCanvas()
-      this.$emit('darsId', this.darsId )
+    this.$emit('darsId', this.darsId )
     //this.student = this.$route.query.student
     this.clearCanvas()
+    const canvasWait = 1000
     setTimeout ( () => { 
-      console.log("WAAIIIITT")
+      console.log("Wait for Canvasl " + canvasWait)
       this.updateCanvas()
-    }, 1000) 
+    }, canvasWait) 
    // } catch (e) {
    //   console.log(e)
    //   this.$router.push('/')
@@ -266,6 +264,12 @@ export default {
    //goToDarses() {
    //  return 
    //},
+   headerConfig () { 
+    const config = {
+      headers: { Authorization: `Bearer ${this.accessToken}` }
+    }
+    return config
+   },
    numHarfLearned () {
      if ( this.dars ) { 
        return this.dars.numHarfLearned 
@@ -399,10 +403,11 @@ export default {
         // nothing
       } else { 
         await axios.put(`${this.backendHost}/students/${this.code}?email=${this.email}`, { student: this.student.student, darsId: this.darsId  })
-        this.student = (await axios.get(`${this.backendHost}/students/${this.code}?email=${this.email}`)).data
-        this.darsDone = false
+       //this.student = (await axios.get(`${this.backendHost}/students/${this.code}?email=${this.email}`)).data
+       //this.darsDone = false
       }
       this.darsId++;
+      this.$router.push({name: 'main',params: {darsId:this.darsId}})
       await this.fetchDars()
     },
     async goToFirstDars() {
@@ -415,6 +420,7 @@ export default {
     },
     async goToPrevDars() {
       this.darsId--;
+      this.$router.push({name: 'main',params: {darsId:this.darsId}})
       await this.fetchDars()
     },
     async goToDars(n) { 

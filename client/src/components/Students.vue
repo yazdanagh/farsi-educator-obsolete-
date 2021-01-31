@@ -212,7 +212,7 @@ export default {
     },
   },
   async mounted() {
-    const res = (await axios.get(`${this.backendHost}/students?admin_code=6100`))
+    const res = (await axios.get(`${this.backendHost}/students`))
     this.students = res.data
     console.log(res)
   },

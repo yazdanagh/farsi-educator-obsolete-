@@ -17,7 +17,6 @@ const configFile = './students_new.config'
 
 const middleware  = require('./middleware');
 
-
 const authToken = async (req,res,next) => {
 
   const authHeader = req.headers['authorization']
@@ -33,7 +32,6 @@ const authToken = async (req,res,next) => {
 }
 
 module.exports = (app) => {
-
 
   app.post('/login', async (req, res) => {
      // Auth
@@ -67,117 +65,85 @@ module.exports = (app) => {
   })
 
   app.get('/students', async (req, res) => {
-    const admin_code = req.query.admin_code
     const students = await db.student.find({})   
-    //const stConf = await fs.readFile(configFile,"utf-8")
-    //const students = JSON.parse(stConf)
-    console.log("ALL")
-    console.log(students)
-    if ( students && admin_code == 6100 ) {
-      console.log("FOUND")
+    if ( students ) {
+      console.log("Got All Students")
       res.json(students)
     } else {
       res.sendStatus(404);
     }
   })
+
+  // Recreate all students
   app.post('/students-update', async (req, res) => {
-    const admin_code = req.query.admin_code
-    if ( true || admin_code === 6100 ) {
-    const updatedStudents = req.body.students 
-	    console.log(updatedStudents)
-    const students = await db.student.find({})   
-    //console.log(JSON.stringify(students,null,2))
-    //await fs.writeFile(configFile,JSON.stringify(students,null,2))
-    await db.student.deleteMany({})   //
-    await db.student.create(updatedStudents)
-    res.json({success:true})
-    } else {
-      res.sendStatus(404);
+    try {
+      const updatedStudents = req.body.students 
+      //console.log(updatedStudents)
+      const students = await db.student.find({})   
+      await db.student.deleteMany({})   //
+      await db.student.create(updatedStudents)
+      res.json({success:true})
+    } catch {
+      res.sendStatus(500);
     }
   })
 
 
   
-  app.put('/students/:code', async (req, res) => {
+ //app.put('/students/:code', async (req, res) => {
 
-    const email = req.query.email
-    const code = req.params.code
-    const student = await db.student.findOne({code,email})   
-    //const stConf = await fs.readFile(configFile,"utf-8")
-    //const students = JSON.parse(stConf)
-    //console.log(students)
-    //const student = doAuth(code,email,students.students)
-    //console.log(student)
-    if ( student ) {
-    student['darsId'] = req.body.darsId 
-    //console.log(JSON.stringify(students,null,2))
-    //await fs.writeFile(configFile,JSON.stringify(students,null,2))
-    await student.save()
-    res.json({success:true})
+ //  const email = req.query.email
+ //  const code = req.params.code
+ //  const student = await db.student.findOne({code,email})   
+ //  if ( student ) {
+ //    student['darsId'] = req.body.darsId 
+ //    //console.log(JSON.stringify(students,null,2))
+ //    //await fs.writeFile(configFile,JSON.stringify(students,null,2))
+ //    await student.save()
+ //    res.json({success:true})
 
-    } else {
-      res.sendStatus(404);
-    }
+ //  } else {
+ //    res.sendStatus(404);
+ //  }
 
-  });
+ //});
 
-  app.get('/users', async (req, res) => {
-    console.log("HERE")
-    const stConf = await fs.readFile('./students.config',"utf-8")
-    const students = JSON.parse(stConf)
-
-    //let students = stConf.split('\n').slice(0,-1)
-    //students = students.reduce((tot,a) => { 
-      //    const b = a.split(':'); 
-      //    tot[b[0]] = b[1] 
-      //    return tot;
-  //   } , {})
-  console.log(students)
-
-  //let students = {
-    //   "Yara" : 4,
-    //   "Delsa": 2
-    //}
-    res.json( students )
-  });
-
-  app.put('/users', async (req, res) => {
-    console.log("HERE PUT")
-    console.log(req.body)
-    const stConf = await fs.readFile('./students.config',"utf-8")
-    const students = JSON.parse(stConf)
-    const progress = req.body 
-    students[progress['student']] = progress['dars']
-    console.log(JSON.stringify(students,null,2))
-    await fs.writeFile('./students.config',JSON.stringify(students,null,2))
-    res.json({success:true})
-
-  });
-
-  app.get('/darses/:darsId', async (req, res) => {
-    const darsId = req.params.darsId
-    const dars = await db.dars.findOne({darsId})   
-    if ( dars ) {
-      res.json(dars)
-    } else {
-      res.sendStatus(404);
+  app.get('/darses/:darsId', authToken, async (req, res) => {
+    try {
+      const darsId = req.params.darsId
+      const dars = await db.dars.findOne({darsId})   
+      if ( dars ) {
+        res.json(dars)
+      } else {
+        res.sendStatus(404);
+      }
+    } catch (err) {
+      res.sendStatus(500)
     }
   })
 
-  app.get('/all_darses/:code', async (req, res) => {
-    const email = req.query.email
-    const code = req.params.code
-    const student = await db.student.findOne({code,email})   
-    const totDarses = await db.dars.count({})   
-    const numDarses = student.name === 'test' ? totDarses + 1 : student.darsId + 1   
-    console.log('+++++++++++' + totDarses + student + code + email)
-    //const dars = await db.dars.findOne({darsId: student.darsId})   
-    const darses = await db.dars.find({darsId: { $in:  Array.from(Array(numDarses).keys())  }})   
-    if ( darses ) {
-      res.json(darses)
-    } else {
-      res.sendStatus(404);
-    }
+  app.get('/darses', authToken, async (req, res) => {
+    try {
+      const code = req.code
+      const page = req.query.page
+      const students = await db.student.find({code})   
+      console.log(code)
+      console.log(page)
+      const student = students[0]   
+      const totDarses = await db.dars.count({})   
+      const numDarses = student.name === 'test' ? totDarses + 1 : student.darsId + 1   
+      console.log('+++++++++++' + totDarses + student + code )
+      //const dars = await db.dars.findOne({darsId: student.darsId})   
+      const darses = await db.dars.find({darsId: { $in:  Array.from(Array(numDarses).keys())  }},{},{ skip: (page-1)*10, limit: 10})   
+      if ( darses ) {
+        res.json(darses)
+      } else {
+        res.sendStatus(404);
+      }
+    } catch (err) {
+    console.log(err)
+    res.sendStatus(500)
+  }
   })
   
   app.get('/horoof', async (req, res) => {

@@ -71,19 +71,18 @@ class php {
         console.log("--------" + idx)
         if ( plh.aTile === null ) {
           const newBound = new paper.Rectangle(startingTopRight, startingTopRight.subtract(php.phiSide, -php.phiSide ))
-          console.log(plh.phiRect.bounds)
-          console.log(newBound)
+          //console.log(plh.phiRect.bounds)
+          //console.log(newBound)
           plh.phiRect.bounds = newBound
           startingTopRight = startingTopRight.subtract(php.phiSide, 0) 
         } else { 
           const tile = plh.aTile.group
           //window.tile = tile
-          console.log("HERE")
-          console.log(tile.bounds)
-          console.log(tile.firstChild.bounds)
-          console.log(tile.lastChild.bounds)
+          //console.log(tile.bounds)
+          //console.log(tile.firstChild.bounds)
+          //console.log(tile.lastChild.bounds)
           const newBound = new paper.Rectangle(startingTopRight, startingTopRight.subtract(tile.lastChild.bounds.width, -tile.lastChild.bounds.height ))
-          console.log(newBound)
+          //console.log(newBound)
           tile.bounds = newBound 
           startingTopRight = startingTopRight.subtract(tile.bounds.width, 0) 
         }

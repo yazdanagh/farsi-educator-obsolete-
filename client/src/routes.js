@@ -12,22 +12,22 @@ const routes = [
     name: 'user' 
   },
   {
-    path: '/mykids',
+    path: '/ui/mk',
     component: MyKids,
     name: 'mykids' 
   },
   {
-    path: '/alldarses/:code',
+    path: '/ui/all_darses',
     component: AllDarses,
     name: 'all_darses' 
   },
   {
-    path: '/all_students',
+    path: '/ui/as',
     component: Students,
     name: 'admin_students' 
   },
   {
-    path: '/dars/:darsId',
+    path: '/ui/dars/:darsId',
     component: Main,
     name: 'main'
   }
