@@ -25,9 +25,7 @@
     <v-card-text class="">
     <div>
       .
-      <router-link :to="{ path: '/ui/all_darses' , query: { page: 1 }}">
       {{ pn(this.student.darsId) }} 
-    </router-link>
     درس را خوانده است
   </div>
   <div>
@@ -41,9 +39,12 @@
 
   </v-card>
 
-   <v-btn style="width:100%" @click="goToUsers" large class="disable-btn mt-5" color="blue lighten-1" > الفبا ( بزودی ) 
-<v-icon >  {{ mdiHome }} </v-icon>
-</v-btn>
+   <v-btn style="width:100%" @click="goToDarses" large class=" mt-5" color="blue lighten-1" > 
+   ادامه درسها
+       <v-icon >  
+          {{ mdiViewQuilt }} 
+       </v-icon>
+   </v-btn>
 </div>
 <div>
   <v-row dense >
@@ -142,7 +143,7 @@ const cons = require('../constants.js');
 const paper =  require('paper');
 import { ati, utils }  from '../class';
 //import { mdiHome, mdiChevronLeft, mdiChevronRight, mdiArrowRightBold, mdiArrowLeftBold } from '@mdi/js';
-import { mdiHome, mdiChevronLeft, mdiChevronDoubleLeft, mdiChevronRight, mdiChevronDoubleRight  } from '@mdi/js';
+import { mdiViewQuilt, mdiChevronLeft, mdiChevronDoubleLeft, mdiChevronRight, mdiChevronDoubleRight  } from '@mdi/js';
 import axios from 'axios';
 import pn from 'persian-number';
 import Vuex from 'vuex'
@@ -165,7 +166,7 @@ export default {
       mdiChevronLeft,
       mdiChevronDoubleRight,
       mdiChevronDoubleLeft,
-      mdiHome,
+      mdiViewQuilt,
       canvas: null,
       goToPages: [], 
       backendHost: process.env.NODE_ENV === 'development' ? 'http://localhost:3085'  : ''
@@ -271,8 +272,8 @@ export default {
      //  php.phiSide = 40
      //}
     },
-    async goToUsers() {
-      await this.$router.push(`/`)
+    async goToDarses() {
+      this.$router.push({name: 'main',params: {darsId:'latest'}})
     },
     async goToPage() { 
       await this.$router.push(`/ui/all_darses?page=${this.page}`)

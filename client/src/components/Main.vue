@@ -25,9 +25,9 @@
     <v-card-text class="">
     <div>
       .
-      <router-link :to="{ path: '/ui/all_darses' , query: { page: 1 }}">
+      <!-- <router-link :to="{ path: '/ui/all_darses' , query: { page: 1 }}"> -->
       {{ pn(this.student.darsId) }} 
-      </router-link>
+      <!-- </router-link> -->
       درس را خوانده است
     </div>
     <div>
@@ -53,26 +53,12 @@
 
   </v-card>
 
-  <!--
-  <v-card-text>
-  Name: {{ this.student.name }}
-   <br/>
-  Studied {{ this.darsId }} of 100 lessons
-   <br/>
-  Learned: 6 out of 28 alphabets
-  </v-card-text>
-  -->
-
-  <!--
-  
-   {{ this.student.naam }}
-   <br/>
-   <br/>
-   ۱۰۰ از {{ this.pn(this.darsId) }} درس 
-   -->
-   <v-btn style="width:100%" @click="goToUsers" large class="disable-btn mt-5" color="blue lighten-1" > الفبا ( بزودی ) 
-<v-icon >  {{ mdiHome }} </v-icon>
-</v-btn>
+   <v-btn style="width:100%" @click="goToAllDarses" large class=" mt-5" color="blue lighten-1" > 
+      بازبینی کلمه ها
+         <v-icon >  
+           {{ mdiViewHeadline }} 
+         </v-icon>
+   </v-btn>
 </div>
 <div>
   <v-row dense >
@@ -173,7 +159,7 @@ const cons = require('../constants.js');
 const paper =  require('paper');
 import { atp, utils }  from '../class';
 //import { mdiHome, mdiChevronLeft, mdiChevronRight, mdiArrowRightBold, mdiArrowLeftBold } from '@mdi/js';
-import { mdiHome, mdiChevronLeft, mdiChevronDoubleLeft, mdiChevronRight, mdiChevronDoubleRight  } from '@mdi/js';
+import { mdiViewHeadline, mdiChevronLeft, mdiChevronDoubleLeft, mdiChevronRight, mdiChevronDoubleRight  } from '@mdi/js';
 import axios from 'axios';
 import lodash from 'lodash'
 import pn from 'persian-number';
@@ -198,7 +184,7 @@ export default {
       mdiChevronLeft,
       mdiChevronDoubleRight,
       mdiChevronDoubleLeft,
-      mdiHome,
+      mdiViewHeadline,
       canvas: null,
       goToDarses: [], 
       backendHost: process.env.NODE_ENV === 'development' ? 'http://localhost:3085'  : ''
@@ -400,8 +386,8 @@ export default {
      //  php.phiSide = 40
      //}
     },
-    async goToUsers() {
-      await this.$router.push(`/`)
+    async goToAllDarses() {
+      this.$router.push({name: 'all_darses' , query: { page:1 }  })
     },
     async goToNextDars() {
       if ( this.darsId <= this.student.darsId ) { 
