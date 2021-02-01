@@ -13,10 +13,12 @@ class phi {
   // static variables
   constructor ( topRight, bottomLeft) {
 
-   //console.log(topRight)
-   //console.log(bottomLeft)
+   console.log("Hala")
+   console.log(topRight)
+   console.log(bottomLeft)
    this.phiRect = new paper.Path.Rectangle(topRight, bottomLeft )
    this.origBound = this.phiRect.bounds
+   console.log(this.phiRect.bounds)
    this.aTile = null
    this.phiRect.strokeColor = 'black'
    this.phiRect.fillColor = 'white'
@@ -53,24 +55,35 @@ class php {
       this.phiRowTR = topRight.subtract ( php.phiSpacing, -php.phiSpacing )
       this.phpRect.fillColor = '#d3d3d3'
       this.phInsts = []
+      this.numRows = numRows
+      this.tilesPerRow = tilesPerRow
     }
     getPhiTopRight(loc) { // todo: add row 
       // TODO : implement Row
-      return this.phiRowTR.subtract( (loc-1)* ( php.phiSide + php.phiGutter), 0 )
+      const locX = (loc - 1) % this.tilesPerRow + 1 
+      const locY = (loc - locX)/this.tilesPerRow
+      console.log(locX,locY)
+      let tr = this.phiRowTR.subtract( (locX-1)* ( php.phiSide + php.phiGutter), -locY * php.phpRow )
+      console.log(tr)
+      return tr
     }
     getPhiBottomLeft(loc)  { // todo : add row
       // TODO : implement Row
-      return this.phiRowTR.subtract( (loc)* ( php.phiSide + php.phiGutter) -php.phiGutter,  -php.phiSide )
+      const locX = (loc - 1) % this.tilesPerRow  + 1 
+      const locY = (loc - locX)/this.tilesPerRow
+      const bl =  this.phiRowTR.subtract( (locX)* ( php.phiSide + php.phiGutter), -(locY+1) * php.phpRow )
+      console.log(bl)
+      return bl
     }
     addPhInsts(phInsts ) {
       this.phInsts = this.phInsts.concat(phInsts)
     }
-    renderPlaceHolderInsts () {
+    renderPlaceHolderInsts (resize) {
       let startingTopRight = this.phiRowTR
       for ( let [idx,plh] of this.phInsts.entries() ) {
         console.log("--------" + idx)
         if ( plh.aTile === null ) {
-          const newBound = new paper.Rectangle(startingTopRight, startingTopRight.subtract(php.phiSide, -php.phiSide ))
+          const newBound = new paper.Rectangle(this.getPhiTopRight(idx+1), this.getPhiBottomLeft(idx+1))
           //console.log(plh.phiRect.bounds)
           //console.log(newBound)
           plh.phiRect.bounds = newBound
@@ -83,8 +96,10 @@ class php {
           //console.log(tile.lastChild.bounds)
           const newBound = new paper.Rectangle(startingTopRight, startingTopRight.subtract(tile.lastChild.bounds.width, -tile.lastChild.bounds.height ))
           //console.log(newBound)
-          tile.bounds = newBound 
-          startingTopRight = startingTopRight.subtract(tile.bounds.width, 0) 
+          if ( resize ) {
+            tile.bounds = newBound 
+            startingTopRight = startingTopRight.subtract(tile.bounds.width, 0) 
+          }
         }
 
       }
@@ -240,12 +255,14 @@ const createEar = ( earPosition, audio ) => {
 const createPlaceHolderPane = ( topRight, harfForms, darsKalameh) => {
   var phPane = new php( topRight, harfForms.length )
   const earPosition = topRight.add( php.phiSpacing + php.phiSide/4 , php.phiSpacing + php.phiSide/2 ) 
-  createEar(earPosition, darsKalameh);
+  if (darsKalameh) 
+    createEar(earPosition, darsKalameh);
 
   let phInsts = []
   let idx = 0
   for ( idx of harfForms.keys() ) {
-    phInsts.push( new phi(phPane.getPhiTopRight(idx+1), phPane.getPhiBottomLeft(idx+1)))
+    const phInst = new phi(phPane.getPhiTopRight(idx+1), phPane.getPhiBottomLeft(idx+1))
+    phInsts.push(phInst )
     idx++
   }
    phPane.addPhInsts(phInsts)

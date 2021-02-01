@@ -32,7 +32,7 @@
     </div>
     <div>
       .
-      <router-link :to="{ path: '/ui/dars/latest' }">
+      <router-link :to="{ path: '/ui/alefba' }">
        {{ this.pn(this.numHarfLearned) }}
       </router-link>
      تا از الفبا را آموخته است  

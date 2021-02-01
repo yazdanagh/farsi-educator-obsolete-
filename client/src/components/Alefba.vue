@@ -30,7 +30,7 @@
   </div>
   <div>
       .
-      <router-link :to="{ path: '/ui/alefba' }">
+      <router-link :to="{ path: '/ui/dars/latest' }">
        {{ this.pn(this.numHarfLearned) }}
       </router-link>
      تا از الفبا را آموخته است  
@@ -44,75 +44,16 @@
        <v-icon >  
           {{ mdiViewQuilt }} 
        </v-icon>
+    </v-btn>
+    <v-btn style="width:100%" @click="goToAllDarses" large class=" mt-5" color="blue lighten-1" > 
+      بازبینی کلمه ها
+         <v-icon >  
+           {{ mdiViewHeadline }} 
+         </v-icon>
    </v-btn>
-</div>
-<div>
-  <v-row dense >
-<v-col cols="6">
-  <v-btn x-large style="width:100%"   @click="page++" large :class="{'disable-btn': page >= lastPage }" class="mt-5" v-bind:color=" darsDone ? 'blue lighten-1' : 'blue lighten-1'" >  
-  <!-- درس بعد --> 
-  <v-icon large >  
-  {{ mdiChevronLeft }} 
-  </v-icon>
-</v-btn>
-</v-col>
-<v-col cols="6">
-
-<v-btn x-large style="width:100%" @click="page--" large :class="{'disable-btn': page == 1}" class="mt-5" color="blue lighten-1" >  
-<!-- درس قبل  -->
-<v-icon large >  
-{{ mdiChevronRight }} 
-</v-icon>
-</v-btn>
-</v-col>
-</v-row>
-<v-row dense >
-<v-col cols="6">
-<v-btn x-large style="width:100%"   @click="page=lastPage" large :class="{'disable-btn': page >= lastPage }" class="mt-5" v-bind:color=" darsDone ? 'blue lighten-1' : 'blue lighten-1'" >  
-  <!-- درس بعد --> 
-  <v-icon large >  
-  {{ mdiChevronDoubleLeft }} 
-  </v-icon>
-</v-btn>
-</v-col>
-<v-col cols="6">
-
-<v-btn x-large style="width:100%" @click="page=1" large :class="{'disable-btn': page == 1}" class="mt-5" color="blue lighten-1" >  
-<!-- درس قبل  -->
-<v-icon large >  
-{{ mdiChevronDoubleRight }} 
-</v-icon>
-</v-btn>
-</v-col>
-  </v-row>
 
 </div>
 <div>
-  <!--
-  <v-row>
-  <v-col cols="1">
-  </v-col>
-  <v-col cols="6">
-  <v-text-field class="mt-5"
-  v-model="selectedDarsId"
-  label="شماره درس"
-  ></v-text-field>
-  </v-col>
-  <v-col cols="5">
-  <v-btn x-large  style="width:100%" @click="goToDars(selectedDarsId)" large class="mt-5" color="blue lighten-1" > برو به درس
-  </v-btn>
-  </v-col>
-  </v-row>
-  -->
-  <v-select class="mt-5"
-  :items="goToPages"
-  item-text="text"
-  item-value="value"
-  background-color="blue lighten-1"
-  v-model="page"
-  solo
-  label='برو به صفحه' 
-  ></v-select>
 
 </div>
 </v-col>
@@ -141,16 +82,16 @@
 <script>
 const cons = require('../constants.js');
 const paper =  require('paper');
-import { ati, utils }  from '../class';
+import { ati,  utils }  from '../class';
 //import { mdiHome, mdiChevronLeft, mdiChevronRight, mdiArrowRightBold, mdiArrowLeftBold } from '@mdi/js';
-import { mdiViewQuilt, mdiChevronLeft, mdiChevronDoubleLeft, mdiChevronRight, mdiChevronDoubleRight  } from '@mdi/js';
+import { mdiViewQuilt, mdiViewHeadline, mdiChevronLeft, mdiChevronDoubleLeft, mdiChevronRight, mdiChevronDoubleRight  } from '@mdi/js';
 import axios from 'axios';
 import pn from 'persian-number';
 import Vuex from 'vuex'
 
 
 export default {
-  name: 'AllDarses',
+  name: 'Alefba',
   data: function () {
     return {
       dars: null,
@@ -167,15 +108,13 @@ export default {
       mdiChevronDoubleRight,
       mdiChevronDoubleLeft,
       mdiViewQuilt,
+      mdiViewHeadline,
       canvas: null,
       goToPages: [], 
       backendHost: process.env.NODE_ENV === 'development' ? 'http://localhost:3085'  : ''
     }
   },
   watch: {
-    async page(newVal) {
-      await this.goToPage(newVal)
-    },
 
   },
   async mounted() {
@@ -185,29 +124,21 @@ export default {
       res = await axios.get(`${this.backendHost}/main`, this.headerConfig)
       this.student = res.data
       this.page = this.$route.query.page
-      res = await axios.get(`${this.backendHost}/darses?page=${this.page}`, this.headerConfig)
-      this.darses = res.data
+      //res = await axios.get(`${this.backendHost}/darses?page=${this.page}`, this.headerConfig)
+      //this.darses = res.data
       res = await axios.get(`${this.backendHost}/horoof`)
       this.horoof = res.data
 
-    const studentDarsId = this.student['darsId']
-    res = await axios.get(`${this.backendHost}/darses/${studentDarsId}`,this.headerConfig)
-    this.dars = res.data
-      const numPages = Math.floor(this.student.darsId/10)  
-      this.goToPages = Array.from(Array(numPages).keys()).map( a => { 
-        return { 
-          text: `برو به صفحه  ${this.pn(a+1)}`,
-          value: a+1
-        }
-
-      })
-
+      const studentDarsId = this.student['darsId']
+      res = await axios.get(`${this.backendHost}/darses/${studentDarsId}`,this.headerConfig)
+      this.dars = res.data
+      this.horoof = this.horoof.slice(0,this.numHarfLearned)
 
       this.initCanvas()
       const canvasWait = 1000
       setTimeout ( () => { 
         console.log("WAIT for Canvas " + canvasWait)
-        this.updateCanvasDarses()
+        this.updateCanvasHoroof()
       }, canvasWait) 
     } catch (e) {
       console.log(e)
@@ -245,6 +176,9 @@ export default {
   },
   //
   methods: {
+    async goToAllDarses() {
+      this.$router.push({name: 'all_darses' , query: { page:1 }  })
+    },
     audioDars(kalameh) {
       return '/audios/' + kalameh + '.m4a'
     },
@@ -282,7 +216,7 @@ export default {
       const canvasWait = 1000
       setTimeout ( () => { 
         console.log("WAIT for Canvas " + canvasWait)
-        this.updateCanvasDarses()
+        this.updateCanvasHoroof()
       }, canvasWait) 
     },
     
@@ -290,33 +224,30 @@ export default {
       paper.project.activeLayer.removeChildren();
       paper.view.draw();
     },
-    async updateCanvasDarses() {
+    async updateCanvasHoroof() {
       this.clearCanvas()
       window.paper = paper
       let phPanes = []
 
-      for ( let darsIdLoc of Array.from(Array(this.darses.length).keys())) {
-        const dars = this.darses[darsIdLoc]
-        const paneTopMargin = 50 + darsIdLoc*100
+        const paneTopMargin = 50 
         const paneRightMargin = 50
         const topRight = new paper.Point( 
         paper.view.size._width - paneRightMargin, paneTopMargin );
-        const phPane = utils.createPlaceHolderPane( topRight, dars['kalamehHarfForms'] , this.darsKalameh)
-        let idx=0;
-        for ( let phInst of phPane.phInsts ) {
-          let atInst = new ati( phPane.getPhiTopRight(idx) , phPane.getPhiBottomLeft(idx), phPane.phInsts, dars['kalamehHarfForms'][idx]  )
-          atInst.group.position = phInst.phiRect.position
-          phInst.aTile = atInst
-          atInst.resolved = true
-          atInst.group.firstChild.visible = false
-          //this.ph.group.bounds = this.group.lastChild.bounds 
-          phInst.phiRect.visible = false
+        const phPane = utils.createPlaceHolderPane( topRight, this.horoof, null)
+       let idx=0;
+       for ( let phInst of phPane.phInsts ) {
+         let atInst = new ati( phPane.getPhiTopRight(idx) , phPane.getPhiBottomLeft(idx), phPane.phInsts, this.horoof[idx]['harfLead']  )
+         atInst.group.position = phInst.phiRect.position
+         phInst.aTile = atInst
+         atInst.resolved = true
+         atInst.group.firstChild.visible = false
+         //this.ph.group.bounds = this.group.lastChild.bounds 
+         phInst.phiRect.visible = false
 
-          idx++
-        }
+         idx++
+       }
       phPane.renderPlaceHolderInsts()
       phPanes.push(phPane)
-      }
 
       // iterate twice to make sure all ati are create on top phi
 
