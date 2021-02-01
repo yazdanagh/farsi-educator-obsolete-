@@ -325,10 +325,10 @@ export default {
         tile.animate()
 
         if ( tile.resolvingPhi && tile.group.position.equals(tile.resolvingPhi.phiRect.position) ) {
-          phPane.renderPlaceHolderInsts()
+          phPane.renderPlaceHolderInsts(true)
           this.darsDone = await checkFinished()
         } else if ( tile.group.position.equals(tile.origin))  {
-          phPane.renderPlaceHolderInsts()
+          phPane.renderPlaceHolderInsts(true)
           this.darsDone = await checkFinished()
         }
       }

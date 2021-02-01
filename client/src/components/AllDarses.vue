@@ -129,7 +129,7 @@
      </div>
    </div>
    <div id="allAudios">
-     <audio v-for="dars in darses" :key="dars.kalameh" :src="audioDars(dars.kalameh)" :id="dars.kalameh"  > </audio>
+     <audio v-for="dars in darses" :key="dars.kalameh" :src="'/audios/' + dars.kalameh + '.m4a'" :id="dars.kalameh"  > </audio>
    </div>
    </v-col>
 
@@ -245,9 +245,7 @@ export default {
   },
   //
   methods: {
-    audioDars(kalameh) {
-      return '/audios/' + kalameh + '.m4a'
-    },
+    
     pn(num) {
       return pn.convert(num)
     },
@@ -301,7 +299,7 @@ export default {
         const paneRightMargin = 50
         const topRight = new paper.Point( 
         paper.view.size._width - paneRightMargin, paneTopMargin );
-        const phPane = utils.createPlaceHolderPane( topRight, dars['kalamehHarfForms'] , this.darsKalameh)
+        const phPane = utils.createPlaceHolderPane( topRight, dars['kalamehHarfForms'] , dars.kalameh)
         let idx=0;
         for ( let phInst of phPane.phInsts ) {
           let atInst = new ati( phPane.getPhiTopRight(idx) , phPane.getPhiBottomLeft(idx), phPane.phInsts, dars['kalamehHarfForms'][idx]  )
@@ -314,7 +312,7 @@ export default {
 
           idx++
         }
-      phPane.renderPlaceHolderInsts()
+      phPane.renderPlaceHolderInsts(true)
       phPanes.push(phPane)
       }
 
