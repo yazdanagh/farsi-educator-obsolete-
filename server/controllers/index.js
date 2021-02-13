@@ -13,7 +13,7 @@ const db = require("../mongo.js")
 const jwt = require("jsonwebtoken");
 
 
-const configFile = './students_new.config'
+//const configFile = './students_new.config'
 
 const middleware  = require('./middleware');
 
@@ -61,6 +61,25 @@ module.exports = (app) => {
       res.json(student)
     } else {
       res.sendStatus(404);
+    }
+  })
+
+  // technicallly should be patch
+  app.put('/students/:_id', authToken, async(req,res) => {
+    try {
+      const code = req.code
+      const student = await db.student.findById(req.params._id)
+      console.log(code)
+      console.log(student)
+      if ( student.code == code ) {
+        student['darsId'] = req.body.darsId 
+        await student.save()
+        res.json(student)
+      } else {
+        res.sendStatus(404)
+      }
+    } catch (e) {
+      res.sendStatus(500);
     }
   })
 

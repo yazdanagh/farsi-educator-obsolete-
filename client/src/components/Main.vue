@@ -390,14 +390,15 @@ export default {
       this.$router.push({name: 'all_darses' , query: { page:1 }  })
     },
     async goToNextDars() {
+      this.darsId++;
       if ( this.darsId <= this.student.darsId ) { 
         // nothing
       } else { 
-        await axios.put(`${this.backendHost}/students/${this.code}?email=${this.email}`, { student: this.student.student, darsId: this.darsId  })
+        await axios.put(`${this.backendHost}/students/${this.student._id}`, { darsId: this.darsId  }, this.headerConfig)
+        //await axios.put(`${this.backendHost}/students/${this.code}?email=${this.email}`, { student: this.student.student, darsId: this.darsId  })
        //this.student = (await axios.get(`${this.backendHost}/students/${this.code}?email=${this.email}`)).data
        //this.darsDone = false
       }
-      this.darsId++;
       this.$router.push({name: 'main',params: {darsId:this.darsId}})
       await this.fetchDars()
     },
