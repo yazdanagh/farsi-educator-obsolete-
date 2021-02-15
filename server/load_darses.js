@@ -30,7 +30,7 @@ const main = async () => {
         harfFormMap[key] = harfForm
       }
       const harfAudio = { data: null, contentType : "audio/m4a" } 
-      const audioFile = `../client/public/audios/${harfSound}.m4a`
+      const audioFile = `../client/src/audios/${harfSound}.m4a`
       console.log(audioFile)
       let fileData =  await fs.readFile(audioFile)
       harfAudio.data = fileData.toString('base64');
@@ -58,7 +58,7 @@ const main = async () => {
         })
         const kalameh = a.shift() 
         const kalamehAudio = { data: null, contentType : "audio/m4a" } 
-        const audioFile = `../client/public/audios/${kalameh}.m4a`
+        const audioFile = `../client/src/audios/${kalameh}.m4a`
         const fileExists = await fs.exists(audioFile)
         if ( fileExists ) {
           let fileData =  await fs.readFile(audioFile)
