@@ -144,7 +144,7 @@
    </div>
    <div id="allAudios">
      <audio :src="audioDars" :id="audioDarsId"  > </audio>
-     <audio v-for="(aG,aIdx) in darsHoroof" :src="audioAlph(aG)" :id="audioAlphId(aG)" :key="aIdx" >
+     <audio v-for="(aG,aIdx) in darsHoroof" :src="audioAlph[aG.harfSound]" :id="audioAlphId(aG)" :key="aIdx" >
      </audio>
    </div>
 </v-col>
@@ -180,6 +180,8 @@ export default {
       student: '',
       //mdiArrowRightBold,
       //mdiArrowLeftBold,
+      audioDars: null ,
+      audioAlph: {},
       mdiChevronRight,
       mdiChevronLeft,
       mdiChevronDoubleRight,
@@ -207,23 +209,31 @@ export default {
     //try {
     //this.email = this.$route.query.email
     //this.code = this.$route.params.code
-    this.darsId = this.$route.params.darsId
     //let res = await axios.get(`${this.backendHost}/students/${this.code}?email=${this.email}`)
     let res = await axios.get(`${this.backendHost}/main`, this.headerConfig)
     console.log(res.data)
     const studentDarsId = parseInt(res.data['darsId']) 
-    if ( this.darsId === 'latest' ) {
-      this.darsId = studentDarsId + 1 
-    } else {
-      //
-      //TODO
-      // Need to check if darsId is less than student DarsId
-    }
+    this.darsId = this.$route.params.darsId === 'latest' ? studentDarsId + 1 : this.$route.params.darsId 
     this.student = res.data
-    res = await axios.get(`${this.backendHost}/darses/${this.darsId}`,this.headerConfig)
-    this.dars = res.data
+    res = await axios.get(`${this.backendHost}/darses/${this.darsId}`,this.headerConfig);
+    this.dars = res.data;
+    let blob = new Blob([ new Buffer(this.dars.kalamehAudio.data, 'base64')], { type: 'audio/m4a' });
+    //window.x = this.dars.kalamehAudio.data
+    let url = window.URL.createObjectURL(blob)
+    //window.audio = new Audio();
+    //window.audio.src = url;
+    //window.audio.play();
+    this.audioDars = url
+    //const x = new Audio(this.dars.kalamehAudio)
+    //x.play()
     res = await axios.get(`${this.backendHost}/horoof`)
     this.horoof = res.data
+    for ( let harf of this.horoof ) {
+      blob = new Blob([ new Buffer(harf.harfAudio.data, 'base64')], { type: 'audio/m4a' });
+      url = window.URL.createObjectURL(blob)
+      this.audioAlph[harf.harfSound ]  = url
+
+    }
     console.log("this")
     console.log(this)
     this.goToDarses = Array.from(Array(this.student.darsId).keys()).map( a => { 
@@ -268,9 +278,9 @@ export default {
        return ""
      }
    },
-    audioDars() {
-      return '/audios/' + this.darsKalameh + '.m4a'
-    },
+   //audioDars() {
+   //  return '/audios/' + this.darsKalameh + '.m4a'
+   //},
     audioDarsId() {
       return this.darsKalameh
     },
@@ -427,9 +437,9 @@ export default {
       }, 1000 )
 
     },
-    audioAlph(aG) {
-      return '/audios/' + aG['harfSound'] + '.m4a'
-    },
+    //audioAlph(aG) {
+    //  return '/audios/' + aG['harfSound'] + '.m4a'
+    //},
     audioAlphId(aG) {
       return aG['harfSound']
     },

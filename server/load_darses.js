@@ -9,10 +9,10 @@ const db = require("./mongo.js")
 const cons = require('./constants');
 
 const main = async () => {
-
+  try {
     const harfFormMap = {}
-
-    const harfs = cons.harfInput.map( a => { 
+    const harfs = [] 
+    for ( let a of cons.harfInput ) {
       const elems = a.split(/\ +/).filter( a=> a)
       const harfName = elems.shift()
       const harfSound = elems.shift()
@@ -29,43 +29,58 @@ const main = async () => {
         harfForms.push(harfForm)
         harfFormMap[key] = harfForm
       }
-      return { 
+      const harfAudio = { data: null, contentType : "audio/m4a" } 
+      const audioFile = `../client/public/audios/${harfSound}.m4a`
+      console.log(audioFile)
+      let fileData =  await fs.readFile(audioFile)
+      harfAudio.data = fileData.toString('base64');
+      harfs.push({ 
         harfName,
         harfSound,
         harfLead,
         harfForms,
-      }
-    })
+        harfAudio,
+      })
+    }
     await db.harf.deleteMany()
     await db.harf.create(harfs)
     const harfsDB = await db.harf.find({})
-    console.log(harfsDB)
+    //console.log(harfsDB)
 
-
-
-    let idx = 0 
-    const darses = cons.darsesInput.map(a => { 
-      idx++
-      const kalamehHarfForms = a.shift().split(/\ +/).filter( a=> a).map(a => {
-        if ( harfFormMap[a] ) { 
-           return harfFormMap[a]
-        } else {
-           return a
+    const darses = []
+    for ( let [idx,a] of cons.darsesInput.entries() ) { 
+        const kalamehHarfForms = a.shift().split(/\ +/).filter( a=> a).map(a => {
+          if ( harfFormMap[a] ) { 
+            return harfFormMap[a]
+          } else {
+            return a
+          }
+        })
+        const kalameh = a.shift() 
+        const kalamehAudio = { data: null, contentType : "audio/m4a" } 
+        const audioFile = `../client/public/audios/${kalameh}.m4a`
+        const fileExists = await fs.exists(audioFile)
+        if ( fileExists ) {
+          let fileData =  await fs.readFile(audioFile)
+          kalamehAudio.data = fileData.toString('base64');
+          console.log(kalamehAudio.data)
         }
-      })
-      const kalameh = a.shift() 
-      return { 
-        kalamehHarfForms, 
-        kalameh,
-        darsId: idx,
-        numHarfLearned: 0
-      }
-    })
+        darses.push({ 
+          kalamehHarfForms, 
+          kalameh,
+          darsId: idx + 1,
+          kalamehAudio,
+          numHarfLearned: 0,
+        })
+    }
     await db.dars.deleteMany()
     await db.dars.create(darses)
     const darsesDB = await db.dars.find({}) 
     console.log(darsesDB)
-   
-    process.exit()
+
+  } catch (e) {
+    console.log(e)
   }
+  process.exit()
+}
 main()

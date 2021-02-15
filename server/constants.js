@@ -71,6 +71,7 @@ const darsesInput = [
 ]
 
 
+// harfName harfSound key harFrom(harfLead) key harfForm  
 const harfInput = [
   "alef aa aaba aa_bakola aac aa_chasban aabi aa_bikola",
   "be be bbt be_bozorg_tanha bkc be_koochik_chap bkd be_koochik_dovar bbc be_bozorg_chasban" ,
