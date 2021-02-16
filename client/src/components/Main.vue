@@ -217,13 +217,17 @@ export default {
     this.student = res.data
     res = await axios.get(`${this.backendHost}/darses/${this.darsId}`,this.headerConfig);
     this.dars = res.data;
-    let blob = new Blob([ new Buffer(this.dars.kalamehAudio.data, 'base64')], { type: 'audio/m4a' });
-    //window.x = this.dars.kalamehAudio.data
-    let url = window.URL.createObjectURL(blob)
-    //window.audio = new Audio();
-    //window.audio.src = url;
-    //window.audio.play();
-    this.audioDars = url
+    let blob
+    let url
+    if ( this.dars.kalamehAudio.data ) {
+      blob = new Blob([ new Buffer(this.dars.kalamehAudio.data, 'base64')], { type: 'audio/m4a' });
+      //window.x = this.dars.kalamehAudio.data
+      url = window.URL.createObjectURL(blob)
+      //window.audio = new Audio();
+      //window.audio.src = url;
+      //window.audio.play();
+      this.audioDars = url
+    }
     //const x = new Audio(this.dars.kalamehAudio)
     //x.play()
     res = await axios.get(`${this.backendHost}/horoof`)
