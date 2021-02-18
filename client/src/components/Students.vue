@@ -107,6 +107,20 @@
                       label="dars"
                     ></v-text-field>
                   </v-col>
+                  <v-col
+                    cols="12"
+                    sm="6"
+                    md="4"
+                    >
+                    <!--
+                    <v-file-input
+                    v-model="editedItem.imageFile"
+                    accept="image/*"
+                    label="Picture"
+                    ></v-file-input>
+                    -->
+
+                  </v-col>
                 </v-row>
               </v-container>
             </v-card-text>
@@ -199,6 +213,8 @@ export default {
         darsId: 0,
         email: '',
         code: 0,
+        imageFile: null,
+        needToSave: false,
       },
       backendHost: process.env.NODE_ENV === 'development' ? 'http://localhost:3085'  : ''
     }
@@ -276,6 +292,7 @@ export default {
       },
 
       save () {
+        this.editedItem.needToSave = true
         if (this.editedIndex > -1) {
           Object.assign(this.students[this.editedIndex], this.editedItem)
         } else {
@@ -284,10 +301,11 @@ export default {
         this.close()
       },
       async saveAll() {
-        for ( let student of this.students ) { 
+        let students = this.students.filter( s => s.needToSave )
+        for ( let student of students ) { 
           student.darsId = parseInt(student.darsId)
         }
-        await axios.post(`${this.backendHost}/students-update`, { students:this.students })
+        await axios.post(`${this.backendHost}/students-update`, { students })
       }
   }
 }

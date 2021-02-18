@@ -408,7 +408,8 @@ export default {
       if ( this.darsId <= this.student.darsId ) { 
         // nothing
       } else { 
-        await axios.put(`${this.backendHost}/students/${this.student._id}`, { darsId: this.darsId  }, this.headerConfig)
+        this.student.darsId++
+        await axios.put(`${this.backendHost}/students/${this.student._id}`, this.student , this.headerConfig)
         //await axios.put(`${this.backendHost}/students/${this.code}?email=${this.email}`, { student: this.student.student, darsId: this.darsId  })
        //this.student = (await axios.get(`${this.backendHost}/students/${this.code}?email=${this.email}`)).data
        //this.darsDone = false

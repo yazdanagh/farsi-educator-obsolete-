@@ -7,7 +7,8 @@ const studentSchema = new Schema({
 	naam: String,
 	darsId: Number,
 	email: String,
-	code: Number
+	code: Number,
+  //studentPic; String
 });
 const darsSchema = new Schema({
 	kalameh: String,

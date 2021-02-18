@@ -44,7 +44,8 @@ module.exports = (app) => {
        const student = await db.student.find({code,email}) 
        const accessToken = jwt.sign(code, process.env.ACCESS_TOKEN_SECRET )
        res.json({accessToken})
-     } catch {
+     } catch (e) {
+       console.log(e)
        res.sendStatus(403)
      }
   })
@@ -70,17 +71,18 @@ module.exports = (app) => {
   app.put('/students/:_id', authToken, async(req,res) => {
     try {
       const code = req.code
-      const student = await db.student.findById(req.params._id)
+      const savedStudent = await db.student.findById(req.params._id)
       console.log(code)
-      console.log(student)
-      if ( student.code == code ) {
-        student['darsId'] = req.body.darsId 
-        await student.save()
-        res.json(student)
+      if ( savedStudent.code == code ) {
+        //student['darsId'] = req.body.darsId 
+        //await student.save()
+        db.student.updateOne(savedStudent, req.body )
+        res.sendStatus(200)
       } else {
         res.sendStatus(404)
       }
     } catch (e) {
+       console.log(e)
       res.sendStatus(500);
     }
   })
@@ -95,16 +97,24 @@ module.exports = (app) => {
     }
   })
 
-  // Recreate all students
+  // update updated students
+  // this can actually use the standar rest put/post 2/17/21
   app.post('/students-update', async (req, res) => {
     try {
       const updatedStudents = req.body.students 
-      //console.log(updatedStudents)
-      const students = await db.student.find({})   
-      await db.student.deleteMany({})   //
-      await db.student.create(updatedStudents)
+      for ( let student of updatedStudents ) {
+        //console.log(updatedStudents)
+        //let savedStudent = await db.student.findById(student._id)   
+        //savedStudent = student
+        //console.log(savedStudent)
+        //await db.student.deleteMany({})   //
+        //await db.student.create(updatedStudents)
+        //await savedStudent.save()
+        await db.student.findByIdAndUpdate(student._id, student)
+      }
       res.json({success:true})
-    } catch {
+    } catch (e) {
+       console.log(e)
       res.sendStatus(500);
     }
   })
@@ -139,6 +149,7 @@ module.exports = (app) => {
         res.sendStatus(404);
       }
     } catch (err) {
+       console.log(err)
       res.sendStatus(500)
     }
   })
