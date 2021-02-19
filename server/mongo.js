@@ -9,6 +9,7 @@ const studentSchema = new Schema({
 	email: String,
 	code: Number,
   //studentPic; String
+  profileImage: { data: String, contentType: String }
 });
 const darsSchema = new Schema({
 	kalameh: String,
@@ -22,6 +23,7 @@ const harfSchema = new Schema({
 	harfName: String,
 	harfSound: String,
   harfForms: [String],
+  harfImages: [ { data: String, contentType: String }] ,
   harfLead: String,
   harfAudio: { data: String, contentType: String }
 });

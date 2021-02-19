@@ -14,7 +14,7 @@
 
     <v-img
       height="200"
-      :src='"/images2/" + student.name + ".jpg"'
+      :src='imgProfile'
     ></v-img>
 
     <v-card-title class="d-flex flex-row-reverse">
@@ -138,7 +138,7 @@
    </canvas>
    <div  id="allImages">
      <div v-for="(aG,aIdx) in darsHoroof" :key="aIdx" >
-     <img v-for="alpha in aG['harfForms']" :key="alpha" style="display:none"  v-bind:id="alpha" v-bind:src="`/images2/${alpha}.png`"> 
+     <img v-for="alpha in aG['harfForms']" :key="alpha" style="display:none"  v-bind:id="alpha" v-bind:src="imgAlph[alpha]"> 
       <img id="ear" style="display:none" src="/images2/ear.jpg" > 
      </div>
    </div>
@@ -182,6 +182,8 @@ export default {
       //mdiArrowLeftBold,
       audioDars: null ,
       audioAlph: {},
+      imgAlph:{},
+      imgProfile: null,
       mdiChevronRight,
       mdiChevronLeft,
       mdiChevronDoubleRight,
@@ -236,8 +238,15 @@ export default {
       blob = new Blob([ new Buffer(harf.harfAudio.data, 'base64')], { type: 'audio/m4a' });
       url = window.URL.createObjectURL(blob)
       this.audioAlph[harf.harfSound ]  = url
-
+      for ( let [idx,harfImage] of harf.harfImages.entries() ) {
+        blob = new Blob([ new Buffer(harfImage.data, 'base64')], { type: 'image/png' });
+        url = window.URL.createObjectURL(blob)
+        this.imgAlph[harf.harfForms[idx]]  = url
+      }
     }
+    blob = new Blob([ new Buffer(this.student.profileImage.data, 'base64')], { type: 'image/jpg' });
+    url = window.URL.createObjectURL(blob)
+    this.imgProfile  = url
     console.log("this")
     console.log(this)
     this.goToDarses = Array.from(Array(this.student.darsId).keys()).map( a => { 
