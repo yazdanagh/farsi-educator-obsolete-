@@ -207,28 +207,24 @@ export default {
 
   },
   async mounted() {
-      
-    //try {
-    //this.email = this.$route.query.email
-    //this.code = this.$route.params.code
-    //let res = await axios.get(`${this.backendHost}/students/${this.code}?email=${this.email}`)
-    let res = await axios.get(`${this.backendHost}/main`, this.headerConfig)
-    console.log(res.data)
-    const studentDarsId = parseInt(res.data['darsId']) 
-    this.darsId = this.$route.params.darsId === 'latest' ? studentDarsId + 1 : this.$route.params.darsId 
-    this.student = res.data
-    res = await axios.get(`${this.backendHost}/darses/${this.darsId}`,this.headerConfig);
-    this.dars = res.data;
-    let blob
-    let url
-    if ( this.dars.kalamehAudio.data ) {
-      blob = new Blob([ new Buffer(this.dars.kalamehAudio.data, 'base64')], { type: 'audio/m4a' });
-      //window.x = this.dars.kalamehAudio.data
-      url = window.URL.createObjectURL(blob)
-      //window.audio = new Audio();
-      //window.audio.src = url;
-      //window.audio.play();
-      this.audioDars = url
+
+    try {
+      let res = await axios.get(`${this.backendHost}/main`, this.headerConfig)
+      this.student = res.data
+      const studentDarsId = parseInt(res.data['darsId']) 
+      this.darsId = this.$route.params.darsId === 'latest' ? studentDarsId + 1 : this.$route.params.darsId 
+      res = await axios.get(`${this.backendHost}/darses/${this.darsId}`,this.headerConfig);
+      this.dars = res.data;
+      let blob
+      let url
+      if ( this.dars.kalamehAudio.data ) {
+        blob = new Blob([ new Buffer(this.dars.kalamehAudio.data, 'base64')], { type: 'audio/m4a' });
+        //window.x = this.dars.kalamehAudio.data
+        url = window.URL.createObjectURL(blob)
+        //window.audio = new Audio();
+        //window.audio.src = url;
+        //window.audio.play();
+        this.audioDars = url
     }
     //const x = new Audio(this.dars.kalamehAudio)
     //x.play()
@@ -265,10 +261,10 @@ export default {
       console.log("Wait for Canvasl " + canvasWait)
       this.updateCanvas()
     }, canvasWait) 
-   // } catch (e) {
-   //   console.log(e)
-   //   this.$router.push('/')
-   // }
+    } catch (e) {
+      console.log(e)
+      this.$router.push('/')
+    }
   },
   computed: { 
 
