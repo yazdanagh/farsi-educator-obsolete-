@@ -355,6 +355,8 @@ export default {
           this.darsDone = await checkFinished()
         }
       }
+      // Do not try window.onresize or addEventListener("resize"... as they dont work
+      paper.view.onResize = this.cleanUpdateCanvas
 
       const checkFinished = async () => {
         //let done = true
@@ -424,26 +426,26 @@ export default {
        //this.darsDone = false
       }
       this.$router.push({name: 'main',params: {darsId:this.darsId}})
-      await this.fetchDars()
+      await this.cleanUpdateCanvas()
     },
     async goToFirstDars() {
       this.darsId = 1
-      await this.fetchDars()
+      await this.cleanUpdateCanvas()
     },
     async goToLastDars() {
       this.darsId = this.student.darsId 
-      await this.fetchDars()
+      await this.cleanUpdateCanvas()
     },
     async goToPrevDars() {
       this.darsId--;
       this.$router.push({name: 'main',params: {darsId:this.darsId}})
-      await this.fetchDars()
+      await this.cleanUpdateCanvas()
     },
     async goToDars(n) { 
       this.darsId = n
-      await this.fetchDars()
+      await this.cleanUpdateCanvas()
     },
-    async fetchDars() {
+    async cleanUpdateCanvas() {
       //await this.$router.push(`/dars/${this.darsId}`)
       this.clearCanvas()
       setTimeout ( () => { 
@@ -460,7 +462,8 @@ export default {
 
     async clearCanvas() {
       paper.project.activeLayer.removeChildren();
-      paper.view.draw();
+      await paper.view.draw();
+      paper.view.clearRect(0, 0, paper.width,paper.height)
     },
     async updateCanvas() {
 

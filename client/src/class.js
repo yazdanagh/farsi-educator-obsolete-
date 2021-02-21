@@ -13,12 +13,12 @@ class phi {
   // static variables
   constructor ( topRight, bottomLeft) {
 
-   console.log("Hala")
-   console.log(topRight)
-   console.log(bottomLeft)
+   //console.log("Hala")
+   //console.log(topRight)
+   //console.log(bottomLeft)
    this.phiRect = new paper.Path.Rectangle(topRight, bottomLeft )
    this.origBound = this.phiRect.bounds
-   console.log(this.phiRect.bounds)
+   //console.log(this.phiRect.bounds)
    this.aTile = null
    this.phiRect.strokeColor = 'black'
    this.phiRect.fillColor = 'white'
@@ -46,7 +46,7 @@ class php {
       tilesPerRow = Math.floor(tilesPerRow)
 
       const numRows = Math.ceil(numTiles / tilesPerRow) 
-      console.log(`${numRows} rows with ${tilesPerRow} tiles in each row`)
+      //console.log(`${numRows} rows with ${tilesPerRow} tiles in each row`)
       const topRight = paneTopRight 
       const bottomLeft = topRight.subtract( tilesPerRow * php.phiSide + ( tilesPerRow -1 ) * php.phiGutter , -numRows * php.phpRow )
       this.phpRect = paper.Path.Rectangle(
@@ -62,9 +62,9 @@ class php {
       // TODO : implement Row
       const locX = (loc - 1) % this.tilesPerRow + 1 
       const locY = (loc - locX)/this.tilesPerRow
-      console.log(locX,locY)
+      //console.log(locX,locY)
       let tr = this.phiRowTR.subtract( (locX-1)* ( php.phiSide + php.phiGutter), -locY * php.phpRow )
-      console.log(tr)
+      //console.log(tr)
       return tr
     }
     getPhiBottomLeft(loc)  { // todo : add row
@@ -72,7 +72,7 @@ class php {
       const locX = (loc - 1) % this.tilesPerRow  + 1 
       const locY = (loc - locX)/this.tilesPerRow
       const bl =  this.phiRowTR.subtract( (locX)* ( php.phiSide + php.phiGutter), -(locY+1) * php.phpRow )
-      console.log(bl)
+      //console.log(bl)
       return bl
     }
     addPhInsts(phInsts ) {
@@ -223,7 +223,7 @@ class ati {
       //this.ph.group.bounds = this.group.lastChild.bounds 
       this.resolvingPhi.phiRect.visible = false
       console.log("resolved")
-      console.log(this)
+      //console.log(this)
     } else if ( this.group.position.equals(this.origin))  {
       this.group.firstChild.visible = true
       this.resolved = false
@@ -249,7 +249,7 @@ const createEar = ( earPosition, audio ) => {
   earRaster.onMouseDown= async ( ) => {
     await document.getElementById(audio).play()
   }
-  console.log("created ear for : " + audio)
+  //console.log("created ear for : " + audio)
 }
 
 const createPlaceHolderPane = ( topRight, harfForms, darsKalameh) => {
@@ -278,7 +278,7 @@ const createAlphatilePane = (topRight, harf, phPane , harfForms) => {
     let atPane = new atp( topRight, harf['harfForms'].length  )
     let idx2=1
     const audio = harf['harfSound'] 
-    console.log(harf['harfSound'])
+    //console.log(harf['harfSound'])
     createEar(topRight.add( atp.atpSpacing + atp.atiSide/4  , atp.atpSpacing + atp.atiSide/2   ) ,audio)
     for ( let harf of harf['harfForms'] ) {
       const occurances = harfForms.reduce( (tot,elem,harfIndex) => { 
