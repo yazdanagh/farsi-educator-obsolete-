@@ -356,7 +356,14 @@ export default {
         }
       }
       // Do not try window.onresize or addEventListener("resize"... as they dont work
-      paper.view.onResize = this.cleanUpdateCanvas
+      var sto = null
+      paper.view.onResize = () => {
+        if ( sto ) {
+          clearTimeout(sto)
+        }
+        sto = setTimeout(this.cleanUpdateCanvas, 250 )
+
+      }
 
       const checkFinished = async () => {
         //let done = true
@@ -463,7 +470,7 @@ export default {
     async clearCanvas() {
       paper.project.activeLayer.removeChildren();
       await paper.view.draw();
-      paper.view.clearRect(0, 0, paper.width,paper.height)
+      //paper.view.clearRect(0, 0, paper.width,paper.height)
     },
     async updateCanvas() {
 
