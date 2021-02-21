@@ -2,8 +2,28 @@
 
  <v-container
           class="fill-height"
-          fluid
         >
+        
+        <!--
+        <v-row
+            align="center"
+            justify="center"
+            >
+        <v-col
+              cols="12"
+              sm="8"
+              md="4"
+            >
+
+        <v-chip x-large
+        label
+            >
+                پارسی شکر است
+بیایید هر روز با هم از این شکر بهره ببریم
+</v-chip>
+</v-col>
+</v-row>
+-->
   <v-row
             align="center"
             justify="center"
@@ -13,16 +33,13 @@
               sm="8"
               md="4"
             >
-              <v-card class="elevation-12">
-                <v-toolbar
-                  color="blue lighten-1"
-                  dark
-                  flat
+            <v-card class="elevation-12"
+            >
+                <v-card-title style="display:block" class="blue lighten-1 text-h4 text-right white--text mt-8"
                 >
+        به شکر خوش آمدید 
+                </v-card-title>
                   <v-spacer></v-spacer>
-                  <v-tooltip bottom>
-                  </v-tooltip>
-                </v-toolbar>
                 <v-card-text>
                   <v-form>
                     <v-text-field
@@ -55,7 +72,7 @@
                 </v-card-text>
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn large @click="goToSchool" color="blue ligthen-1"> برو به مدرسه </v-btn>
+                  <v-btn x-large @click="goToSchool" color="#64B5F6"> برو به مدرسه </v-btn>
                 </v-card-actions>
               </v-card>
             </v-col>

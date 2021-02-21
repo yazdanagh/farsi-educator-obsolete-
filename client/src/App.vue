@@ -1,10 +1,13 @@
 <template>
-  <v-app>
+ <div id='app'>
+    
+  <v-app >
     <v-app-bar
       app
       color="blue lighten-2"
       dark
     >
+
     <!--
       <div class="d-flex align-center">
         <v-img
@@ -42,11 +45,15 @@
       </v-btn>
     </v-app-bar>
 
-    <v-main>
+    
+    <v-main  :style="`background-image: url('images2/shekar7.png')`" 
+    class="fill-height bg-image"
+>
       <router-view @darsId="onClickChild"></router-view> 
       <!-- <Main> </Main> -->
-    </v-main>
+      </v-main>
   </v-app>
+</div>
 </template>
 
 <script>
@@ -73,3 +80,13 @@ export default {
   }),
 };
 </script>
+
+
+<style >
+.bg-image {
+   background-repeat: repeat;
+   background-position: center center;
+   background-attachment: fixed;
+   background-size: cover;
+ }
+</style>

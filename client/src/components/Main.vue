@@ -22,8 +22,8 @@
     </v-card-title>
 
     <v-divider class="mx-3"></v-divider>
-    <v-card-text class="">
-    <div>
+    <v-card-text style="display:block" class="text-right">
+    <div style="display:none">
       .
       <!-- <router-link :to="{ path: '/ui/all_darses' , query: { page: 1 }}"> -->
       {{ pn(this.student.darsId) }} 
@@ -125,8 +125,13 @@
   background-color="blue lighten-1"
   v-model="selectedDarsId"
   solo
-  label="برو به درس"
-  ></v-select>
+  >
+
+  <template v-slot:label style="right:25px;left:auto">
+      <p class="justify-right">برو به درس</p>
+    </template>
+
+  </v-select>
 
 </div>
 </v-col>
@@ -180,7 +185,7 @@ export default {
       student: '',
       //mdiArrowRightBold,
       //mdiArrowLeftBold,
-      audioDars: null ,
+      //audioDars: null ,
       audioAlph: {},
       imgAlph:{},
       imgProfile: null,
@@ -287,9 +292,21 @@ export default {
        return ""
      }
    },
-   //audioDars() {
-   //  return '/audios/' + this.darsKalameh + '.m4a'
-   //},
+   audioDars() {
+      let blob
+      let url
+     if ( this.dars.kalamehAudio.data ) {
+       blob = new Blob([ new Buffer(this.dars.kalamehAudio.data, 'base64')], { type: 'audio/m4a' });
+       //window.x = this.dars.kalamehAudio.data
+       url = window.URL.createObjectURL(blob)
+       //window.audio = new Audio();
+       //window.audio.src = url;
+       //window.audio.play();
+       return  url
+     } else {
+       return null
+     }
+   },
     audioDarsId() {
       return this.darsKalameh
     },
