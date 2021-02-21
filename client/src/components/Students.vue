@@ -305,6 +305,7 @@ export default {
         for ( let student of students ) { 
           student.darsId = parseInt(student.darsId)
         }
+        console.log(students)
         await axios.post(`${this.backendHost}/students-update`, { students })
       }
   }
