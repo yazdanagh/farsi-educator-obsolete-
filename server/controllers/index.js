@@ -97,33 +97,46 @@ module.exports = (app) => {
     }
   })
 
-  // update updated students
-  // this can actually use the standar rest put/post 2/17/21
+ // temporarily put this back
   app.post('/students-update', async (req, res) => {
     try {
-      const updatedStudents = req.body.students 
-      for ( let student of updatedStudents ) {
-        //console.log(updatedStudents)
-        //let savedStudent = await db.student.findById(student._id)   
-        //savedStudent = student
-        //console.log(savedStudent)
-        //await db.student.deleteMany({})   //
-        //await db.student.create(updatedStudents)
-        //await savedStudent.save()
-        if ( student._id ) {
-          await db.student.findByIdAndUpdate(student._id, student )
-          console.log(`Update student ${student.name}`)
-        } else {
-          await db.student.create(student)
-          console.log(`Create student ${student.name}`)
-        }
-      }
-      res.json({success:true})
+      const updatedStudents = req.body.students
+      //console.log(updatedStudents)
+      const students = await db.student.find({})
+      await db.student.deleteMany({})   //
+      await db.student.create(updatedStudents)
     } catch (e) {
-       console.log(e)
-      res.sendStatus(500);
+      res.sendStatus(500)
     }
   })
+
+/////// // update updated students
+/////// // this can actually use the standar rest put/post 2/17/21
+/////// app.post('/students-update', async (req, res) => {
+///////   try {
+///////     const updatedStudents = req.body.students 
+///////     for ( let student of updatedStudents ) {
+///////       //console.log(updatedStudents)
+///////       //let savedStudent = await db.student.findById(student._id)   
+///////       //savedStudent = student
+///////       //console.log(savedStudent)
+///////       //await db.student.deleteMany({})   //
+///////       //await db.student.create(updatedStudents)
+///////       //await savedStudent.save()
+///////       if ( student._id ) {
+///////         await db.student.findByIdAndUpdate(student._id, student )
+///////         console.log(`Update student ${student.name}`)
+///////       } else {
+///////         await db.student.create(student)
+///////         console.log(`Create student ${student.name}`)
+///////       }
+///////     }
+///////     res.json({success:true})
+///////   } catch (e) {
+///////      console.log(e)
+///////     res.sendStatus(500);
+///////   }
+/////// })
 
 
   

@@ -301,7 +301,9 @@ export default {
         this.close()
       },
       async saveAll() {
-        let students = this.students.filter( s => s.needToSave )
+        //let students = this.students.filter( s => s.needToSave )
+        // temporariliy save everything
+        let students = this.students
         for ( let student of students ) { 
           student.darsId = parseInt(student.darsId)
         }
