@@ -110,7 +110,7 @@ module.exports = (app) => {
         //await db.student.deleteMany({})   //
         //await db.student.create(updatedStudents)
         //await savedStudent.save()
-        await db.student.findByIdAndUpdate(student._id, student)
+        await db.student.findByIdAndUpdate(student._id, student, {upsert: true})
       }
       res.json({success:true})
     } catch (e) {
