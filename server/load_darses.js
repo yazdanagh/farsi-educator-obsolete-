@@ -31,7 +31,7 @@ const main = async () => {
       }
       const harfAudio = { data: null, contentType : "audio/m4a" } 
       const audioFile = `../client/src/audios/${harfSound}.m4a`
-      console.log(audioFile)
+      //console.log(audioFile)
       let fileData =  await fs.readFile(audioFile)
       harfAudio.data = fileData.toString('base64');
       const harfImages= []
@@ -72,7 +72,7 @@ const main = async () => {
         if ( fileExists ) {
           let fileData =  await fs.readFile(audioFile)
           kalamehAudio.data = fileData.toString('base64');
-          console.log(kalamehAudio.data)
+          //console.log(kalamehAudio.data)
         }
         darses.push({ 
           kalamehHarfForms, 
@@ -85,17 +85,22 @@ const main = async () => {
     await db.dars.deleteMany()
     await db.dars.create(darses)
     const darsesDB = await db.dars.find({}) 
-    console.log(darsesDB)
+    //console.log(darsesDB)
 
     const profiles = []
     const students = await db.student.find({})
     for ( let [id,student] of students.entries() ) {
-      const imageFile = `../client/src/images2/profiles/${student.name}.jpg`
-      let fileData =  await fs.readFile(imageFile)
-      const profileImage = { data: null, contentType : "image/jpg" } 
-      profileImage.data = fileData.toString('base64');
-      student.profileImage = profileImage
-      await student.save()
+      try {
+        const imageFile = `../client/src/images2/profiles/${student.name}.jpg`
+        let fileData =  await fs.readFile(imageFile)
+        console.log(imageFile)
+        const profileImage = { data: null, contentType : "image/jpg" } 
+        profileImage.data = fileData.toString('base64');
+        student.profileImage = profileImage
+        await student.save()
+      } catch (e) {
+        console.log(e)
+      }
     }
 
   } catch (e) {

@@ -186,7 +186,7 @@ export default {
       numHarfLearned: '',
       //mdiArrowRightBold,
       //mdiArrowLeftBold,
-      //audioDars: null ,
+      audioDars: null ,
       audioAlph: {},
       imgAlph:{},
       imgProfile: null,
@@ -215,7 +215,7 @@ export default {
   async mounted() {
 
     console.log("Mounted")
-    try {
+    //try {
       let res = await axios.get(`${this.backendHost}/main`, this.headerConfig)
       this.student = res.data
       const studentDarsId = parseInt(res.data['darsId']) 
@@ -231,7 +231,7 @@ export default {
       this.dars = res.data;
       let blob
       let url
-      //this.addKalamehAudio();
+      this.addKalamehAudio();
       
     //const x = new Audio(this.dars.kalamehAudio)
     //x.play()
@@ -247,6 +247,7 @@ export default {
         this.imgAlph[harf.harfForms[idx]]  = url
       }
     }
+    console.log(this.student.profileImage)
     blob = new Blob([ new Buffer(this.student.profileImage.data, 'base64')], { type: 'image/jpg' });
     url = window.URL.createObjectURL(blob)
     this.imgProfile  = url
@@ -268,10 +269,10 @@ export default {
       console.log("Wait for Canvasl " + canvasWait)
       this.updateCanvas()
     }, canvasWait) 
-    } catch (e) {
-      console.log(e)
-      this.$router.push('/')
-    }
+    //} catch (e) {
+    //  console.log(e)
+    //  this.$router.push('/')
+    //}
   },
   computed: { 
 
@@ -294,21 +295,21 @@ export default {
   //    return ""
   //  }
   //},
-  audioDars() {
-     let blob
-     let url
-    if ( this.dars && this.dars.kalamehAudio.data ) {
-      blob = new Blob([ new Buffer(this.dars.kalamehAudio.data, 'base64')], { type: 'audio/m4a' });
-      //window.x = this.dars.kalamehAudio.data
-      url = window.URL.createObjectURL(blob)
-      //window.audio = new Audio();
-      //window.audio.src = url;
-      //window.audio.play();
-      return  url
-    } else {
-      return null
-    }
-  },
+  //audioDars() {
+  //   let blob
+  //   let url
+  //  if ( this.dars && this.dars.kalamehAudio.data ) {
+  //    blob = new Blob([ new Buffer(this.dars.kalamehAudio.data, 'base64')], { type: 'audio/m4a' });
+  //    //window.x = this.dars.kalamehAudio.data
+  //    url = window.URL.createObjectURL(blob)
+  //    //window.audio = new Audio();
+  //    //window.audio.src = url;
+  //    //window.audio.play();
+  //    return  url
+  //  } else {
+  //    return null
+  //  }
+  //},
     audioDarsId() {
       return this.darsKalameh
     },
@@ -337,7 +338,7 @@ export default {
     addKalamehAudio() {
       let blob
       let url
-      if ( this.dars.kalamehAudio.data ) {
+      if ( this.dars && this.dars.kalamehAudio.data ) {
         blob = new Blob([ new Buffer(this.dars.kalamehAudio.data, 'base64')], { type: 'audio/m4a' });
         //window.x = this.dars.kalamehAudio.data
         url = window.URL.createObjectURL(blob)
