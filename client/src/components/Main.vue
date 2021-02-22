@@ -183,6 +183,7 @@ export default {
       selectedDarsId: '',
       darsDone: false,
       student: '',
+      numHarfLearned: '',
       //mdiArrowRightBold,
       //mdiArrowLeftBold,
       //audioDars: null ,
@@ -218,8 +219,15 @@ export default {
       let res = await axios.get(`${this.backendHost}/main`, this.headerConfig)
       this.student = res.data
       const studentDarsId = parseInt(res.data['darsId']) 
-      this.darsId = this.$route.params.darsId === 'latest' ? studentDarsId + 1 : this.$route.params.darsId 
+      this.darsId = studentDarsId + 1  
       res = await axios.get(`${this.backendHost}/darses/${this.darsId}`,this.headerConfig);
+      this.numHarfLearned = res.data.numHarfLearned
+      if ( this.$route.params.darsId === 'latest' ) {
+        // do nothing
+      } else {
+        this.darsId = this.$route.params.darsId
+        res = await axios.get(`${this.backendHost}/darses/${this.darsId}`,this.headerConfig);
+      }
       this.dars = res.data;
       let blob
       let url
@@ -279,17 +287,17 @@ export default {
     }
     return config
    },
-   numHarfLearned () {
-     if ( this.dars ) { 
-       return this.dars.numHarfLearned 
-     } else {
-       return ""
-     }
-   },
+  //numHarfLearned () {
+  //  if ( this.dars ) { 
+  //    return this.dars.numHarfLearned 
+  //  } else {
+  //    return ""
+  //  }
+  //},
   audioDars() {
      let blob
      let url
-    if ( this.dars.kalamehAudio.data ) {
+    if ( this.dars && this.dars.kalamehAudio.data ) {
       blob = new Blob([ new Buffer(this.dars.kalamehAudio.data, 'base64')], { type: 'audio/m4a' });
       //window.x = this.dars.kalamehAudio.data
       url = window.URL.createObjectURL(blob)

@@ -14,7 +14,7 @@
 
     <v-img
       height="200"
-      :src='"/images2/" + student.name + ".jpg"'
+      :src='imgProfile'
     ></v-img>
 
     <v-card-title class="d-flex flex-row-reverse">
@@ -65,7 +65,7 @@
    </canvas>
    <div  id="allImages">
      <div v-for="(aG,aIdx) in horoof" :key="aIdx" >
-     <img v-for="alpha in aG['harfForms']" :key="alpha" style="display:none"  v-bind:id="alpha" v-bind:src="`/images2/${alpha}.png`"> 
+     <img v-for="alpha in aG['harfForms']" :key="alpha" style="display:none"  v-bind:id="alpha" v-bind:src="imgAlph[alpha]"> 
       <img id="ear" style="display:none" src="/images2/ear.jpg" > 
      </div>
    </div>
@@ -103,6 +103,9 @@ export default {
       selectedPageId: '', 
       //mdiArrowRightBold,
       //mdiArrowLeftBold,
+      audioAlph: {},
+      imgAlph:{},
+      imgProfile: null,
       mdiChevronRight,
       mdiChevronLeft,
       mdiChevronDoubleRight,
@@ -119,7 +122,7 @@ export default {
   },
   async mounted() {
     //debugger
-    try {
+    //try {
       let res
       res = await axios.get(`${this.backendHost}/main`, this.headerConfig)
       this.student = res.data
@@ -133,6 +136,22 @@ export default {
       res = await axios.get(`${this.backendHost}/darses/${studentDarsId}`,this.headerConfig)
       this.dars = res.data
       this.horoof = this.horoof.slice(0,this.numHarfLearned)
+      let blob,url
+      for ( let harf of this.horoof ) {
+        blob = new Blob([ new Buffer(harf.harfAudio.data, 'base64')], { type: 'audio/m4a' });
+        url = window.URL.createObjectURL(blob)
+        this.audioAlph[harf.harfSound ]  = url
+      for ( let [idx,harfImage] of harf.harfImages.entries() ) {
+        blob = new Blob([ new Buffer(harfImage.data, 'base64')], { type: 'image/png' });
+        url = window.URL.createObjectURL(blob)
+        this.imgAlph[harf.harfForms[idx]]  = url
+      }
+    }
+    blob = new Blob([ new Buffer(this.student.profileImage.data, 'base64')], { type: 'image/jpg' });
+    url = window.URL.createObjectURL(blob)
+    this.imgProfile  = url
+    console.log("this")
+    console.log(this)
 
       this.initCanvas()
       const canvasWait = 1000
@@ -140,10 +159,10 @@ export default {
         console.log("WAIT for Canvas " + canvasWait)
         this.updateCanvasHoroof()
       }, canvasWait) 
-    } catch (e) {
-      console.log(e)
-      this.$router.push('/')
-    }
+   //} catch (e) {
+   //  console.log(e)
+   //  this.$router.push('/')
+   //}
   },
   computed: { 
     ...Vuex.mapState({ 
