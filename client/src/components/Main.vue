@@ -213,6 +213,7 @@ export default {
   },
   async mounted() {
 
+    console.log("Mounted")
     try {
       let res = await axios.get(`${this.backendHost}/main`, this.headerConfig)
       this.student = res.data
@@ -222,15 +223,8 @@ export default {
       this.dars = res.data;
       let blob
       let url
-      if ( this.dars.kalamehAudio.data ) {
-        blob = new Blob([ new Buffer(this.dars.kalamehAudio.data, 'base64')], { type: 'audio/m4a' });
-        //window.x = this.dars.kalamehAudio.data
-        url = window.URL.createObjectURL(blob)
-        //window.audio = new Audio();
-        //window.audio.src = url;
-        //window.audio.play();
-        this.audioDars = url
-    }
+      //this.addKalamehAudio();
+      
     //const x = new Audio(this.dars.kalamehAudio)
     //x.play()
     res = await axios.get(`${this.backendHost}/horoof`)
@@ -292,21 +286,21 @@ export default {
        return ""
      }
    },
-   audioDars() {
-      let blob
-      let url
-     if ( this.dars.kalamehAudio.data ) {
-       blob = new Blob([ new Buffer(this.dars.kalamehAudio.data, 'base64')], { type: 'audio/m4a' });
-       //window.x = this.dars.kalamehAudio.data
-       url = window.URL.createObjectURL(blob)
-       //window.audio = new Audio();
-       //window.audio.src = url;
-       //window.audio.play();
-       return  url
-     } else {
-       return null
-     }
-   },
+  audioDars() {
+     let blob
+     let url
+    if ( this.dars.kalamehAudio.data ) {
+      blob = new Blob([ new Buffer(this.dars.kalamehAudio.data, 'base64')], { type: 'audio/m4a' });
+      //window.x = this.dars.kalamehAudio.data
+      url = window.URL.createObjectURL(blob)
+      //window.audio = new Audio();
+      //window.audio.src = url;
+      //window.audio.play();
+      return  url
+    } else {
+      return null
+    }
+  },
     audioDarsId() {
       return this.darsKalameh
     },
@@ -332,6 +326,19 @@ export default {
   },
   //
   methods: {
+    addKalamehAudio() {
+      let blob
+      let url
+      if ( this.dars.kalamehAudio.data ) {
+        blob = new Blob([ new Buffer(this.dars.kalamehAudio.data, 'base64')], { type: 'audio/m4a' });
+        //window.x = this.dars.kalamehAudio.data
+        url = window.URL.createObjectURL(blob)
+        //window.audio = new Audio();
+        //window.audio.src = url;
+        //window.audio.play();
+        this.audioDars = url
+      }
+    },
     shuffle(array) {
         var currentIndex = array.length, temporaryValue, randomIndex;
 
@@ -445,7 +452,8 @@ export default {
        //this.student = (await axios.get(`${this.backendHost}/students/${this.code}?email=${this.email}`)).data
        //this.darsDone = false
       }
-      this.$router.push({name: 'main',params: {darsId:this.darsId}})
+      await this.$router.push({name: 'main',params: {darsId:this.darsId}})
+      //await this.addKalamehAudio()
       await this.cleanUpdateCanvas()
     },
     async goToFirstDars() {
