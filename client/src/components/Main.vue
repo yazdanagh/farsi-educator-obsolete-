@@ -148,7 +148,14 @@
      </div>
    </div>
    <div id="allAudios">
-     <audio :src="audioDars" :id="audioDarsId"  > </audio>
+     <audio  :id="audioDarsId"  > 
+        <source :src="audioDars" type="audio/mp3">
+     </audio>
+     <!--
+     <audio id="aab"  > 
+        <source src="http://192.168.1.82:8080/aab.mp3" type="audio/mp3">
+     </audio>
+     -->
      <audio v-for="(aG,aIdx) in darsHoroof" :src="audioAlph[aG.harfSound]" :id="audioAlphId(aG)" :key="aIdx" >
      </audio>
    </div>
@@ -186,7 +193,7 @@ export default {
       numHarfLearned: '',
       //mdiArrowRightBold,
       //mdiArrowLeftBold,
-      audioDars: null ,
+      audioDars: '' ,
       audioAlph: {},
       imgAlph:{},
       imgProfile: null,
@@ -282,6 +289,9 @@ export default {
    //goToDarses() {
    //  return 
    //},
+   audioDarsId() {
+     return this.darsKalameh
+   },
    headerConfig () { 
     const config = {
       headers: { Authorization: `Bearer ${this.accessToken}` }
@@ -310,9 +320,7 @@ export default {
   //    return null
   //  }
   //},
-    audioDarsId() {
-      return this.darsKalameh
-    },
+   
    darsHarfForms() {  
      return this.dars ? this.dars['kalamehHarfForms'] : [] 
    },
@@ -335,6 +343,7 @@ export default {
   },
   //
   methods: {
+    
     addKalamehAudio() {
       let blob
       let url
@@ -346,7 +355,21 @@ export default {
         //window.audio.src = url;
         //window.audio.play();
         this.audioDars = url
+        console.log("HERE  " + url)
+        
       }
+//     const audioElement = document.createElement('audio');
+//     audioElement.setAttribute('controls', true);
+////     //audioElement.setAttribute('id', this.audioDarsId);
+//    document.body.appendChild(audioElement);
+//    const sourceElement = document.createElement('source');
+//    audioElement.appendChild(sourceElement);
+//    sourceElement.src = url;
+////    //sourceElement.src = url;
+//    sourceElement.type = 'audio/mp3';
+//
+//     audioElement.play()
+//
     },
     shuffle(array) {
         var currentIndex = array.length, temporaryValue, randomIndex;

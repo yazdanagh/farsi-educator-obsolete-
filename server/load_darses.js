@@ -66,8 +66,10 @@ const main = async () => {
           }
         })
         const kalameh = a.shift() 
-        const kalamehAudio = { data: null, contentType : "audio/m4a" } 
-        const audioFile = `../client/src/audios/${kalameh}.m4a`
+        const kalamehAudio = { data: null, contentType : "audio/mp3" } 
+        const audioFile = `../client/public/${kalameh}.mp3`
+        //const kalamehAudio = { data: null, contentType : "audio/m4a" } 
+        //const audioFile = `../client/src/audios/${kalameh}.m4a`
         const fileExists = await fs.exists(audioFile)
         if ( fileExists ) {
           let fileData =  await fs.readFile(audioFile)

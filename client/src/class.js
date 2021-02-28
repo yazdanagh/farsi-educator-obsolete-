@@ -247,6 +247,7 @@ const createEar = ( earPosition, audio ) => {
   earRaster.strokeColor = "yellow"
   //window.earRaster = earRaster
   earRaster.onMouseDown= async ( ) => {
+    await document.getElementById(audio).load()
     await document.getElementById(audio).play()
   }
   //console.log("created ear for : " + audio)
