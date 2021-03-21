@@ -29,9 +29,9 @@ const main = async () => {
         harfForms.push(harfForm)
         harfFormMap[key] = harfForm
       }
-      const harfAudio = { data: null, contentType : "audio/m4a" } 
-      const audioFile = `../client/src/audios/${harfSound}.m4a`
-      //console.log(audioFile)
+      const harfAudio = { data: null, contentType : "audio/mp3" } 
+      const audioFile = `../client/src/audios/${harfSound}.mp3`
+      console.log(`harfSound ${harfSound} added`)
       let fileData =  await fs.readFile(audioFile)
       harfAudio.data = fileData.toString('base64');
       const harfImages= []
@@ -67,14 +67,14 @@ const main = async () => {
         })
         const kalameh = a.shift() 
         const kalamehAudio = { data: null, contentType : "audio/mp3" } 
-        const audioFile = `../client/public/${kalameh}.mp3`
+        const audioFile = `../client/src/audios/${kalameh}.mp3`
         //const kalamehAudio = { data: null, contentType : "audio/m4a" } 
         //const audioFile = `../client/src/audios/${kalameh}.m4a`
         const fileExists = await fs.exists(audioFile)
         if ( fileExists ) {
           let fileData =  await fs.readFile(audioFile)
           kalamehAudio.data = fileData.toString('base64');
-          //console.log(kalamehAudio.data)
+          console.log(`kalameh ${kalameh} was added`)
         }
         darses.push({ 
           kalamehHarfForms, 
