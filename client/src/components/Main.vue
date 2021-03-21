@@ -214,7 +214,10 @@ export default {
     async darsId(newVal) {
       let res = await axios.get(`${this.backendHost}/darses/${newVal}`, this.headerConfig)
       this.dars = res.data
+      await this.addKalamehAudio()
+      await this.cleanUpdateCanvas()
       //  //await this.updateCanvas(newVal)
+      await this.$router.push({name: 'main',params: {darsId:this.darsId}})
       this.$emit('darsId', newVal )
     }
 
@@ -484,26 +487,27 @@ export default {
        //this.student = (await axios.get(`${this.backendHost}/students/${this.code}?email=${this.email}`)).data
        //this.darsDone = false
       }
-      await this.$router.push({name: 'main',params: {darsId:this.darsId}})
+      //await this.$router.push({name: 'main',params: {darsId:this.darsId}})
       //await this.addKalamehAudio()
-      await this.cleanUpdateCanvas()
+      //await this.cleanUpdateCanvas()
     },
     async goToFirstDars() {
       this.darsId = 1
-      await this.cleanUpdateCanvas()
+      //await this.cleanUpdateCanvas()
     },
     async goToLastDars() {
-      this.darsId = this.student.darsId 
-      await this.cleanUpdateCanvas()
+      this.darsId = this.student.darsId + 1
+      //await this.cleanUpdateCanvas()
     },
     async goToPrevDars() {
       this.darsId--;
-      this.$router.push({name: 'main',params: {darsId:this.darsId}})
-      await this.cleanUpdateCanvas()
+      //this.$router.push({name: 'main',params: {darsId:this.darsId}})
+      //await this.cleanUpdateCanvas()
     },
     async goToDars(n) { 
       this.darsId = n
-      await this.cleanUpdateCanvas()
+      //await this.addKalamehAudio()
+      //await this.cleanUpdateCanvas()
     },
     async cleanUpdateCanvas() {
       //await this.$router.push(`/dars/${this.darsId}`)
