@@ -7,7 +7,7 @@
  <v-data-table
     :headers="headers"
     :items="students"
-    :items-per-page="5"
+    :items-per-page="20"
     class="elevation-1"
   >
    <template v-slot:item.name="{ item }">
@@ -56,7 +56,18 @@
 
             <v-card-text>
               <v-container>
-                <v-row>
+              <v-row>
+                 <v-col
+                    cols="12"
+                    sm="6"
+                    md="4"
+                  >
+                    <v-text-field
+                      v-model="editedItem.studentId"
+                      label="Student ID"
+                    ></v-text-field>
+                  </v-col>
+
                   <v-col
                     cols="12"
                     sm="6"
@@ -196,6 +207,7 @@
 
 import axios from 'axios'
 import { mdiHome } from '@mdi/js';
+import Vuex from 'vuex'
 
 export default {
   name: 'User',
@@ -204,7 +216,7 @@ export default {
       dialog: false,
       dialogDelete: false,
       students: [],
-      headers: "name naam darsId email code actions".split(' ').map( a => {  return { 'text': a, 'value': a }} ),
+      headers: "studentId name naam darsId email code actions".split(' ').map( a => {  return { 'text': a, 'value': a }} ),
       editedIndex: -1,
       mdiHome,
       editedItem: {
@@ -234,6 +246,15 @@ export default {
   },
 
   computed: { 
+    ...Vuex.mapState({ 
+      accessToken: state => state.accessToken
+    }),
+    headerConfig () { 
+      const config = {
+        headers: { Authorization: `Bearer ${this.accessToken}` }
+      }
+      return config
+    },
     formTitle () {
         return this.editedIndex === -1 ? 'New Item' : 'Edit Item'
     },
@@ -291,12 +312,23 @@ export default {
         })
       },
 
-      save () {
-        this.editedItem.needToSave = true
+      async save () {
+        //this.editedItem.needToSave = true
+        const student = this.editedItem
         if (this.editedIndex > -1) {
-          Object.assign(this.students[this.editedIndex], this.editedItem)
+          console.log(student)
+          student.darsId = parseInt(student.darsId)
+          student.studentId = parseInt(student.studentId)
+          const res = await axios.put(`${this.backendHost}/students/${student._id}`,  student, this.headerConfig )
+          if ( res.status === 200 ) {
+            Object.assign(this.students[this.editedIndex], student)
+          }
         } else {
-          this.students.push(this.editedItem)
+          console.log(student)
+          const res = await axios.post(`${this.backendHost}/students`,  { student} )
+          if ( res.status === 200 ) {
+            this.students.push(this.editedItem)
+          }
         }
         this.close()
       },

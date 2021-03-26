@@ -29,6 +29,7 @@ const authToken = async (req,res,next) => {
       req.code = code
       next()
     } catch (err) {
+      console.log(err)
       res.sendStatus(403)
     }
 }
@@ -71,12 +72,16 @@ module.exports = (app) => {
   app.put('/students/:_id', authToken, async(req,res) => {
     try {
       const code = req.code
-      const savedStudent = await db.student.findById(req.params._id)
+      let savedStudent = await db.student.findById(req.params._id)
       console.log(code)
-      if ( savedStudent.code == code ) {
+      // Admin code
+      if ( savedStudent.code == code || code == 1111 ) {
         //student['darsId'] = req.body.darsId 
         //await student.save()
-        db.student.updateOne(savedStudent, req.body )
+        console.log(req.body)
+        savedStudent = req.body
+        await db.student.updateOne({_id:savedStudent._id}, req.body )
+        //await savedStudent.save()
         res.sendStatus(200)
       } else {
         res.sendStatus(404)
@@ -97,6 +102,17 @@ module.exports = (app) => {
     }
   })
 
+  app.post('/students', async (req, res) => {
+    try {
+      const student = req.body.student
+      await db.student.create(student)
+      res.sendStatus(200)
+    } catch (e) {
+      console.log(e)
+      res.sendStatus(500)
+    }
+  })
+
  // temporarily put this back
   app.post('/students-update', async (req, res) => {
     try {
@@ -110,33 +126,33 @@ module.exports = (app) => {
     }
   })
 
-/////// // update updated students
-/////// // this can actually use the standar rest put/post 2/17/21
-/////// app.post('/students-update', async (req, res) => {
-///////   try {
-///////     const updatedStudents = req.body.students 
-///////     for ( let student of updatedStudents ) {
-///////       //console.log(updatedStudents)
-///////       //let savedStudent = await db.student.findById(student._id)   
-///////       //savedStudent = student
-///////       //console.log(savedStudent)
-///////       //await db.student.deleteMany({})   //
-///////       //await db.student.create(updatedStudents)
-///////       //await savedStudent.save()
-///////       if ( student._id ) {
-///////         await db.student.findByIdAndUpdate(student._id, student )
-///////         console.log(`Update student ${student.name}`)
-///////       } else {
-///////         await db.student.create(student)
-///////         console.log(`Create student ${student.name}`)
-///////       }
-///////     }
-///////     res.json({success:true})
-///////   } catch (e) {
-///////      console.log(e)
-///////     res.sendStatus(500);
-///////   }
-/////// })
+/////// update updated students
+/////// this can actually use the standar rest put/post 2/17/21
+///////app.post('/students-update', async (req, res) => {
+///////  try {
+///////    const updatedStudents = req.body.students 
+///////    for ( let student of updatedStudents ) {
+///////      //console.log(updatedStudents)
+///////      //let savedStudent = await db.student.findById(student._id)   
+///////      //savedStudent = student
+///////      //console.log(savedStudent)
+///////      //await db.student.deleteMany({})   //
+///////      //await db.student.create(updatedStudents)
+///////      //await savedStudent.save()
+///////      if ( student._id ) {
+///////        await db.student.findByIdAndUpdate(student._id, student )
+///////        console.log(`Update student ${student.name}`)
+///////      } else {
+///////        await db.student.create(student)
+///////        console.log(`Create student ${student.name}`)
+///////      }
+///////    }
+///////    res.json({success:true})
+///////  } catch (e) {
+///////     console.log(e)
+///////    res.sendStatus(500);
+///////  }
+///////})
 
 
   
