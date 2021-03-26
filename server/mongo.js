@@ -6,6 +6,7 @@ const studentSchema = new Schema({
 	name: String,
 	naam: String,
 	darsId: Number,
+  studentId: Number,
 	email: String,
 	code: Number,
   //studentPic; String
