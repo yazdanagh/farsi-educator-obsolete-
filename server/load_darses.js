@@ -91,6 +91,17 @@ const main = async () => {
 
     const profiles = []
     const students = await db.student.find({})
+
+    // Create students in student config
+    let configStudents =  await fs.readFile("./students.config")
+    configStudents = JSON.parse(configStudents )
+    console.log(configStudents)
+    for ( let configStudent of configStudents ) {
+      if ( !students.find( s => s.studentId === configStudent.studentId )) {
+        await db.student.create(configStudent)
+      }
+    }
+
     for ( let [id,student] of students.entries() ) {
       try {
         const imageFile = `../client/src/images2/profiles/${student.name}.jpg`
