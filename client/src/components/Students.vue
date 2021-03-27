@@ -10,18 +10,21 @@
     :items-per-page="20"
     class="elevation-1"
   >
+   <template v-slot:item.pic="{ item }">
+   <v-img
+   height="100"
+   width="100"
+   :src="item.url"
+   ></v-img>
+
+   </template>
    <template v-slot:item.name="{ item }">
       <v-chip
         color="grey lighten-3"
         
-      >
-      <!--
-<router-link :to="'/dars/' + item.code + '?email=' + item.email">
-        {{ item.name }}
-</router-link>
--->
-<span @click="goToStudent(item.code,item.email)"> {{ item.name }} </span>
-      </v-chip>
+        >
+        <span @click="goToStudent(item.code,item.email)"> {{ item.name }} </span>
+        </v-chip>
     </template>
   <template v-slot:top>
       <v-toolbar
@@ -56,6 +59,21 @@
 
             <v-card-text>
               <v-container>
+              <v-row>
+              <v-col
+                    cols="12"
+                  >
+                  <v-image-input
+                  v-model="editedItem.profileImage"
+                  :image-quality="0.85"
+                  :name="'hajoo'"
+                  clearable
+                  image-format="jpeg"
+                  @file-info="onFileInfo"
+                  />
+
+                  </v-col>
+              </v-row>
               <v-row>
                  <v-col
                     cols="12"
@@ -123,6 +141,15 @@
                     sm="6"
                     md="4"
                     >
+                    <!--
+                    <v-image-input
+                    v-model="imageData"
+                    :image-quality="0.85"
+                    clearable
+                    image-format="jpeg"
+                    @file-info="onFileInfo"
+                    />
+                    -->
                     <!--
                     <v-file-input
                     v-model="editedItem.imageFile"
@@ -213,10 +240,11 @@ export default {
   name: 'User',
   data: function () {
     return {
+      imageData: null,
       dialog: false,
       dialogDelete: false,
       students: [],
-      headers: "studentId name naam darsId email code actions".split(' ').map( a => {  return { 'text': a, 'value': a }} ),
+      headers: "pic studentId name naam darsId email code actions".split(' ').map( a => {  return { 'text': a, 'value': a }} ),
       editedIndex: -1,
       mdiHome,
       editedItem: {
@@ -225,7 +253,7 @@ export default {
         darsId: 0,
         email: '',
         code: 0,
-        imageFile: null,
+        profileImage: "", 
         needToSave: false,
       },
       backendHost: process.env.NODE_ENV === 'development' ? 'http://localhost:3085'  : ''
@@ -242,6 +270,14 @@ export default {
   async mounted() {
     const res = (await axios.get(`${this.backendHost}/students`))
     this.students = res.data
+    let blob,url;
+    for ( let student of this.students ) {
+      if ( student.profileImage ) {
+        blob = new Blob([ new Buffer(student.profileImage.data, 'base64')], { type: 'image/jpg' });
+        url = window.URL.createObjectURL(blob)
+        student.url = url
+      }
+    }
     console.log(res)
   },
 
@@ -268,6 +304,9 @@ export default {
     }
   },
   methods: { 
+    onFileInfo(file) {
+      console.log(file)
+    },
     async goToStudent(code,email) {
       const headers = {
         'Content-Type': 'application/json',
@@ -291,8 +330,10 @@ export default {
         this.dialogDelete = true
       },
 
-      deleteItemConfirm () {
-        this.students.splice(this.editedIndex, 1)
+      async deleteItemConfirm () {
+        const student = this.students.splice(this.editedIndex, 1)[0]
+        console.log(student)
+        await axios.delete(`${this.backendHost}/students/${student._id}` )
         this.closeDelete()
       },
 
@@ -325,6 +366,8 @@ export default {
           }
         } else {
           console.log(student)
+          let temp = student.profileImage
+          student.profileImage = { contentType: "image/jpeg", data: temp.split(',')[1] }
           const res = await axios.post(`${this.backendHost}/students`,  { student} )
           if ( res.status === 200 ) {
             this.students.push(this.editedItem)

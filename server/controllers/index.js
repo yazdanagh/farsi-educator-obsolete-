@@ -102,9 +102,28 @@ module.exports = (app) => {
     }
   })
 
+  app.delete('/students/:id', async (req, res) => {
+    try {
+      const _id = req.params.id
+      const student = await db.student.findById(_id)   
+      if ( student ) {
+        console.log("Delete student with id: " + _id)
+        await db.student.deleteOne({_id})
+        res.sendStatus(200)
+      } else {
+        res.sendStatus(404);
+      }
+    } catch (e) {
+      console.log(e)
+      res.sendStatus(500)
+    }
+  })
+
+
   app.post('/students', async (req, res) => {
     try {
       const student = req.body.student
+      console.log("Create student: " + student.name)
       await db.student.create(student)
       res.sendStatus(200)
     } catch (e) {
