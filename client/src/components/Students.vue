@@ -64,7 +64,7 @@
                     cols="12"
                   >
                   <v-image-input
-                  v-model="editedItem.profileImage"
+                  v-model="imageData"
                   :image-quality="0.85"
                   :name="'hajoo'"
                   clearable
@@ -240,7 +240,7 @@ export default {
   name: 'User',
   data: function () {
     return {
-      imageData: null,
+      imageData: "",
       dialog: false,
       dialogDelete: false,
       students: [],
@@ -321,6 +321,9 @@ export default {
     editItem (item) {
         this.editedIndex = this.students.indexOf(item)
         this.editedItem = Object.assign({}, item)
+        if ( this.editedItem.profileImage ) {
+        // this.editedItem.profileImage = "data:image/jpeg;base64," + this.editedItem.profileImage.data
+        }
         this.dialog = true
       },
 
@@ -360,14 +363,18 @@ export default {
           console.log(student)
           student.darsId = parseInt(student.darsId)
           student.studentId = parseInt(student.studentId)
+          if ( this.imageData ) {
+            student.profileImage = { contentType: "image/jpeg", data: this.imageData.split(',')[1] }
+          }
           const res = await axios.put(`${this.backendHost}/students/${student._id}`,  student, this.headerConfig )
           if ( res.status === 200 ) {
             Object.assign(this.students[this.editedIndex], student)
           }
         } else {
           console.log(student)
-          let temp = student.profileImage
-          student.profileImage = { contentType: "image/jpeg", data: temp.split(',')[1] }
+          if ( this.imageData ) {
+            student.profileImage = { contentType: "image/jpeg", data: this.imageData.split(',')[1] }
+          }
           const res = await axios.post(`${this.backendHost}/students`,  { student} )
           if ( res.status === 200 ) {
             this.students.push(this.editedItem)

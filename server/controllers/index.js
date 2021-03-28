@@ -27,6 +27,7 @@ const authToken = async (req,res,next) => {
       const code = await jwt.verify(token,process.env.ACCESS_TOKEN_SECRET)
       console.log(code)
       req.code = code
+      console.log("Authorized")
       next()
     } catch (err) {
       console.log(err)

@@ -48,10 +48,10 @@
     
     <v-main  :style="`background-image: url('images2/shekar7.png')`" 
     class="fill-height bg-image"
->
+    >
       <router-view @darsId="onClickChild"></router-view> 
       <!-- <Main> </Main> -->
-      </v-main>
+    </v-main>
   </v-app>
 </div>
 </template>
