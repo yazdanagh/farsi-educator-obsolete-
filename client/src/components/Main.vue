@@ -248,8 +248,13 @@ export default {
     res = await axios.get(`${this.backendHost}/horoof`)
     this.horoof = res.data
     for ( let harf of this.horoof ) {
-      blob = new Blob([ new Buffer(harf.harfAudio.data, 'base64')], { type: 'audio/m4a' });
-      url = window.URL.createObjectURL(blob)
+      //if ( harf.harfAudio.data ) { 
+        blob = new Blob([ new Buffer(harf.harfAudio.data, 'base64')], { type: 'audio/m4a' });
+        url = window.URL.createObjectURL(blob)
+      //} else {
+      //  console.log(` No audio for ${harf.harfName}`)
+       // url = "no_audio"
+      //}
       this.audioAlph[harf.harfSound ]  = url
       for ( let [idx,harfImage] of harf.harfImages.entries() ) {
         blob = new Blob([ new Buffer(harfImage.data, 'base64')], { type: 'image/png' });
@@ -525,8 +530,10 @@ export default {
     },
 
     async clearCanvas() {
-      paper.project.activeLayer.removeChildren();
-      await paper.view.draw();
+      if ( paper.project )
+        paper.project.activeLayer.removeChildren();
+      if ( paper.view )
+        await paper.view.draw();
       //paper.view.clearRect(0, 0, paper.width,paper.height)
     },
     async updateCanvas() {

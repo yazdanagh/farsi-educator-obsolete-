@@ -31,12 +31,15 @@ const main = async () => {
       }
       const harfAudio = { data: null, contentType : "audio/mp3" } 
       const audioFile = `../client/src/audios/${harfSound}.mp3`
-      console.log(`harfSound ${harfSound} added`)
-      let fileData =  await fs.readFile(audioFile)
-      harfAudio.data = fileData.toString('base64');
+      const fileExists = await fs.exists(audioFile)
+      if ( fileExists ) {
+        console.log(`harfSound ${harfSound} added`)
+        let fileData =  await fs.readFile(audioFile)
+        harfAudio.data = fileData.toString('base64');
+      }
       const harfImages= []
       for ( let harfForm of harfForms ) {
-        const imageFile = `../client/src/images2/${harfForm}.png`
+        const imageFile = `../client/src/images3/${harfForm}.png`
         let fileData =  await fs.readFile(imageFile)
         const harfImage = { data: null, contentType : "image/png" } 
         harfImage.data = fileData.toString('base64');
@@ -74,8 +77,8 @@ const main = async () => {
         if ( fileExists ) {
           let fileData =  await fs.readFile(audioFile)
           kalamehAudio.data = fileData.toString('base64');
-          console.log(`kalameh ${kalameh} was added`)
         }
+          console.log(`kalameh ${kalameh} was added`)
         darses.push({ 
           kalamehHarfForms, 
           kalameh,
@@ -89,6 +92,18 @@ const main = async () => {
     const darsesDB = await db.dars.find({}) 
     //console.log(darsesDB)
 
+
+  // const kelases = await db.kelas.find({})
+  // // create kelases in kelas config
+  // let configKelases =  await fs.readFile("./kelases.config")
+  // configKelases = JSON.parse(configKelases )
+  // console.log(configKelases)
+  // for ( let configKelas of configKelases ) {
+  //   if ( !students.find( s => s.studentId === configKelas.studentId )) {
+  //     await db.student.create(configStudent)
+  //   }
+  // }
+    
     const profiles = []
     const students = await db.student.find({})
 

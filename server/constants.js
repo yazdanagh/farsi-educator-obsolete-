@@ -86,7 +86,26 @@ const harfInput = [
   "shin she shibt shine_bozorg_tanha shikc  shine_koochik_chap shikd shine_koochik_dovar shibc shine_bozorg_chasban" ,
   "ze ze zt ze_tanha zc ze_chasban" ,
   "lam le lbt le_bozorg_tanha lkc le_koochik_chap lkd le_koochik_dovar lbc le_bozorg_chasban" ,
-  "vav ve vt vav_tanha vc vav_chasban" ,
+  "jim je jkc je_koochik_chap jkd je_koochik_dovar jbt je_bozorg_tanha jbc je_bozorg_chasban" ,
+  "che che chkc che_koochik_chap chkd che_koochik_dovar chbt che_bozorg_tanha chbc che_bozorg_chasban" ,
+  "he he hkc he_koochik_chap hkd he_koochik_dovar hbt he_bozorg_tanha hbc he_bozorg_chasban" ,
+  "khe khe khkc khe_koochik_chap khkd khe_koochik_dovar khbt khe_bozorg_tanha khbc khe_bozorg_chasban" ,
+  "kaf ke kkc ke_koochik_chap kkd ke_koochik_dovar kbt ke_bozorg_tanha kbc ke_bozorg_chasban" ,
+  "gaf ge gkc ge_koochik_chap gkd ge_koochik_dovar gbt ge_bozorg_tanha gbc ge_bozorg_chasban" ,
+  "vav ve vt vav_tanha vc vav_chasban",
+  "sad se sadekc sade_koochik_chap sadekd sade_koochik_dovar sadebt sade_bozorg_tanha sadebc sade_bozorg_chasban",
+  "zad ze zadekc zade_koochik_chap zadekd zade_koochik_dovar zadebt zade_bozorg_tanha zadebc zade_bozorg_chasban",
+  "sse se ssbt sse_bozorg_tanha sskc sse_koochik_chap sskd sse_koochik_dovar ssbc sse_bozorg_chasban" ,
+  "ein ee einekc eine_koochik_chap einekd eine_koochik_dovar einebt eine_bozorg_tanha einebc eine_bozorg_chasban",
+  "ghein ghe gheinekc gheine_koochik_chap gheinekd gheine_koochik_dovar gheinebt gheine_bozorg_tanha gheinebc gheine_bozorg_chasban",
+  "zad ze zadekc zade_koochik_chap zadekd zade_koochik_dovar zadebt zade_bozorg_tanha zadebc zade_bozorg_chasban",
+  "ta te tac ta_chap tar ta_rast tat ta_tanha tad ta_dovar", 
+  "za ze zac za_chap zar za_rast zat za_tanha zad za_dovar", 
+  "hhe he hhv hhe_vasat hha hhe_akhar hht hhe_tanha hhkc hhe_koochik_chap", 
+  "fe fe fbt fe_bozorg_tanha fkc fe_koochik_chap fkd fe_koochik_dovar fbc fe_bozorg_chasban" ,
+  "ghaf ghe ghbt ghe_bozorg_tanha ghkc ghe_koochik_chap ghkd ghe_koochik_dovar ghbc ghe_bozorg_chasban" ,
+  "zhe zhe zht zhe_tanha zhc zhe_chasban" ,
+
   //[ faseleh ] 
 ]
 
