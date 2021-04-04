@@ -182,7 +182,7 @@ export default {
   name: 'Main',
   data: function () {
     return {
-      darsId: 1,
+      darsId: null,
       email: '',
       code: '',
       dars: null,
@@ -211,7 +211,12 @@ export default {
     async selectedDarsId(newVal) {
       await this.goToDars(newVal)
     },
-    async darsId(newVal) {
+    async darsId(newVal, oldVal) {
+      //console.log(` new val: ${newVal}, old val: ${oldVal}`)
+      if ( oldVal === null || newVal == oldVal ) { 
+        //console.log("returning ...")
+        return
+      }
       let res = await axios.get(`${this.backendHost}/darses/${newVal}`, this.headerConfig)
       this.dars = res.data
       await this.addKalamehAudio()
@@ -226,26 +231,28 @@ export default {
 
     console.log("Mounted")
     //try {
-      let res = await axios.get(`${this.backendHost}/main`, this.headerConfig)
-      this.student = res.data
-      const studentDarsId = parseInt(res.data['darsId']) 
-      this.darsId = studentDarsId + 1  
-      res = await axios.get(`${this.backendHost}/darses/${this.darsId}`,this.headerConfig);
-      this.numHarfLearned = res.data.numHarfLearned
+      const resMain = await axios.get(`${this.backendHost}/main`, this.headerConfig)
+      this.student = resMain.data
+      const studentDarsId = parseInt(resMain.data['darsId']) 
+
+      const resDars = await axios.get(`${this.backendHost}/darses/${studentDarsId + 1}`,this.headerConfig);
+      this.numHarfLearned = resDars.data.numHarfLearned
       if ( this.$route.params.darsId === 'latest' ) {
         // do nothing
+        this.darsId = studentDarsId + 1  
+        this.dars = resDars.data
       } else {
         this.darsId = this.$route.params.darsId
-        res = await axios.get(`${this.backendHost}/darses/${this.darsId}`,this.headerConfig);
+        const resDars2 = await axios.get(`${this.backendHost}/darses/${this.darsId}`,this.headerConfig);
+        this.dars = resDars2.data
       }
-      this.dars = res.data;
       let blob
       let url
       this.addKalamehAudio();
       
     //const x = new Audio(this.dars.kalamehAudio)
     //x.play()
-    res = await axios.get(`${this.backendHost}/horoof`)
+    let res = await axios.get(`${this.backendHost}/horoof`)
     this.horoof = res.data
     for ( let harf of this.horoof ) {
       //if ( harf.harfAudio.data ) { 
@@ -278,12 +285,12 @@ export default {
     this.initCanvas()
     this.$emit('darsId', this.darsId )
     //this.student = this.$route.query.student
-    this.clearCanvas()
-    const canvasWait = 1000
-    setTimeout ( () => { 
-      console.log("Wait for Canvasl " + canvasWait)
-      this.updateCanvas()
-    }, canvasWait) 
+    await this.cleanUpdateCanvas()
+    // const canvasWait = 2000
+    // setTimeout ( () => { 
+    //   console.log("Wait mounted for Canvas " + canvasWait)
+    //   this.updateCanvas()
+    // }, canvasWait) 
     //} catch (e) {
     //  console.log(e)
     //  this.$router.push('/')
@@ -417,12 +424,11 @@ export default {
       }
       // Do not try window.onresize or addEventListener("resize"... as they dont work
       var sto = null
-      paper.view.onResize = () => {
+      paper.view.onResize = async () => {
         if ( sto ) {
           clearTimeout(sto)
         }
-        sto = setTimeout(this.cleanUpdateCanvas, 250 )
-
+        sto = await setTimeout(this.cleanUpdateCanvas, 250 )
       }
 
       const checkFinished = async () => {
@@ -494,31 +500,26 @@ export default {
       }
       //await this.$router.push({name: 'main',params: {darsId:this.darsId}})
       //await this.addKalamehAudio()
-      //await this.cleanUpdateCanvas()
     },
     async goToFirstDars() {
       this.darsId = 1
-      //await this.cleanUpdateCanvas()
     },
     async goToLastDars() {
       this.darsId = this.student.darsId + 1
-      //await this.cleanUpdateCanvas()
     },
     async goToPrevDars() {
       this.darsId--;
       //this.$router.push({name: 'main',params: {darsId:this.darsId}})
-      //await this.cleanUpdateCanvas()
     },
     async goToDars(n) { 
       this.darsId = n
       //await this.addKalamehAudio()
-      //await this.cleanUpdateCanvas()
     },
     async cleanUpdateCanvas() {
       //await this.$router.push(`/dars/${this.darsId}`)
-      this.clearCanvas()
-      setTimeout ( () => { 
-        this.updateCanvas()
+      await this.clearCanvas()
+      await setTimeout ( async () => { 
+        await this.updateCanvas()
       }, 1000 )
 
     },
@@ -538,6 +539,7 @@ export default {
     },
     async updateCanvas() {
 
+      console.log("Update canvas...")
       const paneTopMargin = 50
       const paneRightMargin = 50
       const topRight = new paper.Point( 
