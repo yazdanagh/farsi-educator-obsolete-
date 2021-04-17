@@ -24,9 +24,9 @@ const authToken = async (req,res,next) => {
   const token = authHeader && authHeader.split(' ')[1]
   if ( token == null ) return res.sendStatus(401)
     try {
-      const code = await jwt.verify(token,process.env.ACCESS_TOKEN_SECRET)
-      console.log(code)
-      req.code = code
+      const studentId = await jwt.verify(token,process.env.ACCESS_TOKEN_SECRET)
+      console.log(studentId)
+      req.studentId = studentId 
       console.log("Authorized")
       next()
     } catch (err) {
@@ -43,8 +43,9 @@ module.exports = (app) => {
      try {
        const code = req.body.code
        const email = req.body.email
-       const student = await db.student.find({code,email}) 
-       const accessToken = jwt.sign(code, process.env.ACCESS_TOKEN_SECRET )
+       const student = await db.student.findOne({code,email}) 
+       let studentId = student.studentId
+       const accessToken = jwt.sign(studentId, process.env.ACCESS_TOKEN_SECRET )
        res.json({accessToken})
      } catch (e) {
        console.log(e)
@@ -54,8 +55,8 @@ module.exports = (app) => {
 
 
   app.get('/main', authToken, async (req, res) => {
-    const code = req.code
-    const students = await db.student.find({code})   
+    const studentId = req.studentId
+    const students = await db.student.find({studentId})   
 	  const student = students[0]
     console.log(student)
     //console.log(req.params)
@@ -72,11 +73,10 @@ module.exports = (app) => {
   // technicallly should be patch
   app.put('/students/:_id', authToken, async(req,res) => {
     try {
-      const code = req.code
+      const studentId = req.studentId
       let savedStudent = await db.student.findById(req.params._id)
-      console.log(code)
       // Admin code
-      if ( savedStudent.code == code || code == 1111 ) {
+      if ( savedStudent.studentId == studentId || studentId == 1000 ) {
         //student['darsId'] = req.body.darsId 
         //await student.save()
         console.log(req.body)
@@ -211,15 +211,15 @@ module.exports = (app) => {
 
   app.get('/darses', authToken, async (req, res) => {
     try {
-      const code = req.code
+      const studentId = req.studentId
       const page = req.query.page
-      const students = await db.student.find({code})   
-      console.log(code)
+      const students = await db.student.find({studentId})   
+      console.log(studentId)
       console.log(page)
       const student = students[0]   
       const totDarses = await db.dars.count({})   
       const numDarses = student.name === 'test' ? totDarses + 1 : student.darsId + 1   
-      console.log('+++++++++++' + totDarses + student + code )
+      console.log('+++++++++++' + totDarses + student + studentId )
       //const dars = await db.dars.findOne({darsId: student.darsId})   
       const darses = await db.dars.find({darsId: { $in:  Array.from(Array(numDarses).keys())  }},{},{ sort: {darsId: 1}, skip: (page-1)*10, limit: 10})   
       if ( darses ) {
