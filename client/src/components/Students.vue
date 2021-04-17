@@ -75,12 +75,12 @@
                   </v-col>
               </v-row>
               <v-row>
-                 <v-col
+                 <v-col v-if="editedIndex != -1"
                     cols="12"
                     sm="6"
                     md="4"
                   >
-                    <v-text-field
+                    <v-text-field 
                       v-model="editedItem.studentId"
                       label="Student ID"
                     ></v-text-field>

@@ -125,8 +125,12 @@ module.exports = (app) => {
     try {
       const student = req.body.student
       console.log("Create student: " + student.name)
+      const maxStuId = (await db.student.find().sort({studentId:-1}).limit(1))[0].studentId
+      console.log(maxStuId)
+      student.studentId = maxStuId + 1
       await db.student.create(student)
-      res.sendStatus(200)
+      const students = await db.student.find({})
+      res.json(students)
     } catch (e) {
       console.log(e)
       res.sendStatus(500)
