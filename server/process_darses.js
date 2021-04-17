@@ -31,16 +31,16 @@ const main = async () => {
       await dars.save()
     
      const darsUniqueHarfForms = _.uniq(dars['kalamehHarfForms'])
-     console.log(darsUniqueHarfForms.length)
+     //console.log(darsUniqueHarfForms.length)
      let darsHarfs = darsUniqueHarfForms.reduce((tot,harfForm) => { 
        let harf = harfs.find( g => g.harfForms.includes(harfForm))
        if ( harfHash[harf.harfName] ) return tot 
        tot.push(harf)
        harfHash[harf.harfName] = 1
        numHarfLearned++ // dars.numHarfLearned + 1
+       console.log(`Learning of harf ${harf.harfName} started at ${dars.kalameh}`)
        return tot
      }, [])
-      console.log(dars)
     }
        
     process.exit()

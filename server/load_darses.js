@@ -33,7 +33,7 @@ const main = async () => {
       const audioFile = `../client/src/audios/${harfSound}.mp3`
       const fileExists = await fs.exists(audioFile)
       if ( fileExists ) {
-        console.log(`harfSound ${harfSound} added`)
+        console.log(`harf ${harfName} harfSound ${harfSound} added`)
         let fileData =  await fs.readFile(audioFile)
         harfAudio.data = fileData.toString('base64');
       }
