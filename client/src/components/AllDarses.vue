@@ -40,7 +40,7 @@
   </v-card>
 
    <v-btn style="width:100%" @click="goToDarses" large class=" mt-5" color="blue lighten-1" > 
-   ادامه درسها
+       ادامه درسها
        <v-icon >  
           {{ mdiViewQuilt }} 
        </v-icon>
@@ -104,15 +104,19 @@
   </v-col>
   </v-row>
   -->
-  <v-select class="mt-5"
+  <v-select reverse class="mt-5"
   :items="goToPages"
   item-text="text"
   item-value="value"
   background-color="blue lighten-1"
   v-model="page"
   solo
-  label='برو به صفحه' 
-  ></v-select>
+  >
+
+  <template v-slot:label>
+     <p> برو به صفحه </p>
+    </template>
+  </v-select>
 
 </div>
 </v-col>

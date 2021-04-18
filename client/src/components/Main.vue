@@ -104,7 +104,7 @@
   </v-col>
   </v-row>
   -->
-  <v-select class="mt-5"
+  <v-select reverse class="mt-5"
   :items="goToDarses"
   item-text="text"
   item-value="value"
@@ -113,8 +113,8 @@
   solo
   >
 
-  <template v-slot:label style="right:25px;left:auto">
-      <p class="justify-right">برو به درس</p>
+  <template v-slot:label>
+      <p>برو به درس</p>
     </template>
 
   </v-select>
@@ -137,11 +137,6 @@
      <audio  :id="audioDarsId"  > 
         <source :src="audioDars" type="audio/mp3">
      </audio>
-     <!--
-     <audio id="aab"  > 
-        <source src="http://192.168.1.82:8080/aab.mp3" type="audio/mp3">
-     </audio>
-     -->
      <audio v-for="(aG,aIdx) in darsHoroof" :src="audioAlph[aG.harfSound]" :id="audioAlphId(aG)" :key="aIdx" >
      </audio>
    </div>
@@ -559,5 +554,8 @@ export default {
 .disable-btn {
   pointer-events: none;
   opacity: 0.2;
+}
+a {
+    text-decoration: none;
 }
 </style>
