@@ -163,6 +163,7 @@ export default {
       horoof: [],
       darsDone: false,
       student: '',
+      numHarfLearned: '',
       selectedPageId: '', 
       //mdiArrowRightBold,
       //mdiArrowLeftBold,
@@ -187,75 +188,71 @@ export default {
 
   },
   async mounted() {
-    //debugger
+
+    console.log("Mounted")
     //try {
-      let res = await axios.get(`${this.backendHost}/main`, this.headerConfig)
-      this.student = res.data
+      const resMain = await axios.get(`${this.backendHost}/main`, this.headerConfig)
+      this.student = resMain.data
+      const studentDarsId = parseInt(resMain.data['darsId']) 
+
+      const resDars = await axios.get(`${this.backendHost}/darses/${studentDarsId + 1}`,this.headerConfig);
+      this.numHarfLearned = resDars.data.numHarfLearned
+
       this.page = this.$route.query.page
       res = await axios.get(`${this.backendHost}/darses?page=${this.page}`, this.headerConfig)
       this.darses = res.data
-      res = await axios.get(`${this.backendHost}/horoof`)
-      this.horoof = res.data
 
-      const studentDarsId = this.student['darsId']
-      res = await axios.get(`${this.backendHost}/darses/${studentDarsId}`,this.headerConfig)
-      this.dars = res.data
 
       let blob
       let url
       for ( let dars of this.darses ) {
-        if ( dars.kalamehAudio.data ) {
-          blob = new Blob([ new Buffer(dars.kalamehAudio.data, 'base64')], { type: 'audio/m4a' });
-          url = window.URL.createObjectURL(blob)
-          this.audioDars[dars.kalameh] = url
-        }
+        this.addKalamehAudio(dars);
       }
+
+      let res = await axios.get(`${this.backendHost}/horoof`)
+      this.horoof = res.data
+
       for ( let harf of this.horoof ) {
         blob = new Blob([ new Buffer(harf.harfAudio.data, 'base64')], { type: 'audio/m4a' });
         url = window.URL.createObjectURL(blob)
-        this.audioAlph[harf.harfSound ]  = url
-        for ( let [idx,harfImage] of harf.harfImages.entries() ) {
-          blob = new Blob([ new Buffer(harfImage.data, 'base64')], { type: 'image/png' });
-          url = window.URL.createObjectURL(blob)
-          this.imgAlph[harf.harfForms[idx]]  = url
-        }
+
+
+
+
+      this.audioAlph[harf.harfSound ]  = url
+      for ( let [idx,harfImage] of harf.harfImages.entries() ) {
+        blob = new Blob([ new Buffer(harfImage.data, 'base64')], { type: 'image/png' });
+        url = window.URL.createObjectURL(blob)
+        this.imgAlph[harf.harfForms[idx]]  = url
       }
-      blob = new Blob([ new Buffer(this.student.profileImage.data, 'base64')], { type: 'image/jpg' });
-      url = window.URL.createObjectURL(blob)
-      this.imgProfile  = url
-
-      const numPages = Math.floor(this.student.darsId/10)  
-      this.goToPages = Array.from(Array(numPages).keys()).map( a => { 
-        return { 
-          text: `برو به صفحه  ${this.pn(a+1)}`,
-          value: a+1
-        }
-
-      })
+    }
 
 
-      this.initCanvas()
-      const canvasWait = 1000
-      setTimeout ( () => { 
+
+    console.log(this.student.profileImage)
+    blob = new Blob([ new Buffer(this.student.profileImage.data, 'base64')], { type: 'image/jpg' });
+    url = window.URL.createObjectURL(blob)
+    this.imgProfile  = url
+    const numPages = Math.floor(this.student.darsId/10)  
+    this.goToPages = Array.from(Array(numPages).keys()).map( a => { 
+      return { 
+        text: `برو به صفحه  ${this.pn(a+1)}`,
+        value: a+1
+      }
+
+    })
+    this.initCanvas()
+    //this.$emit('darsId', this.darsId )
+    const canvasWait = 1000
+    setTimeout ( () => { 
         console.log("WAIT for Canvas " + canvasWait)
         this.updateCanvasDarses()
-      }, canvasWait) 
-   //} catch (e) {
-   //  console.log(e)
-   //  this.$router.push('/')
-   //}
+    }, canvasWait) 
   },
   computed: { 
     ...Vuex.mapState({ 
       accessToken: state => state.accessToken
     }),
-   numHarfLearned() {
-     if ( this.dars ) { 
-       return this.dars.numHarfLearned 
-     } else {
-       return ""
-     }
-   },
    lastPage() {
      const numPages = Math.floor(this.student.darsId/10)  
      return numPages
@@ -276,6 +273,23 @@ export default {
   },
   //
   methods: {
+
+    addKalamehAudio(dars) {
+      let blob
+      let url
+      if ( dars && dars.kalamehAudio.data ) {
+        blob = new Blob([ new Buffer(dars.kalamehAudio.data, 'base64')], { type: 'audio/m4a' });
+        //window.x = dars.kalamehAudio.data
+        url = window.URL.createObjectURL(blob)
+        //window.audio = new Audio();
+        //window.audio.src = url;
+        //window.audio.play();
+        this.audioDars = url
+        console.log("HERE  " + url)
+        
+      }
+    },
+
     
     pn(num) {
       return pn.convert(num)

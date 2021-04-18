@@ -218,6 +218,7 @@ export default {
 
       const resDars = await axios.get(`${this.backendHost}/darses/${studentDarsId + 1}`,this.headerConfig);
       this.numHarfLearned = resDars.data.numHarfLearned
+
       if ( this.$route.params.darsId === 'latest' ) {
         // do nothing
         this.darsId = studentDarsId + 1  
@@ -230,12 +231,11 @@ export default {
       let blob
       let url
       this.addKalamehAudio();
-      
-    //const x = new Audio(this.dars.kalamehAudio)
-    //x.play()
-    let res = await axios.get(`${this.backendHost}/horoof`)
-    this.horoof = res.data
-    for ( let harf of this.horoof ) {
+
+      let res = await axios.get(`${this.backendHost}/horoof`)
+      this.horoof = res.data
+
+      for ( let harf of this.horoof ) {
       //if ( harf.harfAudio.data ) { 
         blob = new Blob([ new Buffer(harf.harfAudio.data, 'base64')], { type: 'audio/m4a' });
         url = window.URL.createObjectURL(blob)
@@ -250,12 +250,14 @@ export default {
         this.imgAlph[harf.harfForms[idx]]  = url
       }
     }
+
+
+
     console.log(this.student.profileImage)
     blob = new Blob([ new Buffer(this.student.profileImage.data, 'base64')], { type: 'image/jpg' });
     url = window.URL.createObjectURL(blob)
     this.imgProfile  = url
-    console.log("this")
-    console.log(this)
+
     this.goToDarses = Array.from(Array(this.student.darsId).keys()).map( a => { 
       return { 
         text: `درس شماره  ${this.pn(a+1)}`,
@@ -265,17 +267,7 @@ export default {
     })
     this.initCanvas()
     this.$emit('darsId', this.darsId )
-    //this.student = this.$route.query.student
     await this.cleanUpdateCanvas()
-    // const canvasWait = 2000
-    // setTimeout ( () => { 
-    //   console.log("Wait mounted for Canvas " + canvasWait)
-    //   this.updateCanvas()
-    // }, canvasWait) 
-    //} catch (e) {
-    //  console.log(e)
-    //  this.$router.push('/')
-    //}
   },
   computed: { 
 
@@ -294,28 +286,6 @@ export default {
     }
     return config
    },
-  //numHarfLearned () {
-  //  if ( this.dars ) { 
-  //    return this.dars.numHarfLearned 
-  //  } else {
-  //    return ""
-  //  }
-  //},
-  //audioDars() {
-  //   let blob
-  //   let url
-  //  if ( this.dars && this.dars.kalamehAudio.data ) {
-  //    blob = new Blob([ new Buffer(this.dars.kalamehAudio.data, 'base64')], { type: 'audio/m4a' });
-  //    //window.x = this.dars.kalamehAudio.data
-  //    url = window.URL.createObjectURL(blob)
-  //    //window.audio = new Audio();
-  //    //window.audio.src = url;
-  //    //window.audio.play();
-  //    return  url
-  //  } else {
-  //    return null
-  //  }
-  //},
    
    darsHarfForms() {  
      return this.dars ? this.dars['kalamehHarfForms'] : [] 
@@ -354,18 +324,6 @@ export default {
         console.log("HERE  " + url)
         
       }
-//     const audioElement = document.createElement('audio');
-//     audioElement.setAttribute('controls', true);
-////     //audioElement.setAttribute('id', this.audioDarsId);
-//    document.body.appendChild(audioElement);
-//    const sourceElement = document.createElement('source');
-//    audioElement.appendChild(sourceElement);
-//    sourceElement.src = url;
-////    //sourceElement.src = url;
-//    sourceElement.type = 'audio/mp3';
-//
-//     audioElement.play()
-//
     },
     shuffle(array) {
         var currentIndex = array.length, temporaryValue, randomIndex;
