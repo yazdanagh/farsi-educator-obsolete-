@@ -133,7 +133,9 @@
      </div>
    </div>
    <div id="allAudios">
-     <audio v-for="dars in darses" :key="dars.kalameh" :src='audioDars[dars.kalameh]' :id="dars.kalameh"  > </audio>
+     <audio v-for="dars in darses" :key="dars.kalameh" :id="dars.kalameh"  > 
+        <source :src="audioDars[dars.kalameh]" type="audio/mp3">
+     </audio>
    </div>
    </v-col>
 
@@ -284,7 +286,7 @@ export default {
         //window.audio = new Audio();
         //window.audio.src = url;
         //window.audio.play();
-        this.audioDars = url
+        this.audioDars[dars.kalameh] = url
         console.log("HERE  " + url)
         
       }
