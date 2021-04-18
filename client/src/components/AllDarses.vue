@@ -296,8 +296,8 @@ export default {
     },
     async initCanvas() {
       this.canvas = document.getElementById('myCanvas');
-      this.canvas.width =   cons.canvasWidth; // window.innerWidth
-      this.canvas.height = 8000 // cons.canvasHeight; // window.innerHeight
+      //this.canvas.width =   cons.canvasWidth; // window.innerWidth
+      this.canvas.height = cons.canvasHeight // cons.canvasHeight; // window.innerHeight
       console.log(cons)
       await paper.setup(this.canvas);
       // scalaing like this wont fix RtoL issue
