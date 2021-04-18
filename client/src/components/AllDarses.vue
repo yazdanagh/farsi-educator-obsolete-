@@ -22,7 +22,7 @@
     </v-card-title>
 
     <v-divider class="mx-3"></v-divider>
-    <v-card-text class="">
+    <v-card-text style="display:block" class="text-right">
     <div>
       .
       {{ pn(this.student.darsId) }} 
@@ -355,5 +355,8 @@ export default {
 .disable-btn {
   pointer-events: none;
   opacity: 0.2;
+}
+a {
+    text-decoration: none;
 }
 </style>

@@ -23,32 +23,18 @@
 
     <v-divider class="mx-3"></v-divider>
     <v-card-text style="display:block" class="text-right">
-    <div style="display:none">
-      .
-      <!-- <router-link :to="{ path: '/ui/all_darses' , query: { page: 1 }}"> -->
-      {{ pn(this.student.darsId) }} 
-      <!-- </router-link> -->
-      درس را خوانده است
-    </div>
     <div>
+      .
+      {{ pn(this.student.darsId) }} 
+    درس را خوانده است
+  </div>
+  <div>
       .
       <router-link :to="{ path: '/ui/alefba' }">
        {{ this.pn(this.numHarfLearned) }}
       </router-link>
      تا از الفبا را آموخته است  
     </div>
-          <!--
-      <v-row
-        class="mx-0"
-        >
-        <div >
-        </div>
-        <div>
-          {{ pn(this.darsId/2) }} تا از الفبا را آموخته است 
-        </div>
-
-      </v-row>
-      -->
     </v-card-text>
 
   </v-card>
