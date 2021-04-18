@@ -348,7 +348,13 @@ export default {
       }
 
       // iterate twice to make sure all ati are create on top phi
-
+      var sto = null
+      paper.view.onResize = async () => {
+        if ( sto ) {
+          clearTimeout(sto)
+        }
+        sto = await setTimeout(this.updateCanvasDarses, 250 )
+      }
 
     }
   }
