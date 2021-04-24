@@ -137,7 +137,8 @@
      <audio  :id="audioDarsId"  > 
         <source :src="audioDars" type="audio/mp3">
      </audio>
-     <audio v-for="(aG,aIdx) in darsHoroof" :src="audioAlph[aG.harfSound]" :id="audioAlphId(aG)" :key="aIdx" >
+     <audio v-for="(aG,aIdx) in darsHoroof" :id="audioAlphId(aG)" :key="aIdx" >
+        <source :src="audioAlph[aG.harfSound]" type="audio/mp3">
      </audio>
    </div>
 </v-col>
