@@ -81,7 +81,7 @@ class php {
     renderPlaceHolderInsts (resize) {
       let startingTopRight = this.phiRowTR
       for ( let [idx,plh] of this.phInsts.entries() ) {
-        console.log("--------" + idx)
+        //console.log("--------" + idx)
         if ( plh.aTile === null ) {
           const newBound = new paper.Rectangle(this.getPhiTopRight(idx+1), this.getPhiBottomLeft(idx+1))
           //console.log(plh.phiRect.bounds)

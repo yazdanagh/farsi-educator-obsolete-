@@ -9,7 +9,6 @@
 
   <v-card
     class="mx-auto mt-5"
-    max-width="374"
   >
 
     <v-img
@@ -125,8 +124,10 @@
 
 <v-col cols="9" class="mb-4">
 <!--<img id="ear" style="display:none" src="images2/ear.jpg" >  -->
-   <canvas id="myCanvas" resize class="mt-5" style="border: 1px solid black; float: right;width:100%">
+  <div>
+   <canvas id="myCanvas"  class="mt-5" style="border: 1px solid black; float: right">
    </canvas>
+ </div>
    <div  id="allImages">
      <div v-for="(aG,aIdx) in darsHoroof" :key="aIdx" >
      <img v-for="alpha in aG['harfForms']" :key="alpha" style="display:none"  v-bind:id="alpha" v-bind:src="imgAlph[alpha]"> 
@@ -211,7 +212,13 @@ export default {
   },
   async mounted() {
 
-    console.log("Mounted")
+    if ( window.innerWidth < 1.2 * window.innerHeight ) {
+      return
+    }
+
+    console.log("Height: " + window.innerHeight + ",Width: " + window.innerWidth)
+    const height = window.innerHeight - 110 
+    console.log(`Mounted with height ${height}`)
     //try {
       const resMain = await axios.get(`${this.backendHost}/main`, this.headerConfig)
       this.student = resMain.data
@@ -266,7 +273,7 @@ export default {
       }
 
     })
-    this.initCanvas()
+    this.initCanvas(height)
     this.$emit('darsId', this.darsId )
     await this.cleanUpdateCanvas()
   },
@@ -322,7 +329,7 @@ export default {
         //window.audio.src = url;
         //window.audio.play();
         this.audioDars = url
-        console.log("HERE  " + url)
+        //console.log("HERE  " + url)
         
       }
     },
@@ -403,11 +410,15 @@ export default {
     pn(num) {
       return pn.convert(num)
     },
-    async initCanvas() {
+    async initCanvas( height) {
       this.canvas = document.getElementById('myCanvas');
       //this.canvas.width =   cons.canvasWidth; // window.innerWidth
-      this.canvas.height = cons.canvasHeight; // window.innerHeight
+      //this.canvas.height = cons.canvasHeight; // window.innerHeight
       console.log(cons)
+      this.canvas.height = height; // window.innerHeight
+      this.canvas.width = this.canvas.parentElement.clientWidth; // window.innerHeight
+      console.log("canvas width: " + this.canvas.width )
+      console.log("canvas height: " + this.canvas.height)
       await paper.setup(this.canvas);
       // scalaing like this wont fix RtoL issue
       // const canvasContext = canvas.getContext('2d');
@@ -417,8 +428,9 @@ export default {
 
       //this line eliminates need to access everything through paper object
       // but as a sideeffect will impact global scope for example breaks browsersync
-      //paper.install(window)
-      console.log(this.canvas.width)
+      console.log(height)
+      console.log("canvas width: " + this.canvas.width)
+      console.log("canvas height: " + this.canvas.height)
 
      //if ( this.canvas.width < 800 ) {
      //  php.phiSide = 40
