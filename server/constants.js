@@ -151,7 +151,7 @@ const darsesInput = [
   // ghaf
   ["ghkc nkd dc", "ghand"],
   ["ghkc aac shikc ghbc", "ghaashogh"],
-  ["chkc aac ghbt", "chaagh"],
+  //["chkc aac ghbt", "chaagh"],
   ["bkc shikd ghkd aac bbt", "boshghaab"],
   ["ghkc rc mkc zc", "ghermez"],
   ["ghkc bkd lbc", "ghabl"],
