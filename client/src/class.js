@@ -26,7 +26,7 @@ class rp {
 
     const avaiHeight = this.rectBL.y - this.phpTR.y - this.phpRow
     console.log("Avai Height " + avaiHeight )
-    this.atiSide = Math.min ( Math.floor((avaiHeight/(numAtps + 1) - atp.atpBetRow - atp.atpSpacing ) /5) * 5 , 80) // atp.atpBetRow + atp.atpSpacing 
+    this.atiSide = Math.min ( Math.floor((avaiHeight/(numAtps + 1) - atp.atpBetRow - 2* atp.atpSpacing ) /5) * 5 , 80) // atp.atpBetRow + atp.atpSpacing 
     console.log( "Ati Side should be: " + this.atiSide )
 
   }
