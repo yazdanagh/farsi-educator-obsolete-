@@ -2,6 +2,27 @@
 <v-container>
 <v-row class="text-center">
 
+<v-col cols="9" class="mb-4">
+<!--<img id="ear" style="display:none" src="images2/ear.jpg" >  -->
+  <div>
+   <canvas id="myCanvas"  class="mt-5" style="border: 1px solid black; float: right">
+   </canvas>
+ </div>
+   <div  id="allImages">
+     <div v-for="(aG,aIdx) in darsHoroof" :key="aIdx" >
+     <img v-for="alpha in aG['harfForms']" :key="alpha" style="display:none"  v-bind:id="alpha" v-bind:src="imgAlph[alpha]"> 
+      <img id="ear" style="display:none" src="/images2/ear.jpg" > 
+     </div>
+   </div>
+   <div id="allAudios">
+     <audio  :id="audioDarsId"  > 
+        <source :src="audioDars" type="audio/mp3">
+     </audio>
+     <audio v-for="(aG,aIdx) in darsHoroof" :id="audioAlphId(aG)" :key="aIdx" >
+        <source :src="audioAlph[aG.harfSound]" type="audio/mp3">
+     </audio>
+   </div>
+</v-col>
 <v-col cols="3">
 <v-spacer> </v-spacer>
 <div class="mt-5">
@@ -23,12 +44,12 @@
     <v-divider class="mx-3"></v-divider>
     <v-card-text style="display:block" class="text-right">
     <div>
-      .
-      {{ pn(this.student.darsId) }} 
-    درس را خوانده است
+      {{ pn(this.student.darsId) }}
+       درس را خوانده است    
+     
   </div>
   <div>
-      .
+      
       <router-link :to="{ path: '/ui/alefba' }">
        {{ this.pn(this.numHarfLearned) }}
       </router-link>
@@ -48,7 +69,7 @@
 <div>
   <v-row dense >
 <v-col cols="6">
-  <v-btn x-large style="width:100%"   @click="goToNextDars" large :class="{'disable-btn': darsId > student.darsId && !darsDone}" class="mt-5" v-bind:color=" darsDone ? 'blue lighten-1' : 'blue lighten-1'" >  
+  <v-btn style="width:100%"   @click="goToNextDars" :class="{'disable-btn': darsId > student.darsId && !darsDone}" class="mt-5" v-bind:color=" darsDone ? 'blue lighten-1' : 'blue lighten-1'" >  
   <!-- درس بعد --> 
   <v-icon large >  
   {{ mdiChevronLeft }} 
@@ -57,7 +78,7 @@
 </v-col>
 <v-col cols="6">
 
-<v-btn x-large style="width:100%" @click="goToPrevDars" large :class="{'disable-btn': darsId == 1}" class="mt-5" color="blue lighten-1" >  
+<v-btn style="width:100%" @click="goToPrevDars" :class="{'disable-btn': darsId == 1}" class="mt-5" color="blue lighten-1" >  
 <!-- درس قبل  -->
 <v-icon large >  
 {{ mdiChevronRight }} 
@@ -67,7 +88,7 @@
 </v-row>
 <v-row dense >
 <v-col cols="6">
-  <v-btn x-large style="width:100%"   @click="goToLastDars" large :class="{'disable-btn': darsId > student.darsId && !darsDone}" class="mt-5" v-bind:color=" darsDone ? 'blue lighten-1' : 'blue lighten-1'" >  
+  <v-btn style="width:100%"   @click="goToLastDars" :class="{'disable-btn': darsId > student.darsId && !darsDone}" class="mt-5" v-bind:color=" darsDone ? 'blue lighten-1' : 'blue lighten-1'" >  
   <!-- درس بعد --> 
   <v-icon large >  
   {{ mdiChevronDoubleLeft }} 
@@ -76,7 +97,7 @@
 </v-col>
 <v-col cols="6">
 
-<v-btn x-large style="width:100%" @click="goToFirstDars" large :class="{'disable-btn': darsId == 1}" class="mt-5" color="blue lighten-1" >  
+<v-btn style="width:100%" @click="goToFirstDars" :class="{'disable-btn': darsId == 1}" class="mt-5" color="blue lighten-1" >  
 <!-- درس قبل  -->
 <v-icon large >  
 {{ mdiChevronDoubleRight }} 
@@ -122,27 +143,7 @@
 </v-col>
 
 
-<v-col cols="9" class="mb-4">
-<!--<img id="ear" style="display:none" src="images2/ear.jpg" >  -->
-  <div>
-   <canvas id="myCanvas"  class="mt-5" style="border: 1px solid black; float: right">
-   </canvas>
- </div>
-   <div  id="allImages">
-     <div v-for="(aG,aIdx) in darsHoroof" :key="aIdx" >
-     <img v-for="alpha in aG['harfForms']" :key="alpha" style="display:none"  v-bind:id="alpha" v-bind:src="imgAlph[alpha]"> 
-      <img id="ear" style="display:none" src="/images2/ear.jpg" > 
-     </div>
-   </div>
-   <div id="allAudios">
-     <audio  :id="audioDarsId"  > 
-        <source :src="audioDars" type="audio/mp3">
-     </audio>
-     <audio v-for="(aG,aIdx) in darsHoroof" :id="audioAlphId(aG)" :key="aIdx" >
-        <source :src="audioAlph[aG.harfSound]" type="audio/mp3">
-     </audio>
-   </div>
-</v-col>
+
 
 </v-row>
 
@@ -212,6 +213,7 @@ export default {
   },
   async mounted() {
 
+    this.changeRTL()
     if ( window.innerWidth < 1.2 * window.innerHeight ) {
       return
     }
@@ -318,6 +320,9 @@ export default {
   //
   methods: {
     
+    changeRTL () {
+      this.$vuetify.rtl = true
+    },
     addKalamehAudio() {
       let blob
       let url
@@ -408,7 +413,7 @@ export default {
    //  return cons.darses.length
    //},
     pn(num) {
-      return pn.convert(num)
+      return pn.convertEnToPe(num)
     },
     async initCanvas( height) {
       this.canvas = document.getElementById('myCanvas');
@@ -420,6 +425,7 @@ export default {
       console.log("canvas width: " + this.canvas.width )
       console.log("canvas height: " + this.canvas.height)
       await paper.setup(this.canvas);
+      window.paper = paper
       // scalaing like this wont fix RtoL issue
       // const canvasContext = canvas.getContext('2d');
       // canvasContext.translate(window.innerWidth, 0);
@@ -492,11 +498,9 @@ export default {
     async updateCanvas() {
 
       console.log("Update canvas...")
-      const paneTopMargin = 50
-      const paneRightMargin = 50
-      const topRight = new paper.Point( 
-      paper.view.size._width - paneRightMargin, paneTopMargin );
-      const phPane = utils.createPlaceHolderPane( topRight, this.darsHarfForms, this.darsKalameh)
+      const renderPane = utils.getRenderArea()
+      window.renderPane = renderPane
+      const phPane = utils.createPlaceHolderPane( renderPane, this.darsHarfForms, this.darsKalameh)
 
       let atPanes = [] 
       let idx

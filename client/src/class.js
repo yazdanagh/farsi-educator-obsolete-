@@ -1,11 +1,22 @@
 var paper = require('paper');
 //const cons = require('./constants.js')
 
-//const trans = (a ) => { return cons.canvasWidth - a } 
 
-//const rasterWidth = 512
-
-
+// render Pane
+class rp {
+  static verMargin = 50
+  static horizMargin = 50
+  constructor ( ) {
+    const topRight = new paper.Point( 
+      paper.view.size._width - rp.horizMargin, rp.verMargin 
+    );
+    const bottomLeft = new paper.Point( 
+      rp.horizMargin, paper.view.size._length - rp.verMargin 
+    );
+    this.rectTR = topRight
+    this.rectBL = bottomLeft
+  }
+}
 
 // placeHolderItem
 class phi { 
@@ -30,33 +41,33 @@ class phi {
 // placeHolderPane
 class php {
     
-    // external margins
-    static minLeftMargin = 10
 
     static phiSide = 80
     static phiSpacing = 10
     static phpRow = php.phiSide + 2 * php.phiSpacing
-    static phiGutter = 4 
+    static phiGutter = 3 
 
-    constructor ( paneTopRight, numTiles ) {
-      window.ptr = paneTopRight
-      let tilesPerRow = (paneTopRight.x - php.minLeftMargin) 
-      tilesPerRow -= (numTiles -1)*php.phiGutter  
-      tilesPerRow = tilesPerRow/ php.phiSide  
-      tilesPerRow = Math.floor(tilesPerRow)
+    constructor ( rp, numTiles ) {
+      //console.log("Num Tiles " + numTiles)
+      //
+      let avaiWidth = (rp.rectTR.x -  rp.rectBL.x) 
+      this.tilesPerRow = numTiles  
+      php.phiSide = Math.min ( Math.floor(avaiWidth/(numTiles + 1)/5) * 5 , 80)
+      php.phpRow = php.phiSide + 2 * php.phiSpacing
+      console.log( "Side should be: " + php.phiSide + ", row is: " + php.phpRow)
 
-      const numRows = Math.ceil(numTiles / tilesPerRow) 
-      //console.log(`${numRows} rows with ${tilesPerRow} tiles in each row`)
-      const topRight = paneTopRight 
-      const bottomLeft = topRight.subtract( tilesPerRow * php.phiSide + ( tilesPerRow -1 ) * php.phiGutter , -numRows * php.phpRow )
+      this.topRight = rp.rectTR 
+      this.bottomLeft  = this.topRight.subtract(avaiWidth, - php.phpRow )
+
       this.phpRect = paper.Path.Rectangle(
-        topRight, bottomLeft
+        this.topRight, this.bottomLeft
       )
-      this.phiRowTR = topRight.subtract ( php.phiSpacing, -php.phiSpacing )
-      this.phpRect.fillColor = '#d3d3d3'
+     // console.log(topRight)
+     // console.log(bottomLeft)
+      this.phiRowTR = this.topRight.subtract ( php.phiSpacing, -php.phiSpacing )
+      this.phpRect.fillColor = '#80461B'
       this.phInsts = []
-      this.numRows = numRows
-      this.tilesPerRow = tilesPerRow
+      this.numRows = 1
     }
     getPhiTopRight(loc) { // todo: add row 
       // TODO : implement Row
@@ -71,7 +82,7 @@ class php {
       // TODO : implement Row
       const locX = (loc - 1) % this.tilesPerRow  + 1 
       const locY = (loc - locX)/this.tilesPerRow
-      const bl =  this.phiRowTR.subtract( (locX)* ( php.phiSide + php.phiGutter), -(locY+1) * php.phpRow )
+      const bl =  this.phiRowTR.subtract( locX*  php.phiSide + ( locX-1)* php.phiGutter, -(locY+1) * php.phiSide )
       //console.log(bl)
       return bl
     }
@@ -253,9 +264,12 @@ const createEar = ( earPosition, audio ) => {
   //console.log("created ear for : " + audio)
 }
 
-const createPlaceHolderPane = ( topRight, harfForms, darsKalameh) => {
-  var phPane = new php( topRight, harfForms.length )
-  const earPosition = topRight.add( php.phiSpacing + php.phiSide/4 , php.phiSpacing + php.phiSide/2 ) 
+const createPlaceHolderPane = ( renderArea, harfForms, darsKalameh) => {
+
+  var phPane = new php( renderArea, harfForms.length )
+  console.log(phPane)
+  
+  const earPosition = phPane.topRight.add( php.phiSpacing + php.phiSide/4 , php.phiSpacing + php.phiSide/2 ) 
   if (darsKalameh) 
     createEar(earPosition, darsKalameh);
 
@@ -302,15 +316,19 @@ const createAlphatilePane = (topRight, harf, phPane , harfForms) => {
   return atPane
 }
 
-
+const getRenderArea = () => {
+  const renderPane = new rp();
+  return renderPane
+}
+  
 
 const utils = {
   createPlaceHolderPane,
-  createAlphatilePane 
+  createAlphatilePane, 
+  getRenderArea,
 }
 
 export { 
-  php, 
   atp, 
   ati, 
   phi,
