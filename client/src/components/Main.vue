@@ -64,6 +64,16 @@
    </v-btn>
 <div>
   <v-row dense >
+
+
+<v-col cols="6">
+<v-btn style="width:100%" @click="goToPrevDars" :class="{'disable-btn': darsId == 1}" class="mt-2" color="blue lighten-1" >  
+<!-- درس قبل  -->
+<v-icon large >  
+{{ mdiChevronRight }} 
+</v-icon>
+</v-btn>
+</v-col>
 <v-col cols="6">
   <v-btn style="width:100%"   @click="goToNextDars" :class="{'disable-btn': darsId > student.darsId && !darsDone}" class="mt-2" v-bind:color=" darsDone ? 'blue lighten-1' : 'blue lighten-1'" >  
   <!-- درس بعد --> 
@@ -72,17 +82,21 @@
   </v-icon>
 </v-btn>
 </v-col>
-<v-col cols="6">
 
-<v-btn style="width:100%" @click="goToPrevDars" :class="{'disable-btn': darsId == 1}" class="mt-2" color="blue lighten-1" >  
+</v-row>
+
+
+<v-row dense >
+<v-col cols="6">
+<v-btn style="width:100%" @click="goToFirstDars" :class="{'disable-btn': darsId == 1}" class="mt-2" color="blue lighten-1" >  
 <!-- درس قبل  -->
 <v-icon large >  
-{{ mdiChevronRight }} 
+{{ mdiChevronDoubleRight }} 
 </v-icon>
 </v-btn>
 </v-col>
-</v-row>
-<v-row dense >
+
+
 <v-col cols="6">
   <v-btn style="width:100%"   @click="goToLastDars" :class="{'disable-btn': darsId > student.darsId && !darsDone}" class="mt-2" v-bind:color=" darsDone ? 'blue lighten-1' : 'blue lighten-1'" >  
   <!-- درس بعد --> 
@@ -91,15 +105,7 @@
   </v-icon>
 </v-btn>
 </v-col>
-<v-col cols="6">
 
-<v-btn style="width:100%" @click="goToFirstDars" :class="{'disable-btn': darsId == 1}" class="mt-2" color="blue lighten-1" >  
-<!-- درس قبل  -->
-<v-icon large >  
-{{ mdiChevronDoubleRight }} 
-</v-icon>
-</v-btn>
-</v-col>
   </v-row>
 
 </div>
