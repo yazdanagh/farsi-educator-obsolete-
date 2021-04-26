@@ -308,7 +308,7 @@ const createAlphatilePane = (rp, anchorTopRight, harf, phPane , harfForms) => {
     //  const audio = harf.match(/([a-z]*)_/).[1]
     //  createEar(topRight.add( atp.atpSpacing + atp.atiSide/4  , atp.atpSpacing + atp.atiSide/2   ) ,audio)
     //}
-    let atPane = new atp( topRight, rp.phiSide, harf['harfForms'].length  )
+    let atPane = new atp( topRight, rp.atiSide, harf['harfForms'].length  )
     let idx2=1
     const audio = harf['harfSound'] 
     //console.log(harf['harfSound'])
