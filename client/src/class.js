@@ -63,7 +63,7 @@ class php {
      // console.log(topRight)
      // console.log(bottomLeft)
       this.phiRowTR = this.topRight.subtract ( php.phiSpacing, -php.phiSpacing )
-      this.phpRect.fillColor = '#80461B'
+      this.phpRect.fillColor = '#C19A6B'
       this.phInsts = []
       this.numRows = 1
     }
@@ -103,9 +103,13 @@ class php {
           //console.log(tile.bounds)
           //console.log(tile.firstChild.bounds)
           //console.log(tile.lastChild.bounds)
-          const newBound = new paper.Rectangle(startingTopRight, startingTopRight.subtract(tile.lastChild.bounds.width, -tile.lastChild.bounds.height ))
+          ////////  MOHEM const scaling =  this.phiSide / tile.lastChild.bounds.height
+          const scaling = 1
+          const newBound = new paper.Rectangle(startingTopRight, startingTopRight.subtract(tile.lastChild.bounds.width * scaling, -tile.lastChild.bounds.height * scaling ))
+          console.log ( "Scaling by: " + this.phiSide / tile.lastChild.bounds.height )
           //console.log(newBound)
           if ( resize ) {
+            console.log("Resize")
             tile.bounds = newBound 
             startingTopRight = startingTopRight.subtract(tile.bounds.width, 0) 
           }
@@ -127,7 +131,7 @@ class atp {
   static rightMargin = 50
   //static topMargin = 30
 
-  static atiSide = 60
+  static atiSide = 50 
   static atpSpacing = 8 
   static atpRow = atp.atiSide + 2 * atp.atpSpacing
   static atiGutter = 10
