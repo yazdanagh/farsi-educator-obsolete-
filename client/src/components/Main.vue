@@ -501,6 +501,17 @@ export default {
       const renderPane = utils.getRenderArea()
       window.renderPane = renderPane
       const phPane = utils.createPlaceHolderPane( renderPane, this.darsHarfForms, this.darsKalameh)
+      window.phPane = phPane
+
+      const phPaneBR = phPane.phpRect.bounds.bottomRight
+
+
+      // Temp for here, to move inside class
+
+      const avaiHeight = renderPane.rectBL.y - phPaneBR.y
+      console.log("Avai Height " + avaiHeight )
+      //
+
 
       let atPanes = [] 
       let idx

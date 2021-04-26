@@ -11,7 +11,7 @@ class rp {
       paper.view.size._width - rp.horizMargin, rp.verMargin 
     );
     const bottomLeft = new paper.Point( 
-      rp.horizMargin, paper.view.size._length - rp.verMargin 
+      rp.horizMargin, paper.view.size._height - rp.verMargin 
     );
     this.rectTR = topRight
     this.rectBL = bottomLeft
@@ -42,9 +42,7 @@ class phi {
 class php {
     
 
-    static phiSide = 80
     static phiSpacing = 10
-    static phpRow = php.phiSide + 2 * php.phiSpacing
     static phiGutter = 3 
 
     constructor ( rp, numTiles ) {
@@ -52,12 +50,12 @@ class php {
       //
       let avaiWidth = (rp.rectTR.x -  rp.rectBL.x) 
       this.tilesPerRow = numTiles  
-      php.phiSide = Math.min ( Math.floor(avaiWidth/(numTiles + 1)/5) * 5 , 80)
-      php.phpRow = php.phiSide + 2 * php.phiSpacing
-      console.log( "Side should be: " + php.phiSide + ", row is: " + php.phpRow)
+      this.phiSide = Math.min ( Math.floor(avaiWidth/(numTiles + 1)/5) * 5 , 80)
+      this.phpRow = this.phiSide + 2 * php.phiSpacing
+      console.log( "Side should be: " + this.phiSide + ", row is: " + this.phpRow)
 
       this.topRight = rp.rectTR 
-      this.bottomLeft  = this.topRight.subtract(avaiWidth, - php.phpRow )
+      this.bottomLeft  = this.topRight.subtract(avaiWidth, - this.phpRow )
 
       this.phpRect = paper.Path.Rectangle(
         this.topRight, this.bottomLeft
@@ -74,7 +72,7 @@ class php {
       const locX = (loc - 1) % this.tilesPerRow + 1 
       const locY = (loc - locX)/this.tilesPerRow
       //console.log(locX,locY)
-      let tr = this.phiRowTR.subtract( (locX-1)* ( php.phiSide + php.phiGutter), -locY * php.phpRow )
+      let tr = this.phiRowTR.subtract( (locX-1)* ( this.phiSide + php.phiGutter), -locY * this.phpRow )
       //console.log(tr)
       return tr
     }
@@ -82,7 +80,7 @@ class php {
       // TODO : implement Row
       const locX = (loc - 1) % this.tilesPerRow  + 1 
       const locY = (loc - locX)/this.tilesPerRow
-      const bl =  this.phiRowTR.subtract( locX*  php.phiSide + ( locX-1)* php.phiGutter, -(locY+1) * php.phiSide )
+      const bl =  this.phiRowTR.subtract( locX*  this.phiSide + ( locX-1)* php.phiGutter, -(locY+1) * this.phiSide )
       //console.log(bl)
       return bl
     }
@@ -98,7 +96,7 @@ class php {
           //console.log(plh.phiRect.bounds)
           //console.log(newBound)
           plh.phiRect.bounds = newBound
-          startingTopRight = startingTopRight.subtract(php.phiSide, 0) 
+          startingTopRight = startingTopRight.subtract(this.phiSide, 0) 
         } else { 
           const tile = plh.aTile.group
           //window.tile = tile
@@ -269,7 +267,7 @@ const createPlaceHolderPane = ( renderArea, harfForms, darsKalameh) => {
   var phPane = new php( renderArea, harfForms.length )
   console.log(phPane)
   
-  const earPosition = phPane.topRight.add( php.phiSpacing + php.phiSide/4 , php.phiSpacing + php.phiSide/2 ) 
+  const earPosition = phPane.topRight.add( php.phiSpacing + phPane.phiSide/4 , php.phiSpacing + phPane.phiSide/2 ) 
   if (darsKalameh) 
     createEar(earPosition, darsKalameh);
 
