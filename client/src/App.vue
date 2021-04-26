@@ -6,6 +6,7 @@
       app
       color="blue lighten-2"
       dark
+      dense
     >
 
     <!--
@@ -30,13 +31,11 @@
       </div>
       -->
 
-      <v-spacer></v-spacer>
-
       <v-btn
         href="/"
         text
       >
-      <span style="font-size: 1.8em" class="mr-2">آموزش فارسی 
+      <span style="font-size: 1.4em" class="mr-2">آموزش فارسی 
         <span v-if="darsIdCopy">
      - درس شماره  {{ pn(this.darsIdCopy) }}
       </span>

@@ -149,7 +149,7 @@
 <script>
 const cons = require('../constants.js');
 const paper =  require('paper');
-import { atp, utils }  from '../class';
+import { utils }  from '../class';
 //import { mdiHome, mdiChevronLeft, mdiChevronRight, mdiArrowRightBold, mdiArrowLeftBold } from '@mdi/js';
 import { mdiViewHeadline, mdiChevronLeft, mdiChevronDoubleLeft, mdiChevronRight, mdiChevronDoubleRight  } from '@mdi/js';
 import axios from 'axios';
@@ -494,7 +494,7 @@ export default {
     async updateCanvas() {
 
       console.log("Update canvas...")
-      const renderPane = utils.getRenderArea()
+      const renderPane = utils.getRenderArea(this.darsHarfForms.length, this.darsHoroof.length)
       window.renderPane = renderPane
       const phPane = utils.createPlaceHolderPane( renderPane, this.darsHarfForms, this.darsKalameh)
       window.phPane = phPane
@@ -506,25 +506,25 @@ export default {
 
       const avaiHeight = renderPane.rectBL.y - phPaneBR.y
       console.log("Avai Height " + avaiHeight )
+      //const atiSide = 
       //
 
 
       let atPanes = [] 
-      let idx
 
       // iterate twice to make sure all ati are create on top phi
-      idx = 0
       //const atPaneCreated = {}
-      console.log(this.darsHoroof)
+      //console.log(this.darsHoroof)
+
+      let topRight = phPane.phpRect.bounds.bottomRight.add(0,10) 
       for ( let harf of this.shuffle(this.darsHoroof) ) {
 
-        let topRight = phPane.phpRect.bounds.bottomRight.add(0, 20 ) 
-        topRight = topRight.add(0,  idx*(atp.atpRow+10))
-
-        let atPane = utils.createAlphatilePane(topRight, harf, phPane, this.darsHarfForms) 
+  //topRight = topRight.add(0,  idx*(atp.atpRow+10))
+        let atPane = utils.createAlphatilePane(renderPane, topRight, harf, phPane, this.darsHarfForms) 
+        topRight = atPane.atpRect.bounds.bottomRight
+        console.log(topRight)
         atPanes.push(atPane)
 
-        idx++
       }
       this.installTileAnimator(paper,phPane,atPanes) 
     }

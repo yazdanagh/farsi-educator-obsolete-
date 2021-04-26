@@ -6,7 +6,7 @@ var paper = require('paper');
 class rp {
   static verMargin = 50
   static horizMargin = 50
-  constructor ( ) {
+  constructor ( numPhis, numAtps ) {
     const topRight = new paper.Point( 
       paper.view.size._width - rp.horizMargin, rp.verMargin 
     );
@@ -15,6 +15,20 @@ class rp {
     );
     this.rectTR = topRight
     this.rectBL = bottomLeft
+    let avaiWidth = (this.rectTR.x -  this.rectBL.x) 
+    this.phiSide = Math.min ( Math.floor(avaiWidth/(numPhis + 1)/5) * 5 , 80)
+    this.phpRow = this.phiSide + 2 * php.phiSpacing
+    console.log( "Phi Side should be: " + this.phiSide + ", row is: " + this.phpRow)
+
+    //
+    this.phpTR = this.rectTR 
+    this.phpBL = this.phpTR.subtract(avaiWidth, - this.phpRow )
+
+    const avaiHeight = this.rectBL.y - this.phpTR.y - this.phpRow
+    console.log("Avai Height " + avaiHeight )
+    this.atiSide = Math.min ( Math.floor((avaiHeight/(numAtps + 1) - atp.atpBetRow - atp.atpSpacing ) /5) * 5 , 80) // atp.atpBetRow + atp.atpSpacing 
+    console.log( "Ati Side should be: " + this.atiSide )
+
   }
 }
 
@@ -48,14 +62,12 @@ class php {
     constructor ( rp, numTiles ) {
       //console.log("Num Tiles " + numTiles)
       //
-      let avaiWidth = (rp.rectTR.x -  rp.rectBL.x) 
       this.tilesPerRow = numTiles  
-      this.phiSide = Math.min ( Math.floor(avaiWidth/(numTiles + 1)/5) * 5 , 80)
-      this.phpRow = this.phiSide + 2 * php.phiSpacing
-      console.log( "Side should be: " + this.phiSide + ", row is: " + this.phpRow)
+      this.phiSide = rp.phiSide
+      this.phpRow = rp.phpRow
 
-      this.topRight = rp.rectTR 
-      this.bottomLeft  = this.topRight.subtract(avaiWidth, - this.phpRow )
+      this.topRight = rp.phpTR 
+      this.bottomLeft = rp.phpBL 
 
       this.phpRect = paper.Path.Rectangle(
         this.topRight, this.bottomLeft
@@ -63,7 +75,7 @@ class php {
      // console.log(topRight)
      // console.log(bottomLeft)
       this.phiRowTR = this.topRight.subtract ( php.phiSpacing, -php.phiSpacing )
-      this.phpRect.fillColor = '#C19A6B'
+      this.phpRect.fillColor = '#C2B280'
       this.phInsts = []
       this.numRows = 1
     }
@@ -131,28 +143,31 @@ class atp {
   static rightMargin = 50
   //static topMargin = 30
 
-  static atiSide = 50 
-  static atpSpacing = 8 
-  static atpRow = atp.atiSide + 2 * atp.atpSpacing
+  //static atiSide = 50 
+  static atpBetRow = 10
+  static atpSpacing = 5 
+  //static atpRow = atp.atiSide + 2 * atp.atpSpacing
   static atiGutter = 10
-  constructor (TR , numAlphs ) {
+  constructor (TR , atiSide, numAlphs ) {
+    this.atiSide = atiSide
+    this.atpRow = this.atiSide + 2 * atp.atpSpacing
     const topRight = TR.add(0, atp.topMargin)  
-    const bottomLeft = topRight.subtract( numAlphs * atp.atiSide + ( numAlphs -1 ) * atp.atiGutter + 2 * atp.atpSpacing, -atp.atpRow  )
+    const bottomLeft = topRight.subtract( numAlphs * this.atiSide + ( numAlphs -1 ) * atp.atiGutter + 2 * atp.atpSpacing, -this.atpRow  )
     this.atpRect = paper.Path.Rectangle(
       topRight, bottomLeft
     )
     window.atpRect = this.atpRect
 
     this.atpRect.strokeColor = 'red'
-    this.atpRect.fillColor = '#ea3c53'
+    this.atpRect.fillColor = 'red'
     this.atiRowTR = topRight.subtract ( atp.atpSpacing, -atp.atpSpacing )
     this.atInsts = []
   }
   getAtiTopRight(loc) { 
-    return this.atiRowTR.subtract( (loc-1)* ( atp.atiSide + atp.atiGutter), 0 )
+    return this.atiRowTR.subtract( (loc-1)* ( this.atiSide + atp.atiGutter), 0 )
   }
   getAtiBottomLeft(loc)  {
-    return this.atiRowTR.subtract( (loc)* ( atp.atiSide + atp.atiGutter) - atp.atiGutter,  -atp.atiSide )
+    return this.atiRowTR.subtract( (loc)* ( this.atiSide + atp.atiGutter) - atp.atiGutter,  -this.atiSide )
   }
   addAtInsts(atInsts ) {
     this.atInsts = this.atInsts.concat(atInsts)
@@ -163,7 +178,7 @@ class atp {
 // alphabet tile instance
 class ati {
     static rasterMargin = 5
-  constructor ( topRight, bottomLeft, phList, letter) {
+  constructor ( topRight, bottomLeft, atiSide, phList, letter) {
     //console.log(topRight)
     //console.log(bottomLeft)
     this.atiRect = new paper.Path.Rectangle(topRight, bottomLeft )
@@ -176,7 +191,7 @@ class ati {
      var raster = new paper.Raster(alpI)  
      raster.position = this.atiRect.position 
      //console.log(raster.size)
-     raster.scale(1, (atp.atiSide-ati.rasterMargin)/raster.size.height);
+     raster.scale(1, (atiSide-ati.rasterMargin)/raster.size.height);
      const group = new paper.Group([this.atiRect, raster])
      group.onMouseDrag = (event) => { 
        group.position = group.position.add(event.delta)
@@ -271,7 +286,7 @@ const createPlaceHolderPane = ( renderArea, harfForms, darsKalameh) => {
   var phPane = new php( renderArea, harfForms.length )
   console.log(phPane)
   
-  const earPosition = phPane.topRight.add( php.phiSpacing + phPane.phiSide/4 , php.phiSpacing + phPane.phiSide/2 ) 
+  const earPosition = phPane.topRight.add( php.phiSpacing + renderArea.phiSide/4 , php.phiSpacing + renderArea.phiSide/2 ) 
   if (darsKalameh) 
     createEar(earPosition, darsKalameh);
 
@@ -286,17 +301,18 @@ const createPlaceHolderPane = ( renderArea, harfForms, darsKalameh) => {
    return phPane 
 }
 
-const createAlphatilePane = (topRight, harf, phPane , harfForms) => {
+const createAlphatilePane = (rp, anchorTopRight, harf, phPane , harfForms) => {
 
+  let topRight = anchorTopRight.add(0, atp.atpBetRow ) 
   //if ( harf != "faseleh" ) {
     //  const audio = harf.match(/([a-z]*)_/).[1]
     //  createEar(topRight.add( atp.atpSpacing + atp.atiSide/4  , atp.atpSpacing + atp.atiSide/2   ) ,audio)
     //}
-    let atPane = new atp( topRight, harf['harfForms'].length  )
+    let atPane = new atp( topRight, rp.phiSide, harf['harfForms'].length  )
     let idx2=1
     const audio = harf['harfSound'] 
     //console.log(harf['harfSound'])
-    createEar(topRight.add( atp.atpSpacing + atp.atiSide/4  , atp.atpSpacing + atp.atiSide/2   ) ,audio)
+    createEar(topRight.add( atp.atpSpacing + atPane.atiSide/4  , atp.atpSpacing + atPane.atiSide/2   ) ,audio)
     for ( let harf of harf['harfForms'] ) {
       const occurances = harfForms.reduce( (tot,elem,harfIndex) => { 
         if (elem === harf) { 
@@ -309,17 +325,17 @@ const createAlphatilePane = (topRight, harf, phPane , harfForms) => {
       const plHoldersArray = occurances.map( a => phPane.phInsts[a] )
 
       let atInst
-      atInst = new ati( atPane.getAtiTopRight(idx2) , atPane.getAtiBottomLeft(idx2), plHoldersArray, harf  )
+      atInst = new ati( atPane.getAtiTopRight(idx2) , atPane.getAtiBottomLeft(idx2), atPane.atiSide, plHoldersArray, harf  )
       atPane.addAtInsts([atInst])
-      atInst = new ati( atPane.getAtiTopRight(idx2) , atPane.getAtiBottomLeft(idx2), plHoldersArray, harf  )
+      atInst = new ati( atPane.getAtiTopRight(idx2) , atPane.getAtiBottomLeft(idx2), atPane.atiSide, plHoldersArray, harf  )
       atPane.addAtInsts([atInst])
       idx2++
     }
   return atPane
 }
 
-const getRenderArea = () => {
-  const renderPane = new rp();
+const getRenderArea = (n, m) => {
+  const renderPane = new rp(n, m);
   return renderPane
 }
   
