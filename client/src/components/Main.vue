@@ -1,5 +1,19 @@
 <template>
+
 <v-container>
+<div v-if="noRender">
+  <h1>
+  این صفحه قابل نمایش نیست
+  </h1>
+ <h2>  
+    ۱. پهنای مرورگر را افزایش دهید یا
+
+  </h2>
+  <h2>  
+۲. دستگاه خود را در حالت منظره نگاه دارید
+  </h2>
+</div>
+<div v-else>
 <v-row class="text-center">
 
 <v-col cols="9" class="mb-4">
@@ -23,7 +37,7 @@
      </audio>
    </div>
 </v-col>
-<v-col cols="3">
+<v-col cols="3" id="navColumn">
 <!-- <v-spacer> </v-spacer> -->
   <v-card
     class="mx-auto mt-3"
@@ -149,6 +163,7 @@
 
 </v-row>
 
+</div>
 </v-container>
 </template>
 
@@ -168,6 +183,7 @@ export default {
   name: 'Main',
   data: function () {
     return {
+      noRender: false,
       darsId: null,
       email: '',
       code: '',
@@ -216,12 +232,14 @@ export default {
   async mounted() {
 
     this.changeRTL()
-    if ( window.innerWidth < 1.2 * window.innerHeight ) {
+    if ( window.innerWidth < 800 ) {    
+      this.noRender = true
       return
     }
+    const height = document.getElementById("navColumn").offsetHeight
 
     console.log("Height: " + window.innerHeight + ",Width: " + window.innerWidth)
-    const height = window.innerHeight - 110 
+    //const height = window.innerHeight - 110 
     console.log(`Mounted with height ${height}`)
     //try {
       const resMain = await axios.get(`${this.backendHost}/main`, this.headerConfig)

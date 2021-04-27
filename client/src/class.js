@@ -75,7 +75,7 @@ class php {
      // console.log(topRight)
      // console.log(bottomLeft)
       this.phiRowTR = this.topRight.subtract ( php.phiSpacing, -php.phiSpacing )
-      this.phpRect.fillColor = '#C2B280'
+      this.phpRect.fillColor = '#d3d3d3'
       this.phInsts = []
       this.numRows = 1
     }
