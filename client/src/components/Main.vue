@@ -433,6 +433,7 @@ export default {
    //  return cons.darses.length
    //},
     pn(num) {
+      //return pn.convert(num)
       return pn.convertEnToPe(num)
     },
     async initCanvas( height) {
@@ -518,9 +519,11 @@ export default {
     async updateCanvas() {
 
       console.log("Update canvas...")
-      const renderPane = utils.getRenderArea(this.darsHarfForms.length, this.darsHoroof.length)
+      const renderPane = utils.getRenderArea() 
+      renderPane.setPhiSide(this.darsHarfForms.length) 
+      renderPane.setAtiSide(this.darsHoroof.length)
       window.renderPane = renderPane
-      const phPane = utils.createPlaceHolderPane( renderPane, this.darsHarfForms, this.darsKalameh)
+      const phPane = utils.createPlaceHolderPane( renderPane, renderPane.rectTR, this.darsHarfForms, this.darsKalameh)
       window.phPane = phPane
 
       const phPaneBR = phPane.phpRect.bounds.bottomRight

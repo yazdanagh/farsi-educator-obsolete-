@@ -6,7 +6,7 @@ var paper = require('paper');
 class rp {
   static verMargin = 25
   static horizMargin = 50 
-  constructor ( numPhis, numAtps ) {
+  constructor ( ) {
     const topRight = new paper.Point( 
       paper.view.size._width - rp.horizMargin, rp.verMargin 
     );
@@ -15,21 +15,25 @@ class rp {
     );
     this.rectTR = topRight
     this.rectBL = bottomLeft
-    let avaiWidth = (this.rectTR.x -  this.rectBL.x) 
-    this.phiSide = Math.min ( Math.floor(avaiWidth/(numPhis + 1)/5) * 5 , 80)
-    this.phpRow = this.phiSide + 2 * php.phiSpacing
-    console.log( "Phi Side should be: " + this.phiSide + ", row is: " + this.phpRow)
+   }
 
-    //
-    this.phpTR = this.rectTR 
-    this.phpBL = this.phpTR.subtract(avaiWidth, - this.phpRow )
+   setPhiSide(numPhis) {
+     this.avaiWidth = (this.rectTR.x -  this.rectBL.x) 
+     this.phiSide = Math.min ( Math.floor(this.avaiWidth/(numPhis + 1)/5) * 5 , 60)
+     this.phpRow = this.phiSide + 2 * php.phiSpacing
+     console.log( "Phi Side should be: " + this.phiSide + ", row is: " + this.phpRow)
+   }
 
-    const avaiHeight = this.rectBL.y - this.phpTR.y - this.phpRow
-    console.log("Avai Height " + avaiHeight )
-    this.atiSide = Math.min ( Math.floor((avaiHeight/(numAtps) - atp.atpBetRow - 2* atp.atpSpacing ) )  , 80) // atp.atpBetRow + atp.atpSpacing 
-    console.log( "Ati Side should be: " + this.atiSide )
+   setAtiSide( numAtps ) { 
+     let phpTR = this.rectTR 
+     let phpBL = phpTR.subtract(this.avaiWidth, - this.phpRow )
+     this.avaiHeight = this.rectBL.y - phpBL.y 
+     console.log("Avai Height " + this.avaiHeight )
+     this.atiSide = Math.min ( Math.floor((this.avaiHeight/(numAtps) - atp.atpBetRow - 2* atp.atpSpacing ) )  , 60) // atp.atpBetRow + atp.atpSpacing 
+     this.atpRow = this.atiSide + 2 * atp.atiSpacing
+     console.log( "Ati Side should be: " + this.atiSide )
+   }
 
-  }
 }
 
 // placeHolderItem
@@ -59,15 +63,15 @@ class php {
     static phiSpacing = 10
     static phiGutter = 3 
 
-    constructor ( rp, numTiles ) {
+    constructor ( rp, TR, numTiles ) {
       //console.log("Num Tiles " + numTiles)
       //
       this.tilesPerRow = numTiles  
       this.phiSide = rp.phiSide
       this.phpRow = rp.phpRow
 
-      this.topRight = rp.phpTR 
-      this.bottomLeft = rp.phpBL 
+      this.topRight = TR 
+      this.bottomLeft = TR.subtract(rp.avaiWidth, - this.phpRow ) 
 
       this.phpRect = paper.Path.Rectangle(
         this.topRight, this.bottomLeft
@@ -116,9 +120,11 @@ class php {
           //console.log(tile.firstChild.bounds)
           //console.log(tile.lastChild.bounds)
           ////////  MOHEM const scaling =  this.phiSide / tile.lastChild.bounds.height
-          const scaling = 1
-          const newBound = new paper.Rectangle(startingTopRight, startingTopRight.subtract(tile.lastChild.bounds.width * scaling, -tile.lastChild.bounds.height * scaling ))
-          console.log ( "Scaling by: " + this.phiSide / tile.lastChild.bounds.height )
+          //const scaling = 1
+          const newBound = new paper.Rectangle(startingTopRight, startingTopRight.subtract(tile.lastChild.bounds.width , -tile.lastChild.bounds.height ))
+          //console.log ( "Scaling by: " + this.phiSide / tile.lastChild.bounds.height )
+          //console.log ( "phiSide: " + this.phiSide )
+          //console.log ( "tiles last child: " + tile.lastChild.bounds.height )
           //console.log(newBound)
           if ( resize ) {
             console.log("Resize")
@@ -281,9 +287,9 @@ const createEar = ( earPosition, audio ) => {
   //console.log("created ear for : " + audio)
 }
 
-const createPlaceHolderPane = ( renderArea, harfForms, darsKalameh) => {
+const createPlaceHolderPane = ( renderArea, TR, harfForms, darsKalameh) => {
 
-  var phPane = new php( renderArea, harfForms.length )
+  var phPane = new php( renderArea, TR, harfForms.length )
   console.log(phPane)
   
   const earPosition = phPane.topRight.add( php.phiSpacing + renderArea.phiSide/4 , php.phiSpacing + renderArea.phiSide/2 ) 
