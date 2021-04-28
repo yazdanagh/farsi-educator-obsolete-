@@ -21,6 +21,7 @@ class rp {
      this.avaiWidth = (this.rectTR.x -  this.rectBL.x) 
      this.phiSide = Math.min ( Math.floor(this.avaiWidth/(numPhis + 1)/5) * 5 , 60)
      this.phpRow = this.phiSide + 2 * php.phiSpacing
+     this.phiPerRow = numPhis
      console.log( "Phi Side should be: " + this.phiSide + ", row is: " + this.phpRow)
    }
 
@@ -66,12 +67,15 @@ class php {
     constructor ( rp, TR, numTiles ) {
       //console.log("Num Tiles " + numTiles)
       //
-      this.tilesPerRow = numTiles  
+      if ( numTiles > rp.phiPerRow ) { 
+        this.numRows = Math.ceil(numTiles/rp.phiPerRow)
+      }
+      this.tilesPerRow = rp.phiPerRow  
       this.phiSide = rp.phiSide
       this.phpRow = rp.phpRow
 
       this.topRight = TR 
-      this.bottomLeft = TR.subtract(rp.avaiWidth, - this.phpRow ) 
+      this.bottomLeft = TR.subtract(rp.avaiWidth, - this.phpRow * this.numRows ) 
 
       this.phpRect = paper.Path.Rectangle(
         this.topRight, this.bottomLeft
@@ -81,7 +85,7 @@ class php {
       this.phiRowTR = this.topRight.subtract ( php.phiSpacing, -php.phiSpacing )
       this.phpRect.fillColor = '#d3d3d3'
       this.phInsts = []
-      this.numRows = 1
+      this.numRows = 3
     }
     getPhiTopRight(loc) { // todo: add row 
       // TODO : implement Row
