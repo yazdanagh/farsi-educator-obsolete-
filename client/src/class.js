@@ -67,9 +67,7 @@ class php {
     constructor ( rp, TR, numTiles ) {
       //console.log("Num Tiles " + numTiles)
       //
-      if ( numTiles > rp.phiPerRow ) { 
-        this.numRows = Math.ceil(numTiles/rp.phiPerRow)
-      }
+      this.numRows = Math.ceil(numTiles/rp.phiPerRow)
       this.tilesPerRow = rp.phiPerRow  
       this.phiSide = rp.phiSide
       this.phpRow = rp.phpRow
