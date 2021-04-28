@@ -225,7 +225,7 @@ module.exports = (app) => {
       const numDarses = student.name === 'test' ? totDarses + 1 : student.darsId + 1   
       console.log('+++++++++++' + totDarses + student + studentId )
       //const dars = await db.dars.findOne({darsId: student.darsId})   
-      const darses = await db.dars.find({darsId: { $in:  Array.from(Array(numDarses).keys())  }},{},{ sort: {darsId: 1}, skip: (page-1)*10, limit: 10})   
+      const darses = await db.dars.find({darsId: { $in:  Array.from(Array(numDarses).keys())  }},{},{ sort: {darsId: 1}, skip: (page-1)*5, limit: 5})   
       if ( darses ) {
         res.json(darses)
       } else {
