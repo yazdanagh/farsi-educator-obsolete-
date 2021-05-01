@@ -221,7 +221,9 @@ export default {
       }
       let res = await axios.get(`${this.backendHost}/darses/${newVal}`, this.headerConfig)
       this.dars = res.data
+      this.numHarfLearned = this.dars.numHarfLearned
       await this.addKalamehAudio()
+      this.darsDone = false
       await this.cleanUpdateCanvas()
       //  //await this.updateCanvas(newVal)
       await this.$router.push({name: 'main',params: {darsId:this.darsId}})

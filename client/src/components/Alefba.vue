@@ -144,16 +144,15 @@ export default {
     //const height = window.innerHeight - 110 
     console.log(`Mounted with height ${height}`)
     //try {
-      let res
-      res = await axios.get(`${this.backendHost}/main`, this.headerConfig)
-      this.student = res.data
+      const resMain = await axios.get(`${this.backendHost}/main`, this.headerConfig)
+      this.student = resMain.data
       this.page = this.$route.query.page
       //res = await axios.get(`${this.backendHost}/darses?page=${this.page}`, this.headerConfig)
       //this.darses = res.data
-      res = await axios.get(`${this.backendHost}/horoof`)
+      let res = await axios.get(`${this.backendHost}/horoof`)
       this.horoof = res.data
 
-      const studentDarsId = this.student['darsId']
+      const studentDarsId = this.student['darsId'] + 1
       res = await axios.get(`${this.backendHost}/darses/${studentDarsId}`,this.headerConfig)
       this.dars = res.data
       this.horoof = this.horoof.slice(0,this.numHarfLearned)
