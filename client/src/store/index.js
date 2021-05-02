@@ -6,7 +6,8 @@ Vue.use(Vuex)
 const store = new Vuex.Store({
   state: {
     accessToken: localStorage.getItem('user-token') || '',
-    darsId: 0
+    studentId: null, 
+    //darsId: 0
   },
   mutations: {
     increment (state) {
@@ -15,6 +16,9 @@ const store = new Vuex.Store({
     accessToken(state, newToken) {
       state.accessToken = newToken
       localStorage.setItem('user-token', newToken)
+    },
+    studentId(state, studentId) {
+      state.studentId = studentId
     }
   },
 

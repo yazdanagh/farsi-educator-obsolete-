@@ -168,7 +168,16 @@ export default {
       set: function(newToken){
         this.$store.commit('accessToken',newToken);
       }
+    },
+    studentId:{
+      get: function(){
+        return this.$store.state.studentId;
+      },
+      set: function(studentId){
+        this.$store.commit('studentId',studentId);
+      }
     }
+
   },
   methods: { 
     async goToSchool() {
@@ -179,15 +188,15 @@ export default {
         'Content-Type': 'application/json',
       }
       const res = (await axios.post(`${this.backendHost}/login`, {email,code}, {headers}))
-      const accessToken= res.data.accessToken
-      this.accessToken = accessToken
+      this.accessToken = res.data.accessToken
+      this.studentId = res.data.studentId
       //this.$router.push({ name: 'main', params: {code}, query: {email }})
       this.$router.push({name: 'main',params: {darsId:'latest'}})
 
     },
-    studentRoute(student) {
-      return `/dars/${this.students[student]}?student=${student}`
-    }
+    //studentRoute(student) {
+    //  return `/dars/${this.students[student]}?student=${student}`
+    //}
   }
 }
 </script>

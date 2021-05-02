@@ -244,7 +244,7 @@ export default {
     //const height = window.innerHeight - 110 
     console.log(`Mounted with height ${height}`)
     //try {
-      const resMain = await axios.get(`${this.backendHost}/main`, this.headerConfig)
+      const resMain = await axios.get(`${this.backendHost}/students/${this.studentId}`, this.headerConfig)
       this.student = resMain.data
       const studentDarsId = parseInt(resMain.data['darsId']) 
 
@@ -304,7 +304,8 @@ export default {
   computed: { 
 
     ...Vuex.mapState({ 
-      accessToken: state => state.accessToken
+      accessToken: state => state.accessToken,
+      studentId: state => state.studentId
     }),
    //goToDarses() {
    //  return 

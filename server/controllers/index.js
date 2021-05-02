@@ -38,7 +38,7 @@ module.exports = (app) => {
        let studentId = student.studentId
        const accessToken = jwt.sign(studentId, process.env.ACCESS_TOKEN_SECRET )
        console.log(`Login successful for student: ${student.name}`)
-       res.json({accessToken})
+       res.json({accessToken,studentId})
      } catch (e) {
        console.log(e)
        res.sendStatus(403)

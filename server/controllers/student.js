@@ -12,7 +12,7 @@ const db = require("../mongo.js")
 
 
 
-router.get('/main',  async (req, res) => {
+router.get('/students/:studentId',  async (req, res) => {
     const studentId = req.studentId
     const students = await db.student.find({studentId})   
 	  const student = students[0]

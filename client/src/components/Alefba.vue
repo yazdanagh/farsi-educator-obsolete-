@@ -144,12 +144,12 @@ export default {
     //const height = window.innerHeight - 110 
     console.log(`Mounted with height ${height}`)
     //try {
-      const resMain = await axios.get(`${this.backendHost}/main`, this.headerConfig)
+      const resMain = await axios.get(`${this.backendHost}/students/${this.studentId}`, this.headerConfig)
       this.student = resMain.data
       this.page = this.$route.query.page
       //res = await axios.get(`${this.backendHost}/darses?page=${this.page}`, this.headerConfig)
       //this.darses = res.data
-      let res = await axios.get(`${this.backendHost}/horoof`)
+      let res = await axios.get(`${this.backendHost}/horoof`, this.headerConfig)
       this.horoof = res.data
 
       const studentDarsId = this.student['darsId'] + 1
@@ -186,7 +186,8 @@ export default {
   },
   computed: { 
     ...Vuex.mapState({ 
-      accessToken: state => state.accessToken
+      accessToken: state => state.accessToken,
+      studentId: state => state.studentId
     }),
    numHarfLearned() {
      if ( this.dars ) { 
