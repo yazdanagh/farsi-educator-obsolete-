@@ -19,11 +19,12 @@ module.exports = {
   // Assign req.currentUser with user object
   assignCurrentUser: async (req, res, next) => {
     console.log("Auth...")
-    const authHeader = req.headers['authorization']
+    const authHeader = req.headers['Authorization']
+    console.log(authHeader)
     const token = authHeader && authHeader.split(' ')[1]
     console.log(req.path)
     console.log(req.method)
-    if ( req.path === '/students' && req.method === 'GET' ) {
+    if ((req.path === '/students' || req.path === '/ui/as') && req.method === 'GET' ) {
       next();
     } else {
    if ( token == null ) return res.sendStatus(401)
