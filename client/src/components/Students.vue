@@ -301,7 +301,7 @@ export default {
       set: function(newToken){
         this.$store.commit('accessToken',newToken);
       }
-    }
+    },
     studentId:{
       get: function(){
         return this.$store.state.studentId;
