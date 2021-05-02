@@ -21,7 +21,7 @@ router.get('/students/:studentId',  async (req, res) => {
     //const student = doAuth(code,email,students.students)
     //    console.log(student)
     if ( student ) {
-      console.log("FOUND" + student)
+      //console.log("FOUND" + student)
       res.json(student)
     } else {
       res.sendStatus(404);
