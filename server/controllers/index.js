@@ -13,8 +13,6 @@ const db = require("../mongo.js")
 const jwt = require("jsonwebtoken");
 
 
-//const configFile = './students_new.config'
-
 const middleware  = require('./middleware');
 
 module.exports = (app) => {
@@ -32,13 +30,14 @@ module.exports = (app) => {
 
   app.post('/login', async (req, res) => {
      // Auth
-     console.log("Hi")
+     console.log("Logging in ...")
      try {
        const code = req.body.code
        const email = req.body.email
        const student = await db.student.findOne({code,email}) 
        let studentId = student.studentId
        const accessToken = jwt.sign(studentId, process.env.ACCESS_TOKEN_SECRET )
+       console.log(`Login successful for student: ${student.name}`)
        res.json({accessToken})
      } catch (e) {
        console.log(e)
@@ -51,7 +50,7 @@ module.exports = (app) => {
   app.use('/', [ middleware.assignCurrentUser ] , require('./dars.js') ); 
 
 
- // temporarily put this back
+  // Save all students
   app.post('/students-update', async (req, res) => {
     try {
       const updatedStudents = req.body.students
@@ -63,65 +62,6 @@ module.exports = (app) => {
       res.sendStatus(500)
     }
   })
-
-/////// update updated students
-/////// this can actually use the standar rest put/post 2/17/21
-///////app.post('/students-update', async (req, res) => {
-///////  try {
-///////    const updatedStudents = req.body.students 
-///////    for ( let student of updatedStudents ) {
-///////      //console.log(updatedStudents)
-///////      //let savedStudent = await db.student.findById(student._id)   
-///////      //savedStudent = student
-///////      //console.log(savedStudent)
-///////      //await db.student.deleteMany({})   //
-///////      //await db.student.create(updatedStudents)
-///////      //await savedStudent.save()
-///////      if ( student._id ) {
-///////        await db.student.findByIdAndUpdate(student._id, student )
-///////        console.log(`Update student ${student.name}`)
-///////      } else {
-///////        await db.student.create(student)
-///////        console.log(`Create student ${student.name}`)
-///////      }
-///////    }
-///////    res.json({success:true})
-///////  } catch (e) {
-///////     console.log(e)
-///////    res.sendStatus(500);
-///////  }
-///////})
-
-
-  
- //app.put('/students/:code', async (req, res) => {
-
- //  const email = req.query.email
- //  const code = req.params.code
- //  const student = await db.student.findOne({code,email})   
- //  if ( student ) {
- //    student['darsId'] = req.body.darsId 
- //    //console.log(JSON.stringify(students,null,2))
- //    //await fs.writeFile(configFile,JSON.stringify(students,null,2))
- //    await student.save()
- //    res.json({success:true})
-
- //  } else {
- //    res.sendStatus(404);
- //  }
-
- //});
-  
-// app.get('/horoof', async (req, res) => {
-//   const horoof = await db.harf.find({})   
-//   if ( horoof ) {
-//     console.log("FOUND" )
-//     res.json(horoof)
-//   } else {
-//     res.sendStatus(404);
-//   }
-// })
-
 
 }
 
