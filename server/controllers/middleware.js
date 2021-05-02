@@ -19,7 +19,7 @@ module.exports = {
   // Assign req.currentUser with user object
   assignCurrentUser: async (req, res, next) => {
     console.log("Auth...")
-    const authHeader = req.headers['Authorization']
+    const authHeader = req.headers['authorization']
     console.log(authHeader)
     const token = authHeader && authHeader.split(' ')[1]
     console.log(req.path)
