@@ -1,116 +1,455 @@
 <template>
+
 <v-container>
+<div v-if="noRender">
+  <h1>
+  این صفحه قابل نمایش نیست
+  </h1>
+ <h2>  
+    ۱. پهنای مرورگر را افزایش دهید یا
+
+  </h2>
+  <h2>  
+    ۲. دستگاه خود را در حالت افقی نگهدارید
+  </h2>
+</div>
+<div v-else>
 <v-row class="text-center">
-
-<v-col cols="3">
-<v-spacer> </v-spacer>
-<div>
-<v-btn style="width:100%" x-large @click="goToUsers" large class="mt-5" color="blue lighten-1" >  درس بعد 
-<v-icon large>  {{ mdiHome }} </v-icon>
-</v-btn>
-</div>
-<div>
-<v-btn x-large style="width:100%"  @click="goToNextDars" large :class="{'disable-btn': !darsDone}" class="mt-5" v-bind:color=" darsDone ? 'blue lighten-1' : 'blue lighten-1'" >  درس بعد 
-<v-icon large>  {{ mdiArrowRightBold }} </v-icon>
-</v-btn>
-</div>
-<div>
-<v-btn x-large style="width:100%" @click="goToPrevDars" large class="mt-5" color="blue lighten-1" >  درس قبل 
-<v-icon large>  {{ mdiArrowLeftBold }} </v-icon>
-</v-btn>
-</div>
-
-</v-col>
 
 <v-col cols="9" class="mb-4">
 <!--<img id="ear" style="display:none" src="images2/ear.jpg" >  -->
-   <canvas id="myCanvas" resize class="mt-5" style="border: 1px solid black; float: right;">
+  <div>
+   <canvas id="myCanvas"  class="mt-3" style="border: 1px solid black; float: right">
    </canvas>
+ </div>
    <div  id="allImages">
-     <div v-for="(aG,aIdx) in alphaGroups" :key="aIdx" >
-     <img v-for="alpha in aG" :key="alpha" style="display:none"  v-bind:id="alpha" v-bind:src="`/images2/${alpha}.png`"> 
+     <div v-for="(aG,aIdx) in darsHoroof" :key="aIdx" >
+     <img v-for="alpha in aG['harfForms']" :key="alpha" style="display:none"  v-bind:id="alpha" v-bind:src="imgAlph[alpha]"> 
       <img id="ear" style="display:none" src="/images2/ear.jpg" > 
      </div>
    </div>
    <div id="allAudios">
-     <audio :src="audioDars" :id="audioDarsId"  > </audio>
-     <audio v-for="(aG,aIdx) in alphaGroups" :src="audioAlph(aG)" :id="audioAlphId(aG)" :key="aIdx" >
+     <audio  :id="audioDarsId"  > 
+        <source :src="audioDars" type="audio/mp3">
+     </audio>
+     <audio v-for="(aG,aIdx) in darsHoroof" :id="audioAlphId(aG)" :key="aIdx" >
+        <source :src="audioAlph[aG.harfSound]" type="audio/mp3">
      </audio>
    </div>
+</v-col>
+<v-col cols="3" id="navColumn">
+<!-- <v-spacer> </v-spacer> -->
+  <v-card
+    class="mx-auto mt-3"
+  >
+
+    <v-img
+      height="200"
+      :src='imgProfile'
+    ></v-img>
+
+    <v-card-title class="d-flex flex-row">
+   {{ this.student.naam }}
+    </v-card-title>
+
+    <v-divider class="mx-3"></v-divider> 
+    <v-card-text style="display:block" class="text-right">
+    <div>
+      {{ pn(this.studentDarsId) }}
+       درس را خوانده است    
+     
+  </div>
+  <div>
+      
+      <router-link :to="{ path: '/ui/alefba' }">
+       {{ this.pn(this.numHarfLearned) }}
+      </router-link>
+     تا از الفبا را آموخته است  
+    </div>
+    </v-card-text>
+
+  </v-card>
+
+   <v-btn style="width:100%" @click="goToAllDarses" large class=" mt-2" color="blue lighten-1" > 
+      بازبینی کلمه ها
+         <v-icon >  
+           {{ mdiViewHeadline }} 
+         </v-icon>
+   </v-btn>
+<div>
+  <v-row dense >
+
+
+<v-col cols="6">
+<v-btn style="width:100%" @click="goToPrevDars" :class="{'disable-btn': darsId == 1}" class="mt-2" color="blue lighten-1" >  
+<!-- درس قبل  -->
+<v-icon large >  
+{{ mdiChevronRight }} 
+</v-icon>
+</v-btn>
+</v-col>
+<v-col cols="6">
+  <v-btn style="width:100%"   @click="goToNextDars" :class="{'disable-btn': darsId > student.darsId && !darsDone}" class="mt-2" v-bind:color=" darsDone ? 'blue lighten-1' : 'blue lighten-1'" >  
+  <!-- درس بعد --> 
+  <v-icon large >  
+  {{ mdiChevronLeft }} 
+  </v-icon>
+</v-btn>
 </v-col>
 
 </v-row>
 
+
+<v-row dense >
+<v-col cols="6">
+<v-btn style="width:100%" @click="goToFirstDars" :class="{'disable-btn': darsId == 1}" class="mt-2" color="blue lighten-1" >  
+<!-- درس قبل  -->
+<v-icon large >  
+{{ mdiChevronDoubleRight }} 
+</v-icon>
+</v-btn>
+</v-col>
+
+
+<v-col cols="6">
+  <v-btn style="width:100%"   @click="goToLastDars" :class="{'disable-btn': darsId > student.darsId && !darsDone}" class="mt-2" v-bind:color=" darsDone ? 'blue lighten-1' : 'blue lighten-1'" >  
+  <!-- درس بعد --> 
+  <v-icon large >  
+  {{ mdiChevronDoubleLeft }} 
+  </v-icon>
+</v-btn>
+</v-col>
+
+  </v-row>
+
+</div>
+<div>
+  <!--
+  <v-row>
+  <v-col cols="1">
+  </v-col>
+  <v-col cols="6">
+  <v-text-field class="mt-5"
+  v-model="selectedDarsId"
+  label="شماره درس"
+  ></v-text-field>
+  </v-col>
+  <v-col cols="5">
+  <v-btn x-large  style="width:100%" @click="goToDars(selectedDarsId)" large class="mt-5" color="blue lighten-1" > برو به درس
+  </v-btn>
+  </v-col>
+  </v-row>
+  -->
+  <v-select reverse class="mt-2"
+  :items="goToDarses"
+  item-text="text"
+  item-value="value"
+  background-color="blue lighten-1"
+  v-model="selectedDarsId"
+  solo
+  >
+
+  <template v-slot:label>
+      <p>برو به درس</p>
+    </template>
+
+  </v-select>
+
+</div>
+</v-col>
+
+
+
+
+</v-row>
+
+</div>
 </v-container>
 </template>
 
 <script>
 const cons = require('../constants.js');
 const paper =  require('paper');
-import { php, phi, atp, ati }  from '../class';
-import { mdiHome, mdiArrowRightBold, mdiArrowLeftBold } from '@mdi/js';
+import { utils }  from '../class';
+//import { mdiHome, mdiChevronLeft, mdiChevronRight, mdiArrowRightBold, mdiArrowLeftBold } from '@mdi/js';
+import { mdiViewHeadline, mdiChevronLeft, mdiChevronDoubleLeft, mdiChevronRight, mdiChevronDoubleRight  } from '@mdi/js';
 import axios from 'axios';
+import lodash from 'lodash'
+import pn from 'persian-number';
+import Vuex from 'vuex'
+
 
 export default {
   name: 'Main',
   data: function () {
     return {
-      darsId: 1,
+      noRender: false,
+      darsId: null,
+      studentDarsId: null,
+      email: '',
+      code: '',
+      dars: null,
+      horoof: [],
+      selectedDarsId: '',
       darsDone: false,
       student: '',
-      mdiArrowRightBold,
-      mdiArrowLeftBold,
-      mdiHome,
-      canvas: null
+      numHarfLearned: '',
+      //mdiArrowRightBold,
+      //mdiArrowLeftBold,
+      audioDars: '' ,
+      audioAlph: {},
+      imgAlph:{},
+      imgProfile: null,
+      mdiChevronRight,
+      mdiChevronLeft,
+      mdiChevronDoubleRight,
+      mdiChevronDoubleLeft,
+      mdiViewHeadline,
+      canvas: null,
+      goToDarses: [], 
+      backendHost: process.env.NODE_ENV === 'development' ? 'http://localhost:3085'  : ''
     }
   },
   watch: {
-    //async darsId(newVal) {
+    async selectedDarsId(newVal) {
+      await this.goToDars(newVal)
+    },
+    async darsId(newVal, oldVal) {
+      //console.log(` new val: ${newVal}, old val: ${oldVal}`)
+      if ( oldVal === null || newVal == oldVal ) { 
+        //console.log("returning ...")
+        return
+      }
+      let res = await axios.get(`${this.backendHost}/darses/${newVal}`, this.headerConfig)
+      this.dars = res.data
+      this.numHarfLearned = this.dars.numHarfLearned
+      await this.addKalamehAudio()
+      this.darsDone = false
+      await this.cleanUpdateCanvas()
       //  //await this.updateCanvas(newVal)
-      //}
+      await this.$router.push({name: 'main',params: {darsId:this.darsId}})
+      this.$emit('darsId', newVal )
+    }
+
   },
   async mounted() {
-    this.initCanvas()
-    this.darsId = this.$route.params.darsId
-    this.student = this.$route.query.student
-    setTimeout ( () => { 
-      console.log("WAAIIIITT")
-      this.updateCanvas()
-    }, 500) 
+
+    this.changeRTL()
+    if ( window.innerWidth < 800 ) {    
+      this.noRender = true
+      return
+    }
+    const height = document.getElementById("navColumn").offsetHeight
+
+    console.log("Height: " + window.innerHeight + ",Width: " + window.innerWidth)
+    //const height = window.innerHeight - 110 
+    console.log(`Mounted with height ${height}`)
+    //try {
+      const resMain = await axios.get(`${this.backendHost}/main`, this.headerConfig)
+      this.student = resMain.data
+      this.studentDarsId = parseInt(resMain.data['darsId']) 
+
+      const resDars = await axios.get(`${this.backendHost}/darses/${this.studentDarsId + 1}`,this.headerConfig);
+      this.numHarfLearned = resDars.data.numHarfLearned
+
+      if ( this.$route.params.darsId === 'latest' ) {
+        // do nothing
+        this.darsId = this.studentDarsId + 1  
+        this.dars = resDars.data
+      } else {
+        this.darsId = this.$route.params.darsId
+        const resDars2 = await axios.get(`${this.backendHost}/darses/${this.darsId}`,this.headerConfig);
+        this.dars = resDars2.data
+      }
+      let blob
+      let url
+      this.addKalamehAudio();
+
+      let res = await axios.get(`${this.backendHost}/horoof`)
+      this.horoof = res.data
+
+      for ( let harf of this.horoof ) {
+      //if ( harf.harfAudio.data ) { 
+        blob = new Blob([ new Buffer(harf.harfAudio.data, 'base64')], { type: 'audio/m4a' });
+        url = window.URL.createObjectURL(blob)
+      //} else {
+      //  console.log(` No audio for ${harf.harfName}`)
+       // url = "no_audio"
+      //}
+      this.audioAlph[harf.harfSound ]  = url
+      for ( let [idx,harfImage] of harf.harfImages.entries() ) {
+        blob = new Blob([ new Buffer(harfImage.data, 'base64')], { type: 'image/png' });
+        url = window.URL.createObjectURL(blob)
+        this.imgAlph[harf.harfForms[idx]]  = url
+      }
+    }
+
+
+
+    console.log(this.student.profileImage)
+    blob = new Blob([ new Buffer(this.student.profileImage.data, 'base64')], { type: 'image/jpg' });
+    url = window.URL.createObjectURL(blob)
+    this.imgProfile  = url
+
+    this.goToDarses = Array.from(Array(this.student.darsId).keys()).map( a => { 
+      return { 
+        text: `درس شماره  ${this.pn(a+1)}`,
+        value: a
+      }
+
+    })
+    this.initCanvas(height)
+    this.$emit('darsId', this.darsId )
+    await this.cleanUpdateCanvas()
   },
   computed: { 
-    audioDars() {
-      return '/audios/' + cons.darses[this.darsId][1] + '.m4a'
-    },
-    audioDarsId() {
-      return cons.darses[this.darsId][1]
-    },
-    darsKalameh() {  
-      return cons.darses[this.darsId][0].split(' ')
-    },
-    alphaGroups() {
 
-      let harfHash = {}
-      const kalamehUnique = this.darsKalameh.filter((value, index, self) => {return self.indexOf(value) === index; })
-      let alphaGrps = kalamehUnique.reduce((tot,harf) => { 
-        if ( harfHash[harf] ) return tot 
-        let alphaGroup = cons.alphaGroups.find( g => g.includes(harf))
-        tot.push(alphaGroup)
-        for ( let harf of alphaGroup ) {
-          harfHash[harf] = 1
-        }
-        return tot
-      }, [])
-      return alphaGrps
+    ...Vuex.mapState({ 
+      accessToken: state => state.accessToken
+    }),
+   //goToDarses() {
+   //  return 
+   //},
+   audioDarsId() {
+     return this.darsKalameh
+   },
+   headerConfig () { 
+    const config = {
+      headers: { Authorization: `Bearer ${this.accessToken}` }
     }
+    return config
+   },
+   
+   darsHarfForms() {  
+     return this.dars ? this.dars['kalamehHarfForms'] : [] 
+   },
+   darsKalameh() {
+     return this.dars ? this.dars['kalameh'] : ''
+   },
+   darsHoroof() {
+     if (this.horoof.length == 0 ) return []
+     let harfHash = {}
+     const darsUniqueHarfForms = this.darsHarfForms.filter((value, index, self) => {return self.indexOf(value) === index; })
+     let darsHarfs = darsUniqueHarfForms.reduce((tot,harfForm) => { 
+       let harf = this.horoof.find( g => g.harfForms.includes(harfForm))
+       if ( harfHash[harf.harfName] ) return tot 
+       tot.push(harf)
+       harfHash[harf.harfName] = 1
+       return tot
+     }, [])
+     return darsHarfs
+   }
   },
   //
   methods: {
-    async initCanvas() {
+    
+    changeRTL () {
+      this.$vuetify.rtl = true
+    },
+    addKalamehAudio() {
+      let blob
+      let url
+      if ( this.dars && this.dars.kalamehAudio.data ) {
+        blob = new Blob([ new Buffer(this.dars.kalamehAudio.data, 'base64')], { type: 'audio/m4a' });
+        //window.x = this.dars.kalamehAudio.data
+        url = window.URL.createObjectURL(blob)
+        //window.audio = new Audio();
+        //window.audio.src = url;
+        //window.audio.play();
+        this.audioDars = url
+        //console.log("HERE  " + url)
+        
+      }
+    },
+    shuffle(array) {
+        var currentIndex = array.length, temporaryValue, randomIndex;
+
+        // While there remain elements to shuffle...
+        while (0 !== currentIndex) {
+
+          // Pick a remaining element...
+          randomIndex = Math.floor(Math.random() * currentIndex);
+          currentIndex -= 1;
+
+          // And swap it with the current element.
+          temporaryValue = array[currentIndex];
+          array[currentIndex] = array[randomIndex];
+          array[randomIndex] = temporaryValue;
+        }
+        return array;
+      },
+    installTileAnimator(paper,phPane, atPanes) {
+      paper.view.onFrame = async () => { 
+
+        const atInsts = lodash.flatten(atPanes.map(a => a.atInsts) )
+        const tile = atInsts.find(t => { 
+          return t.resolve || t.resolvingTarg 
+        })
+        if ( !tile ) return
+        console.log("Found tile: " + tile)
+        tile.animate()
+
+        if ( tile.resolvingPhi && tile.group.position.equals(tile.resolvingPhi.phiRect.position) ) {
+          phPane.renderPlaceHolderInsts(true)
+          this.darsDone = await checkFinished()
+        } else if ( tile.group.position.equals(tile.origin))  {
+          phPane.renderPlaceHolderInsts(true)
+          this.darsDone = await checkFinished()
+        }
+      }
+      // Do not try window.onresize or addEventListener("resize"... as they dont work
+      var sto = null
+      paper.view.onResize = async () => {
+        if ( sto ) {
+          clearTimeout(sto)
+        }
+        sto = await setTimeout(this.cleanUpdateCanvas, 250 )
+      }
+
+      const checkFinished = async () => {
+        //let done = true
+        for ( let phInst of phPane.phInsts ) {  
+          if ( !phInst.aTile ) {
+            return false
+          }
+        }
+        return true
+      }
+
+      
+      //document.getElementById("myCanvas").style.opacity =  1 
+    },
+    alefba(darsId) {
+      if ( darsId < 2 ) {
+        return this.pn(2)
+      } else if ( darsId < 5 ) {
+        return this.pn(3)
+      } else if ( darsId < 10 ) {
+        return this.pn(4)
+      } else if ( darsId < 15 ) {
+        return this.pn(5)
+      } else {
+        return this.pn(6)
+      }
+    },
+   //totalDarses() {
+   //  return cons.darses.length
+   //},
+    pn(num) {
+      //return pn.convert(num)
+      return pn.convertEnToPe(num)
+    },
+    async initCanvas( height) {
       this.canvas = document.getElementById('myCanvas');
-      this.canvas.width =  cons.canvasWidth; // window.innerWidth
-      this.canvas.height = cons.canvasHeight; // window.innerHeight
+      //this.canvas.width =   cons.canvasWidth; // window.innerWidth
+      //this.canvas.height = cons.canvasHeight; // window.innerHeight
+      console.log(cons)
+      this.canvas.height = height; // window.innerHeight
+      this.canvas.width = this.canvas.parentElement.clientWidth; // window.innerHeight
+      console.log("canvas width: " + this.canvas.width )
+      console.log("canvas height: " + this.canvas.height)
       await paper.setup(this.canvas);
+      window.paper = paper
       // scalaing like this wont fix RtoL issue
       // const canvasContext = canvas.getContext('2d');
       // canvasContext.translate(window.innerWidth, 0);
@@ -119,226 +458,108 @@ export default {
 
       //this line eliminates need to access everything through paper object
       // but as a sideeffect will impact global scope for example breaks browsersync
-      //paper.install(window)
+      console.log(height)
+      console.log("canvas width: " + this.canvas.width)
+      console.log("canvas height: " + this.canvas.height)
+
+     //if ( this.canvas.width < 800 ) {
+     //  php.phiSide = 40
+     //}
     },
-    async goToUsers() {
-      await this.$router.push(`/`)
+    async goToAllDarses() {
+      this.$router.push({name: 'all_darses' , query: { page:1 }  })
     },
     async goToNextDars() {
-      await axios.put('http://localhost:3085/users', { student: this.student, dars: this.darsId  })
       this.darsId++;
-      await this.goToDars()
+      console.log("Here")
+      if ( this.darsId <= this.student.darsId ) { 
+        // nothing
+      } else { 
+        this.studentDarsId++
+        this.student.darsId++
+        this.student = Object.assign({},this.student)
+        await axios.put(`${this.backendHost}/students/${this.student._id}`, this.student , this.headerConfig)
+        //await axios.put(`${this.backendHost}/students/${this.code}?email=${this.email}`, { student: this.student.student, darsId: this.darsId  })
+       //this.student = (await axios.get(`${this.backendHost}/students/${this.code}?email=${this.email}`)).data
+       //this.darsDone = false
+      }
+      //await this.$router.push({name: 'main',params: {darsId:this.darsId}})
+      //await this.addKalamehAudio()
+    },
+    async goToFirstDars() {
+      this.darsId = 1
+    },
+    async goToLastDars() {
+      this.darsId = this.student.darsId + 1
     },
     async goToPrevDars() {
       this.darsId--;
-      await this.goToDars()
+      //this.$router.push({name: 'main',params: {darsId:this.darsId}})
     },
-    async goToDars() {
-      await this.$router.push(`/dars/${this.darsId}`)
-      setTimeout ( () => { 
-        this.updateCanvas()
-      }, 50 )
+    async goToDars(n) { 
+      this.darsId = n
+      //await this.addKalamehAudio()
+    },
+    async cleanUpdateCanvas() {
+      //await this.$router.push(`/dars/${this.darsId}`)
+      await this.clearCanvas()
+      await setTimeout ( async () => { 
+        await this.updateCanvas()
+      }, 1000 )
 
     },
-    audioAlph(aG) {
-      return '/audios/' + aG[0].match(/([a-z]*)_/).[1] + '.m4a'
-    },
+    //audioAlph(aG) {
+    //  return '/audios/' + aG['harfSound'] + '.m4a'
+    //},
     audioAlphId(aG) {
-      return aG[0].match(/([a-z]*)_/).[1]
+      return aG['harfSound']
     },
 
+    async clearCanvas() {
+      if ( paper.project )
+        paper.project.activeLayer.removeChildren();
+      if ( paper.view )
+        await paper.view.draw();
+      //paper.view.clearRect(0, 0, paper.width,paper.height)
+    },
     async updateCanvas() {
 
-      const createEar = ( earPosition, audio ) => { 
-        let ear = document.getElementById("ear")
-        let earRaster = new paper.Raster(ear)  
-        earRaster.position = earPosition  
-        earRaster.strokeColor = "yellow"
-        //window.earRaster = earRaster
-        earRaster.onMouseDown= ( ) => {
-          document.getElementById(audio).play()
-        }
-        //console.log("created ear for : " + audio)
+      console.log("Update canvas...")
+      const renderPane = utils.getRenderArea() 
+      renderPane.setPhiSide(this.darsHarfForms.length) 
+      renderPane.setAtiSide(this.darsHoroof.length)
+      window.renderPane = renderPane
+      const phPane = utils.createPlaceHolderPane( renderPane, renderPane.rectTR, this.darsHarfForms, this.darsKalameh)
+      window.phPane = phPane
+
+      const phPaneBR = phPane.phpRect.bounds.bottomRight
+
+
+      // Temp for here, to move inside class
+
+      const avaiHeight = renderPane.rectBL.y - phPaneBR.y
+      console.log("Avai Height " + avaiHeight )
+      //const atiSide = 
+      //
+
+
+      let atPanes = [] 
+
+      // iterate twice to make sure all ati are create on top phi
+      //const atPaneCreated = {}
+      //console.log(this.darsHoroof)
+
+      let topRight = phPane.phpRect.bounds.bottomRight.add(0,10) 
+      for ( let harf of this.shuffle(this.darsHoroof) ) {
+
+  //topRight = topRight.add(0,  idx*(atp.atpRow+10))
+        let atPane = utils.createAlphatilePane(renderPane, topRight, harf, phPane, this.darsHarfForms) 
+        topRight = atPane.atpRect.bounds.bottomRight
+        console.log(topRight)
+        atPanes.push(atPane)
+
       }
-
-      paper.project.activeLayer.removeChildren();
-      paper.view.draw();
-      document.getElementById("myCanvas").style.opacity = 0.2;
-
-      const paneTopMargin = 50
-      const paneRightMargin = 50
-      const topRight = new paper.Point( 
-      cons.canvasWidth - paneTopMargin, paneRightMargin );
-      var phPane = new php( topRight, this.darsKalameh.length + 2)
-      const earPosition = topRight.add( php.phiSpacing + php.phiSide/4 , php.phiSpacing + php.phiSide/2 ) 
-      createEar(earPosition, cons.darses[this.darsId][1]);
-
-      let phInsts = []
-      const atInsts = [] 
-      let idx = 0
-      for ( idx of this.darsKalameh.keys() ) {
-        phInsts.push( new phi(phPane.getPhiTopRight(idx+1), phPane.getPhiBottomLeft(idx+1)))
-        idx++
-      }
-    // iterate twice to make sure all ati are create on top phi
-    idx = 0
-    //const atPaneCreated = {}
-    for ( let alphaGroup of shuffle(this.alphaGroups) ) {
-
-      //console.log(cons)
-      let topRight = phPane.phpRect.bounds.bottomRight.add(0, 20 ) 
-      topRight = topRight.add(0,  idx*(atp.atpRow+10))
-
-      //if ( harf != "faseleh" ) {
-        //  const audio = harf.match(/([a-z]*)_/).[1]
-        //  createEar(topRight.add( atp.atpSpacing + atp.atiSide/4  , atp.atpSpacing + atp.atiSide/2   ) ,audio)
-        //}
-        let atPane = new atp( topRight, alphaGroup.length  )
-        let idx2=1
-        for ( let harf of alphaGroup ) {
-          const audio = harf.match(/([a-z]*)_/).[1]
-          createEar(topRight.add( atp.atpSpacing + atp.atiSide/4  , atp.atpSpacing + atp.atiSide/2   ) ,audio)
-          const occurances = this.darsKalameh.reduce( (tot,elem,harfIndex) => { 
-            if (elem === harf) { 
-              tot.push(harfIndex)
-            } 
-            return tot 
-          } , [] )
-          //console.log( harf + " Occurs:" ) 
-          //console.log( occurances)
-          const plHoldersArray = occurances.map( a => phInsts[a] )
-
-          let atInst
-          atInst = new ati( atPane.getAtiTopRight(idx2) , atPane.getAtiBottomLeft(idx2), plHoldersArray, harf  )
-          atInsts.push(atInst)
-          atInst = new ati( atPane.getAtiTopRight(idx2) , atPane.getAtiBottomLeft(idx2), plHoldersArray, harf  )
-          atInsts.push(atInst)
-          idx2++
-        }
-      //window.at = atInst1
-      //window.atp = atPane
-      idx++
-    }
-  const renderLine = () => {
-    let startingTopRight = phPane.phiRowTR
-    for ( let [idx,plh] of phInsts.entries() ) {
-      console.log("--------" + idx)
-      if ( plh.aTile === null ) {
-        const newBound = new paper.Rectangle(startingTopRight, startingTopRight.subtract(php.phiSide, -php.phiSide ))
-        console.log(plh.phiRect.bounds)
-        console.log(newBound)
-        plh.phiRect.bounds = newBound
-        startingTopRight = startingTopRight.subtract(php.phiSide, 0) 
-      } else { 
-        const tile = plh.aTile.group
-        //window.tile = tile
-        console.log("HERE")
-        console.log(tile.bounds)
-        console.log(tile.firstChild.bounds)
-        console.log(tile.lastChild.bounds)
-        const newBound = new paper.Rectangle(startingTopRight, startingTopRight.subtract(tile.lastChild.bounds.width, -tile.lastChild.bounds.height ))
-        console.log(newBound)
-        tile.bounds = newBound 
-        startingTopRight = startingTopRight.subtract(tile.bounds.width, 0) 
-      }
-
-    }
-  }
-
-  paper.view.onFrame = async () => { 
-    const tile = atInsts.find(t => { 
-      return t.resolve || t.resolvingTarg 
-    })
-    if ( !tile ) return
-    console.log("Found tile: " + tile)
-    if ( tile.resolve ) {
-      tile.resolve = false
-      for ( let ph of tile.ph ) {
-        if ( ph.aTile ) { 
-          continue
-        }
-        if ( ph.phiRect.contains(tile.group.position)) {
-          tile.resolvingTarg = ph.phiRect.position 
-          tile.resolvingPhi = ph 
-          console.log("then here ")
-          //window.ph = ph
-          break
-        } 
-      }
-      tile.resolvingTarg = tile.resolvingTarg || tile.origin
-    }
-
-    let vector = tile.resolvingTarg.subtract(tile.group.position) 
-    let step = vector  
-    console.log('vector length: ' + vector.length )
-    if ( vector.length > 20 ) {
-      //console.log( 'step is: ' +step)
-      step = step.divide(10)
-      //console.log( 'step is: ' +step)
-      step = step.floor()
-      //console.log( 'step is: ' +step)
-    } else { 
-      step = vector
-    }
-    tile.group.position = tile.group.position.add(step)
-    if ( tile.group.position.equals(tile.resolvingTarg) ) {
-      tile.resolvingTarg = null
-    }
-    if ( tile.resolvingPhi && tile.group.position.equals(tile.resolvingPhi.phiRect.position) ) {
-      tile.resolved = true
-      tile.group.firstChild.visible = false
-      tile.resolvingPhi.aTile = tile
-      //tile.ph.group.bounds = tile.group.lastChild.bounds 
-      tile.resolvingPhi.phiRect.visible = false
-      console.log("resolved")
-      console.log(tile)
-      renderLine()
-      this.darsDone = await checkFinished()
-    } else if ( tile.group.position.equals(tile.origin))  {
-      tile.group.firstChild.visible = true
-      tile.resolved = false
-      if ( tile.resolvingPhi ) {
-        tile.resolvingPhi.aTile = null
-        tile.resolvingPhi.phiRect.visible = true
-      }
-      console.log(" non resolved")
-      //console.log(tile.group)
-      console.log(tile.ph.phiRect)
-      tile.resolvingPhi = null
-      //tile.ph.group.bounds = tile.ph.origBound
-      renderLine()
-      this.darsDone = await checkFinished()
-    }
-  }
-
-  const checkFinished = async () => {
-    //let done = true
-    for ( let phInst of phInsts ) {  
-      if ( !phInst.aTile ) {
-        return false
-      }
-    }
-    return true
-  }
-
-  function shuffle(array) {
-    var currentIndex = array.length, temporaryValue, randomIndex;
-
-    // While there remain elements to shuffle...
-    while (0 !== currentIndex) {
-
-      // Pick a remaining element...
-      randomIndex = Math.floor(Math.random() * currentIndex);
-      currentIndex -= 1;
-
-      // And swap it with the current element.
-      temporaryValue = array[currentIndex];
-      array[currentIndex] = array[randomIndex];
-      array[randomIndex] = temporaryValue;
-    }
-    return array;
-  }
-  document.getElementById("myCanvas").style.opacity =  1 
+      this.installTileAnimator(paper,phPane,atPanes) 
     }
   }
 }
@@ -348,5 +569,8 @@ export default {
 .disable-btn {
   pointer-events: none;
   opacity: 0.2;
+}
+a {
+    text-decoration: none;
 }
 </style>

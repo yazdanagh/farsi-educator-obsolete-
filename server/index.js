@@ -29,7 +29,7 @@ app.use(bodyParser.json({
 const appRoot = path.normalize(__dirname + "/..")
 //require("./client2_idx.js")(app);
 app.use(express.static(`${appRoot}/client/dist`));
-require("./controllers/index.js")(app);
+require("./controllers")(app);
 
 app.get('*', (req, res) => {
   console.log(__dirname)

@@ -243,7 +243,7 @@ export default {
         this.addKalamehAudio(dars);
       }
 
-      let res = await axios.get(`${this.backendHost}/horoof`)
+      let res = await axios.get(`${this.backendHost}/horoof`, this.headerConfig)
       this.horoof = res.data
 
       for ( let harf of this.horoof ) {
