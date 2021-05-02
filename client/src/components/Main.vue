@@ -474,6 +474,7 @@ export default {
         // nothing
       } else { 
         this.student.darsId++
+        this.student = Object.assign({},this.student)
         await axios.put(`${this.backendHost}/students/${this.student._id}`, this.student , this.headerConfig)
         //await axios.put(`${this.backendHost}/students/${this.code}?email=${this.email}`, { student: this.student.student, darsId: this.darsId  })
        //this.student = (await axios.get(`${this.backendHost}/students/${this.code}?email=${this.email}`)).data
