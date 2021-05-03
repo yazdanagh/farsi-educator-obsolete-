@@ -144,16 +144,16 @@ export default {
     //const height = window.innerHeight - 110 
     console.log(`Mounted with height ${height}`)
     //try {
-      const resMain = await axios.get(`${this.backendHost}/students/${this.studentId}`, this.headerConfig)
+      const resMain = await axios.get(`${this.backendHost}/api/students/${this.studentId}`, this.headerConfig)
       this.student = resMain.data
       this.page = this.$route.query.page
       //res = await axios.get(`${this.backendHost}/darses?page=${this.page}`, this.headerConfig)
       //this.darses = res.data
-      let res = await axios.get(`${this.backendHost}/horoof`, this.headerConfig)
+      let res = await axios.get(`${this.backendHost}/api/horoof`, this.headerConfig)
       this.horoof = res.data
 
       const studentDarsId = this.student['darsId'] + 1
-      res = await axios.get(`${this.backendHost}/darses/${studentDarsId}`,this.headerConfig)
+      res = await axios.get(`${this.backendHost}/api/darses/${studentDarsId}`,this.headerConfig)
       this.dars = res.data
       this.horoof = this.horoof.slice(0,this.numHarfLearned)
       let blob,url
@@ -259,7 +259,7 @@ export default {
     },
     async goToPage() { 
       await this.$router.push(`/ui/all_darses?page=${this.page}`)
-      const res = await axios.get(`${this.backendHost}/darses?page=${this.page}`, this.headerConfig)
+      const res = await axios.get(`${this.backendHost}/api/darses?page=${this.page}`, this.headerConfig)
       this.darses = res.data
       const canvasWait = 1000
       setTimeout ( () => { 

@@ -268,7 +268,7 @@ export default {
     },
   },
   async mounted() {
-    const res = (await axios.get(`${this.backendHost}/students`))
+    const res = (await axios.get(`${this.backendHost}/api/students`))
     this.students = res.data
     let blob,url;
     for ( let student of this.students ) {
@@ -345,7 +345,7 @@ export default {
       async deleteItemConfirm () {
         const student = this.students.splice(this.editedIndex, 1)[0]
         console.log(student)
-        await axios.delete(`${this.backendHost}/students/${student._id}` )
+        await axios.delete(`${this.backendHost}/api/students/${student._id}` )
         this.closeDelete()
       },
 
@@ -375,7 +375,7 @@ export default {
           if ( this.imageData ) {
             student.profileImage = { contentType: "image/jpeg", data: this.imageData.split(',')[1] }
           }
-          const res = await axios.put(`${this.backendHost}/students/${student._id}`,  student, this.headerConfig )
+          const res = await axios.put(`${this.backendHost}/api/students/${student._id}`,  student, this.headerConfig )
           if ( res.status === 200 ) {
             Object.assign(this.students[this.editedIndex], student)
           }
@@ -384,7 +384,7 @@ export default {
           if ( this.imageData ) {
             student.profileImage = { contentType: "image/jpeg", data: this.imageData.split(',')[1] }
           }
-          const res = await axios.post(`${this.backendHost}/students`,  { student} )
+          const res = await axios.post(`${this.backendHost}/api/students`,  { student} )
           if ( res.status === 200 ) {
             this.students.push(this.editedItem)
           }
@@ -399,7 +399,7 @@ export default {
           student.darsId = parseInt(student.darsId)
         }
         console.log(students)
-        await axios.post(`${this.backendHost}/students-update`, { students })
+        await axios.post(`${this.backendHost}/api/students-update`, { students })
       }
   }
 }

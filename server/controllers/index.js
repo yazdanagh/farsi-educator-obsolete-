@@ -45,13 +45,13 @@ module.exports = (app) => {
      }
   })
 
-  app.use('/', [ middleware.assignCurrentUser ] , require('./student.js') ); 
-  app.use('/', [ middleware.assignCurrentUser ] , require('./harf.js') ); 
-  app.use('/', [ middleware.assignCurrentUser ] , require('./dars.js') ); 
+  app.use('/api', [ middleware.assignCurrentUser ] , require('./student.js') ); 
+  app.use('/api', [ middleware.assignCurrentUser ] , require('./harf.js') ); 
+  app.use('/api', [ middleware.assignCurrentUser ] , require('./dars.js') ); 
 
 
   // Save all students
-  app.post('/students-update', async (req, res) => {
+  app.post('/api/students-update', async (req, res) => {
     try {
       const updatedStudents = req.body.students
       //console.log(updatedStudents)

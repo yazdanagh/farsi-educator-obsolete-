@@ -219,7 +219,7 @@ export default {
         //console.log("returning ...")
         return
       }
-      let res = await axios.get(`${this.backendHost}/darses/${newVal}`, this.headerConfig)
+      let res = await axios.get(`${this.backendHost}/api/darses/${newVal}`, this.headerConfig)
       this.dars = res.data
       this.numHarfLearned = this.dars.numHarfLearned
       await this.addKalamehAudio()
@@ -233,6 +233,8 @@ export default {
   },
   async mounted() {
 
+    console.log(this.headerConfig)
+
     this.changeRTL()
     if ( window.innerWidth < 800 ) {    
       this.noRender = true
@@ -244,11 +246,11 @@ export default {
     //const height = window.innerHeight - 110 
     console.log(`Mounted with height ${height}`)
     //try {
-      const resMain = await axios.get(`${this.backendHost}/students/${this.studentId}`, this.headerConfig)
+      const resMain = await axios.get(`${this.backendHost}/api/students/${this.studentId}`, this.headerConfig)
       this.student = resMain.data
       const studentDarsId = parseInt(resMain.data['darsId']) 
 
-      const resDars = await axios.get(`${this.backendHost}/darses/${studentDarsId + 1}`,this.headerConfig);
+      const resDars = await axios.get(`${this.backendHost}/api/darses/${studentDarsId + 1}`,this.headerConfig);
       this.numHarfLearned = resDars.data.numHarfLearned
 
       if ( this.$route.params.darsId === 'latest' ) {
@@ -257,14 +259,14 @@ export default {
         this.dars = resDars.data
       } else {
         this.darsId = this.$route.params.darsId
-        const resDars2 = await axios.get(`${this.backendHost}/darses/${this.darsId}`,this.headerConfig);
+        const resDars2 = await axios.get(`${this.backendHost}/api/darses/${this.darsId}`,this.headerConfig);
         this.dars = resDars2.data
       }
       let blob
       let url
       this.addKalamehAudio();
 
-      let res = await axios.get(`${this.backendHost}/horoof`, this.headerConfig)
+      let res = await axios.get(`${this.backendHost}/api/horoof`, this.headerConfig)
       this.horoof = res.data
 
       for ( let harf of this.horoof ) {
@@ -476,7 +478,7 @@ export default {
       } else { 
         this.student.darsId++
         this.student = Object.assign({},this.student)
-        await axios.put(`${this.backendHost}/students/${this.student._id}`, this.student , this.headerConfig)
+        await axios.put(`${this.backendHost}/api/students/${this.student._id}`, this.student , this.headerConfig)
         //await axios.put(`${this.backendHost}/students/${this.code}?email=${this.email}`, { student: this.student.student, darsId: this.darsId  })
        //this.student = (await axios.get(`${this.backendHost}/students/${this.code}?email=${this.email}`)).data
        //this.darsDone = false
