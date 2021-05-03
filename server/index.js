@@ -28,8 +28,8 @@ app.use(bodyParser.json({
   app.use(cookieParser());
 const appRoot = path.normalize(__dirname + "/..")
 //require("./client2_idx.js")(app);
-app.use(express.static(`${appRoot}/client/dist`));
 require("./controllers")(app);
+app.use(express.static(`${appRoot}/client/dist`));
 
 app.get('*', (req, res) => {
   console.log(__dirname)
