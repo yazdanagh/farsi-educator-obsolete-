@@ -48,6 +48,7 @@ module.exports = (app) => {
   app.use('/api', [ middleware.assignCurrentUser ] , require('./student.js') ); 
   app.use('/api', [ middleware.assignCurrentUser ] , require('./harf.js') ); 
   app.use('/api', [ middleware.assignCurrentUser ] , require('./dars.js') ); 
+  app.use('/api', [],  require('./kelas.js') ); 
 
 
   // Save all students

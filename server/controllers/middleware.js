@@ -24,7 +24,7 @@ module.exports = {
     const token = authHeader && authHeader.split(' ')[1]
     console.log(req.path)
     console.log(req.method)
-    if ((req.path === '/students' || req.path === '/ui/as') && req.method === 'GET' ) {
+    if ((req.path === '/students' || req.path === '/ui/as' || req.path === '/kelases' ) && req.method === 'GET' ) {
       next();
     } else {
    if ( token == null ) return res.sendStatus(401)

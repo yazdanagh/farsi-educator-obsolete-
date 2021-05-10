@@ -106,6 +106,7 @@ const main = async () => {
     
     const profiles = []
     const students = await db.student.find({})
+    const kelases = await db.kelas.find({})
 
     // Create students in student config
     let configStudents =  await fs.readFile("./students.config")
@@ -116,6 +117,18 @@ const main = async () => {
         await db.student.create(configStudent)
       }
     }
+
+    // Create kelases in kalases config
+    let configKelases =  await fs.readFile("./kelases.config")
+    configKelases = JSON.parse(configKelases )
+    console.log(configKelases)
+    for ( let configKelas of configKelases ) {
+      if ( !kelases.find( k => k.kelasName === configKelas.kelasName )) {
+        await db.kelas.create(configKelas)
+        console.log(`class ${configKelas} was created`)
+      }
+    }
+
 
     for ( let [id,student] of students.entries() ) {
       try {
