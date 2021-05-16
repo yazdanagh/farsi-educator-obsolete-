@@ -24,21 +24,25 @@ module.exports = {
     const token = authHeader && authHeader.split(' ')[1]
     console.log(req.path)
     console.log(req.method)
-    if ((req.path === '/students' || req.path === '/ui/as' || req.path === '/kelases' ) && req.method === 'GET' ) {
-      next();
-    } else {
-   if ( token == null ) return res.sendStatus(401)
-     try {
+    // temp for easy dev only
+    // if ( req.path === '/ui/as' ) {
+    //   next();
+    // } else {
+    if ( token == null ) { 
+      console.log("No token, access denied")
+      return res.sendStatus(401)
+    }
+    try {
        const studentId = await jwt.verify(token,process.env.ACCESS_TOKEN_SECRET)
        console.log(studentId)
        req.studentId = studentId 
        console.log("Authorized")
        next()
-     } catch (err) {
+    } catch (err) {
        console.log(err)
        res.sendStatus(403)
-     }
     }
+  //}
   }
 }
 
