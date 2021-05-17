@@ -1,4 +1,5 @@
 const express  = require('express');
+const db = require("../mongo.js")
 const router   = express.Router();
 const util = require("util")
 require("dotenv").config()
@@ -7,16 +8,14 @@ const exec = util.promisify(require('child_process').exec);
 const fs = bluebird.promisifyAll(require("fs-extra"))
 const _= require("lodash")
 //const dJSON = require('dirty-json');
-const db = require("../mongo.js")
 
 
 
 
 router.get('/students/:studentId',  async (req, res) => {
     const studentId = req.studentId
-    const students = await db.student.find({studentId})   
-	  const student = students[0]
-    console.log(student)
+    const student = await db.student.findOne({studentId}).populate('kelases')   
+    console.log(student.kelases)
     //console.log(req.params)
     //const student = doAuth(code,email,students.students)
     //    console.log(student)
@@ -52,9 +51,19 @@ router.get('/students/:studentId',  async (req, res) => {
   })
 
   router.get('/students', async (req, res) => {
-    const students = await db.student.find({})   
-    if ( students ) {
+    const filterClass = req.query.filterClass
+    let students
+    if ( !filterClass ) {
+      students = await db.student.find({})   
       console.log("Got All Students")
+    } else {
+      // TODO : optimize this query 
+      students = await db.student.find({})
+      const myself = students.find(s => s.studentId == req.studentId ) 
+      console.log("Filtering for: " + myself.kelases[0] )
+      students = students.filter( s => s.kelases.includes(myself.kelases[0]))
+    }
+    if ( students ) {
       res.json(students)
     } else {
       res.sendStatus(404);

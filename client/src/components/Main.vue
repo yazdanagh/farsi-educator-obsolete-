@@ -49,14 +49,22 @@
     ></v-img>
 
     <v-card-title class="d-flex flex-row">
-   {{ this.student.naam }}
+    {{ this.student.naam }} 
     </v-card-title>
 
     <v-divider class="mx-3"></v-divider> 
     <v-card-text style="display:block" class="text-right">
     <div>
+      در کلاس 
+      <router-link :to="{ path: '/ui/kelas' }">
+      {{ this.studentKelases }}
+      </router-link>
+      فارسی می‌‌آموزد
+   </div>
+
+    <div>
       {{ pn(this.student.darsId) }}
-       درس را خوانده است    
+       درس را به پایان رسانده است    
      
   </div>
   <div>
@@ -250,6 +258,9 @@ export default {
       this.student = resMain.data
       const studentDarsId = parseInt(resMain.data['darsId']) 
 
+      res = (await axios.get(`${this.backendHost}/api/kelases`, this.headerConfig))
+      this.kelases = res.data
+      this.kelasNames = this.kelases.map( a=>a.kelasName )
       const resDars = await axios.get(`${this.backendHost}/api/darses/${studentDarsId + 1}`,this.headerConfig);
       this.numHarfLearned = resDars.data.numHarfLearned
 
@@ -312,6 +323,9 @@ export default {
    //goToDarses() {
    //  return 
    //},
+   studentKelases() {
+      return this.student ? this.student.kelases.map(a=>a.kelasName).join(" ") : "" 
+   },
    audioDarsId() {
      return this.darsKalameh
    },

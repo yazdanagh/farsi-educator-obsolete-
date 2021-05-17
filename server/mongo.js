@@ -12,7 +12,7 @@ const studentSchema = new Schema({
   //studentPic; String
   kelases: [{
      type: Schema.Types.ObjectId,
-     ref: 'Kelas'
+     ref: 'kelas'
   }],
   profileImage: { data: String, contentType: String }
 });

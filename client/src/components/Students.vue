@@ -1,12 +1,35 @@
 <template>
 <v-container>
-<v-row class="mt-10 text-center">
 
+
+
+<v-row class="mt-10 text-center">
+<v-col
+ cols="3"
+>
+  <v-select  class="mt-2"
+        :items="kelasNames"
+        item-text="text"
+        item-value="value"
+        background-color="blue lighten-1"
+        v-model="kelas"
+        solo
+        >
+        <!--
+        <template v-slot:label>
+        <p> {{ kelas }} </p>
+    </template>
+    -->
+  </v-select>
+  </v-col>
+</v-row>
+
+<v-row class="mt-10 text-center">
 
 
  <v-data-table
     :headers="headers"
-    :items="students"
+    :items="kelasStudents"
     :items-per-page="20"
     class="elevation-1"
   >
@@ -26,6 +49,10 @@
         <span @click="goToStudent(item.code,item.email)"> {{ item.name }} </span>
         </v-chip>
     </template>
+    <template v-slot:item.kelas="{ item }">
+    {{ kelasIdToNames(item.kelases)  }}
+    </template>
+
   <template v-slot:top>
       <v-toolbar
         flat
@@ -37,6 +64,8 @@
           vertical
         ></v-divider>
         <v-spacer></v-spacer>
+      
+
         <v-dialog
           v-model="dialog"
           max-width="500px"
@@ -125,12 +154,26 @@
                       v-model="editedItem.code"
                       label="code"
                     ></v-text-field>
+                    </v-col>
+                    <v-col
+                    cols="12"
+                    sm="6"
+                    md="4"
+                  >
+                    <v-select
+                      :items="kelasNames"
+                      v-model="editedItem.kelases"
+                      label="classes"
+                      multiple
+                    ></v-select>
                   </v-col>
+
                   <v-col
                     cols="12"
                     sm="6"
                     md="4"
                   >
+
                     <v-text-field
                       v-model="editedItem.darsId"
                       label="dars"
@@ -182,6 +225,7 @@
             </v-card-actions>
           </v-card>
         </v-dialog>
+        
         <v-dialog v-model="dialogDelete" max-width="500px">
           <v-card>
             <v-card-title class="headline">Are you sure you want to delete this item?</v-card-title>
@@ -234,7 +278,7 @@
 
 import axios from 'axios'
 import { mdiHome } from '@mdi/js';
-import Vuex from 'vuex'
+//import Vuex from 'vuex'
 
 export default {
   name: 'User',
@@ -244,13 +288,17 @@ export default {
       dialog: false,
       dialogDelete: false,
       students: [],
-      headers: "pic studentId name naam darsId email code actions".split(' ').map( a => {  return { 'text': a, 'value': a }} ),
+      kelases: [],
+      kelasNames: [],
+      kelas: "",
+      headers: "pic studentId name naam kelas darsId email code actions".split(' ').map( a => {  return { 'text': a, 'value': a }} ),
       editedIndex: -1,
       mdiHome,
       editedItem: {
         name: '',
         naam: '',
         darsId: 0,
+        kelases: [],
         email: '',
         code: 0,
         profileImage: "", 
@@ -260,6 +308,8 @@ export default {
     }
   },
   watch: {
+   //kelas (val, oldVal ) {
+   //},
     dialog (val) {
       val || this.close()
     },
@@ -268,8 +318,18 @@ export default {
     },
   },
   async mounted() {
-    const res = (await axios.get(`${this.backendHost}/api/students`))
+    console.log(process.env)
+    const headers = {
+      'Content-Type': 'application/json',
+    }
+    let res = (await axios.post(`${this.backendHost}/login`, {email: "yazdan.aghaghiri@gmail.com", code: "1111"}, {headers}))
+    this.accessToken = res.data.accessToken
+    this.studentId = res.data.studentId
+    res = (await axios.get(`${this.backendHost}/api/students`, this.headerConfig))
     this.students = res.data
+    res = (await axios.get(`${this.backendHost}/api/kelases`, this.headerConfig))
+    this.kelases = res.data
+    this.kelasNames = this.kelases.map( a=>a.kelasName )
     let blob,url;
     for ( let student of this.students ) {
       if ( student.profileImage ) {
@@ -282,9 +342,25 @@ export default {
   },
 
   computed: { 
-    ...Vuex.mapState({ 
-      accessToken: state => state.accessToken
-    }),
+  //...Vuex.mapState({ 
+  //  accessToken: state => state.accessToken,
+  //  studentId: state => state.studentId
+  //}),
+    kelasObj () {
+      return this.kelases.find(s => s.kelasName === this.kelas )
+    },
+    kelasStudents () {
+      if ( this.kelas ) 
+        return this.students.filter (s => { 
+          console.log(s.kelases)
+          return s.kelases.find( sk => { 
+            console.log(sk)
+            return sk === this.kelasObj._id
+          }) 
+        })
+      else 
+         return this.students
+    },
     headerConfig () { 
       const config = {
         headers: { Authorization: `Bearer ${this.accessToken}` }
@@ -315,6 +391,16 @@ export default {
   methods: { 
     onFileInfo(file) {
       console.log(file)
+    },
+    kelasIdToNames ( ids ) {
+      console.log(ids)
+      if ( !ids || !this.kelases ) return []
+      return ids.filter(a=> a).map ( k  => { 
+        const studentKelas = this.kelases.find( j => j._id == k )
+        if (!studentKelas ) return ''
+        console.log(studentKelas )
+        return studentKelas.kelasName 
+      })
     },
     async goToStudent(code,email) {
       const headers = {
@@ -368,6 +454,7 @@ export default {
       async save () {
         //this.editedItem.needToSave = true
         const student = this.editedItem
+        student.kelases = student.kelases.map( k => this.kelases.find(j => j.kelasName === k )) 
         if (this.editedIndex > -1) {
           console.log(student)
           student.darsId = parseInt(student.darsId)
@@ -377,7 +464,11 @@ export default {
           }
           const res = await axios.put(`${this.backendHost}/api/students/${student._id}`,  student, this.headerConfig )
           if ( res.status === 200 ) {
-            Object.assign(this.students[this.editedIndex], student)
+            //Object.assign(this.students[this.editedIndex], student)
+            //this.students[this.editedIndex ] = student
+            //this.students = Object.assign({}, this.students )
+            let res = (await axios.get(`${this.backendHost}/api/students`, this.headerConfig))
+            this.students = res.data
           }
         } else {
           console.log(student)
@@ -386,7 +477,10 @@ export default {
           }
           const res = await axios.post(`${this.backendHost}/api/students`,  { student} )
           if ( res.status === 200 ) {
-            this.students.push(this.editedItem)
+            //this.students.push(this.editedItem)
+            //this.students = Object.assign({}, this.students )
+            let res = (await axios.get(`${this.backendHost}/api/students`, this.headerConfig))
+            this.students = res.data
           }
         }
         this.close()
