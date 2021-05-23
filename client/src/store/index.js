@@ -6,7 +6,7 @@ Vue.use(Vuex)
 const store = new Vuex.Store({
   state: {
     accessToken: localStorage.getItem('user-token') || '',
-    studentId: null, 
+    studentId: localStorage.getItem('student-id') || null
     //darsId: 0
   },
   mutations: {
@@ -19,6 +19,7 @@ const store = new Vuex.Store({
     },
     studentId(state, studentId) {
       state.studentId = studentId
+      localStorage.setItem('student-id', studentId)
     }
   },
 

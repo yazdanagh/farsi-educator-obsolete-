@@ -325,7 +325,7 @@ export default {
     let res = (await axios.post(`${this.backendHost}/login`, {email: "yazdan.aghaghiri@gmail.com", code: "1111"}, {headers}))
     this.accessToken = res.data.accessToken
     this.studentId = res.data.studentId
-    res = (await axios.get(`${this.backendHost}/api/students`, this.headerConfig))
+    res = (await axios.get(`${this.backendHost}/api/students?noFilterClass=1`, this.headerConfig))
     this.students = res.data
     res = (await axios.get(`${this.backendHost}/api/kelases`, this.headerConfig))
     this.kelases = res.data
@@ -431,7 +431,7 @@ export default {
       async deleteItemConfirm () {
         const student = this.students.splice(this.editedIndex, 1)[0]
         console.log(student)
-        await axios.delete(`${this.backendHost}/api/students/${student._id}` )
+        await axios.delete(`${this.backendHost}/api/students/${student._id}`, this.headerConfig )
         this.closeDelete()
       },
 
@@ -467,7 +467,7 @@ export default {
             //Object.assign(this.students[this.editedIndex], student)
             //this.students[this.editedIndex ] = student
             //this.students = Object.assign({}, this.students )
-            let res = (await axios.get(`${this.backendHost}/api/students`, this.headerConfig))
+            let res = (await axios.get(`${this.backendHost}/api/students?noFilterClass=1`, this.headerConfig))
             this.students = res.data
           }
         } else {
@@ -475,11 +475,11 @@ export default {
           if ( this.imageData ) {
             student.profileImage = { contentType: "image/jpeg", data: this.imageData.split(',')[1] }
           }
-          const res = await axios.post(`${this.backendHost}/api/students`,  { student} )
+          const res = await axios.post(`${this.backendHost}/api/students`,  { student} , this.headerConfig )
           if ( res.status === 200 ) {
             //this.students.push(this.editedItem)
             //this.students = Object.assign({}, this.students )
-            let res = (await axios.get(`${this.backendHost}/api/students`, this.headerConfig))
+            let res = (await axios.get(`${this.backendHost}/api/students?noFilterClass=1`, this.headerConfig))
             this.students = res.data
           }
         }

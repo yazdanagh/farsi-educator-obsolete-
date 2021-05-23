@@ -56,6 +56,7 @@
     <v-card-text style="display:block" class="text-right">
     <div>
       در کلاس 
+      <!--<router-link :to="{ path: '/ui/kelas', query: {noFilterClass: 1} }"> -->
       <router-link :to="{ path: '/ui/kelas' }">
       {{ this.studentKelases }}
       </router-link>

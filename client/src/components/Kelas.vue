@@ -98,7 +98,7 @@ export default {
     },
   },
   async mounted() {
-    let res = (await axios.get(`${this.backendHost}/api/students?filterClass=1` , this.headerConfig))
+    let res = (await axios.get(`${this.backendHost}/api/students` , this.headerConfig))
     this.students = res.data
     res = (await axios.get(`${this.backendHost}/api/kelases`, this.headerConfig))
     this.kelases = res.data

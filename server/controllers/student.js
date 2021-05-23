@@ -55,35 +55,43 @@ router.get('/students/:studentId',  async (req, res) => {
   })
 
   router.get('/students', async (req, res) => {
-    const filterClass = req.query.filterClass
-    let students
-    if ( !filterClass ) {
-      students = await db.student.find({})   
-      console.log("Got All Students")
-    } else {
-      // TODO : optimize this query 
-      students = await db.student.find({})
-      const myself = students.find(s => s.studentId == req.studentId ) 
-      console.log("Filtering for: " + myself.kelases[0] )
-      students = students.filter( s => s.kelases.includes(myself.kelases[0]))
-    }
-    if ( students ) {
-      res.json(students)
-    } else {
-      res.sendStatus(404);
+    try {
+      const noFilterClass = req.query.noFilterClass
+      console.log(req.query)
+      const currentStudentId = req.currentStudentId
+      let students
+      if ( !noFilterClass || currentStudentId == 1000 ) {
+        if ( noFilterClass ) {
+          students = await db.student.find({})   
+          console.log("Got All Students")
+        } else {
+          console.log(currentStudentId)
+          const myself = await db.student.findOne({studentId:currentStudentId}).populate('kelases')   
+          console.log("Filtering for: " + myself.kelases[0] )
+          students = await db.student.find({kelases : myself.kelases[0] })
+        }
+        res.json(students)
+      } else {
+        res.sendStatus(401);
+      }
+    } catch (e) {
+      console.log(e)
+      res.sendStatus(500);
     }
   })
 
   router.delete('/students/:id', async (req, res) => {
     try {
       const _id = req.params.id
-      const student = await db.student.findById(_id)   
-      if ( student ) {
+      
+      const currentStudentId = req.currentStudentId
+      if ( currentStudentId == 1000 ) {
+        const student = await db.student.findById(_id)   
         console.log("Delete student with id: " + _id)
         await db.student.deleteOne({_id})
         res.sendStatus(200)
       } else {
-        res.sendStatus(404);
+        res.sendStatus(401);
       }
     } catch (e) {
       console.log(e)

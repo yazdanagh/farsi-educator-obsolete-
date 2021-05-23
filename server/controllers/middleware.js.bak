@@ -17,7 +17,7 @@ const asyncRequest = fn => {
 module.exports = {
   //asyncRequest,
   // Assign req.currentUser with user object
-  assignCurrentStudent: async (req, res, next) => {
+  assignCurrentUser: async (req, res, next) => {
     console.log("Auth...")
     const authHeader = req.headers['authorization']
     console.log(authHeader)
@@ -25,27 +25,35 @@ module.exports = {
     console.log(req.path)
     console.log(req.method)
     // temp for easy dev only
-    // if ( req.path === '/ui/as' ) {
-    //   next();
-    // } else {
+   // if ( req.path === '/ui/as' ) {
+   //   next();
+   // } else {
     if ( token == null ) { 
       console.log("No token, access denied")
       return res.sendStatus(401)
-    }
-    try {
-       const studentId = await jwt.verify(token,process.env.ACCESS_TOKEN_SECRET)
+   }
+   try {
+     const studentId = await jwt.verify(token,process.env.ACCESS_TOKEN_SECRET)
+     if ( req.studentId ==  studentId ) {
        console.log(studentId)
-       req.currentStudentId = studentId 
-       if ( studentId == 1000 ) {
-         console.log("Authorized as ADMIN")
-       } else {
-         console.log("Authorized")
-       }
+       console.log("Authorized")
+       req.studentId = studentId 
        next()
-    } catch (err) {
+     } else {
+       if ( studentId === '1000' ) { 
+         req.studentId = studentId 
+         console.log("Authorized admin")
+         next()
+       } else {
+       console.log(req )
+         console.log(`Student Id ${studentId} not authorized`)
+         return res.sendStatus(401)
+       }
+     }
+   } catch (err) {
        console.log(err)
        res.sendStatus(403)
-    }
+     }
   //}
   }
 }

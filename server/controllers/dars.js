@@ -29,7 +29,7 @@ const db = require("../mongo.js")
 
   router.get('/darses', async (req, res) => {
     try {
-      const studentId = req.studentId
+      const studentId = req.currentStudentId
       const page = req.query.page
       const students = await db.student.find({studentId})   
       console.log(studentId)
