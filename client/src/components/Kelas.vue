@@ -8,6 +8,7 @@
     :headers="headers"
     :items="students"
     :items-per-page="20"
+    hide-default-header
     class="elevation-1"
   >
    <template v-slot:item.pic="{ item }">
@@ -28,14 +29,16 @@
         </v-chip>
     </template>
     -->
+    <!--
     <template v-slot:item.kelas="{ item }">
     {{ kelasIdToNames(item.kelases)  }}
     </template>
+    -->
   <template v-slot:top>
       <v-toolbar
         flat
       >
-        <v-toolbar-title> student list </v-toolbar-title>
+        <v-toolbar-title>  دانش آموزان کلاس </v-toolbar-title>
         <v-divider
           class="mx-4"
           inset
@@ -70,7 +73,8 @@ export default {
       kelases: [],
       kelasNames: [],
       kelas: "",
-      headers: "pic studentId name naam kelas darsId".split(' ').map( a => {  return { 'text': a, 'value': a }} ),
+      //headers: "pic studentId name naam kelas darsId".split(' ').map( a => {  return { 'text': a, 'value': a }} ),
+      headers: "pic name naam darsId".split(' ').map( a => {  return { 'text': a, 'value': a }} ),
       editedIndex: -1,
       mdiHome,
       editedItem: {
