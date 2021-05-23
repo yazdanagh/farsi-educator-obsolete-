@@ -38,7 +38,10 @@
       <v-toolbar
         flat
       >
-        <v-toolbar-title>  دانش آموزان کلاس </v-toolbar-title>
+      <v-toolbar-title>  
+      دانش آموزان کلاس
+      {{ kelas }}
+      </v-toolbar-title>
         <v-divider
           class="mx-4"
           inset
@@ -103,6 +106,7 @@ export default {
     res = (await axios.get(`${this.backendHost}/api/kelases`, this.headerConfig))
     this.kelases = res.data
     this.kelasNames = this.kelases.map( a=>a.kelasName )
+    this.kelas = this.kelases.find ( k => k._id == this.students[0].kelases[0] ).kelasName
     let blob,url;
     for ( let student of this.students ) {
       if ( student.profileImage ) {

@@ -454,7 +454,7 @@ export default {
       async save () {
         //this.editedItem.needToSave = true
         const student = this.editedItem
-        student.kelases = student.kelases.map( k => this.kelases.find(j => j.kelasName === k )) 
+        student.kelases = student.kelases.map( k => this.kelases.find(j => j.kelasName === k )).filter(k=>k)
         if (this.editedIndex > -1) {
           console.log(student)
           student.darsId = parseInt(student.darsId)
