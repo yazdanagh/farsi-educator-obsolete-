@@ -68,7 +68,7 @@
 
         <v-dialog
           v-model="dialog"
-          max-width="500px"
+          max-width="700px"
         >
           <template v-slot:activator="{ on, attrs }">
             <v-btn
@@ -319,6 +319,7 @@ export default {
   },
   async mounted() {
     console.log(process.env)
+    this.$vuetify.rtl = false 
     const headers = {
       'Content-Type': 'application/json',
     }
