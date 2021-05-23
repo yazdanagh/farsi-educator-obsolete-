@@ -57,6 +57,7 @@ router.get('/students/:studentId',  async (req, res) => {
   router.get('/students', async (req, res) => {
     try {
       const noFilterClass = req.query.noFilterClass
+      const kelasIndex = req.query.kelasIndex || 0
       console.log(req.query)
       const currentStudentId = req.currentStudentId
       let students
@@ -67,8 +68,8 @@ router.get('/students/:studentId',  async (req, res) => {
         } else {
           console.log(currentStudentId)
           const myself = await db.student.findOne({studentId:currentStudentId}).populate('kelases')   
-          console.log("Filtering for: " + myself.kelases[0] )
-          students = await db.student.find({kelases : myself.kelases[0] })
+          console.log("Filtering for: " + myself.kelases[kelasIndex] )
+          students = await db.student.find({kelases : myself.kelases[kelasIndex] })
         }
         res.json(students)
       } else {

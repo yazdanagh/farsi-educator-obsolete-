@@ -57,9 +57,12 @@
     <div>
       در کلاس 
       <!--<router-link :to="{ path: '/ui/kelas', query: {noFilterClass: 1} }"> -->
-      <router-link :to="{ path: '/ui/kelas' }">
-      {{ this.studentKelases }}
+
+      <span v-for="(sc,idx) in studentKelases" :key="sc" >
+        <router-link  :to="kelasLink(idx)">
+      {{ sc  }}
       </router-link>
+    </span>
       فارسی می‌‌آموزد
    </div>
 
@@ -325,7 +328,8 @@ export default {
    //  return 
    //},
    studentKelases() {
-      return this.student ? this.student.kelases.map(a=>a.kelasName).join(" ") : "" 
+     console.log(this.student.kelases)
+      return this.student ? this.student.kelases.map(a=>a.kelasName)  : []
    },
    audioDarsId() {
      return this.darsKalameh
@@ -360,6 +364,13 @@ export default {
   //
   methods: {
     
+    kelasLink(idx) {
+      if (idx) {
+        return { path: '/ui/kelas', query: {kelasIndex: idx  }}
+      } else {
+        return { path: '/ui/kelas' }
+      }
+    },
     changeRTL () {
       this.$vuetify.rtl = true
     },

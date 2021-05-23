@@ -73,22 +73,13 @@ export default {
       dialog: false,
       dialogDelete: false,
       students: [],
+      student: null,
       kelases: [],
       kelasNames: [],
       kelas: "",
       //headers: "pic studentId name naam kelas darsId".split(' ').map( a => {  return { 'text': a, 'value': a }} ),
       headers: "pic name naam darsId".split(' ').map( a => {  return { 'text': a, 'value': a }} ),
-      editedIndex: -1,
       mdiHome,
-      editedItem: {
-        name: '',
-        naam: '',
-        darsId: 0,
-        email: '',
-        code: 0,
-        profileImage: "", 
-        needToSave: false,
-      },
       backendHost: process.env.NODE_ENV === 'development' ? 'http://localhost:3085'  : ''
     }
   },
@@ -101,12 +92,20 @@ export default {
     },
   },
   async mounted() {
-    let res = (await axios.get(`${this.backendHost}/api/students` , this.headerConfig))
+    const kelasIndex = this.$route.query.kelasIndex || 0
+    let res
+    res = await axios.get(`${this.backendHost}/api/students/${this.studentId}`, this.headerConfig)
+    this.student = res.data
+    this.kelas =  this.student.kelases[kelasIndex].kelasName
+    if ( kelasIndex ) {
+      res = (await axios.get(`${this.backendHost}/api/students?kelasIndex=${kelasIndex}` , this.headerConfig))
+    } else {
+      res = (await axios.get(`${this.backendHost}/api/students` , this.headerConfig))
+    }
     this.students = res.data
     res = (await axios.get(`${this.backendHost}/api/kelases`, this.headerConfig))
     this.kelases = res.data
     this.kelasNames = this.kelases.map( a=>a.kelasName )
-    this.kelas = this.kelases.find ( k => k._id == this.students[0].kelases[0] ).kelasName
     let blob,url;
     for ( let student of this.students ) {
       if ( student.profileImage ) {
@@ -120,7 +119,8 @@ export default {
 
   computed: { 
     ...Vuex.mapState({ 
-      accessToken: state => state.accessToken
+      accessToken: state => state.accessToken,
+      studentId: state => state.studentId
     }),
     headerConfig () { 
       const config = {
@@ -153,16 +153,16 @@ export default {
     onFileInfo(file) {
       console.log(file)
     },
-    kelasIdToNames ( ids ) {
-      console.log(ids)
-      if ( !ids || !this.kelases ) return []
-      return ids.filter(a=> a).map ( k  => { 
-        const studentKelas = this.kelases.find( j => j._id == k )
-        if (!studentKelas ) return ''
-        console.log(studentKelas )
-        return studentKelas.kelasName 
-      })
-    },
+   //kelasIdToNames ( ids ) {
+   //  console.log(ids)
+   //  if ( !ids || !this.kelases ) return []
+   //  return ids.filter(a=> a).map ( k  => { 
+   //    const studentKelas = this.kelases.find( j => j._id == k )
+   //    if (!studentKelas ) return ''
+   //    console.log(studentKelas )
+   //    return studentKelas.kelasName 
+   //  })
+   //},
     async goToStudent(code,email) {
       const headers = {
         'Content-Type': 'application/json',

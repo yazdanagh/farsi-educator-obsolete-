@@ -65,7 +65,6 @@
         ></v-divider>
         <v-spacer></v-spacer>
       
-
         <v-dialog
           v-model="dialog"
           max-width="700px"
