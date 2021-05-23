@@ -13,27 +13,31 @@ const _= require("lodash")
 
 
 router.get('/students/:studentId',  async (req, res) => {
-    const studentId = req.studentId
-    const student = await db.student.findOne({studentId}).populate('kelases')   
-    console.log(student.kelases)
-    //console.log(req.params)
-    //const student = doAuth(code,email,students.students)
-    //    console.log(student)
-    if ( student ) {
-      //console.log("FOUND" + student)
+  try {
+    const studentId = req.params.studentId
+    const currentStudentId = req.currentStudentId
+    //console.log(studentId)
+    //console.log(currentStudentId)
+    if ( studentId == req.currentStudentId || currentStudentId == 1000) {
+      const student = await db.student.findOne({studentId}).populate('kelases')   
+      console.log(student.kelases)
       res.json(student)
     } else {
-      res.sendStatus(404);
+      res.sendStatus(401)
     }
-  })
+  } catch (e) {
+    console.log(e)
+    res.sendStatus(500);
+  }
+})
 
   // technicallly should be patch
   router.put('/students/:_id',  async(req,res) => {
     try {
-      const studentId = req.studentId
+      const currentStudentId = req.currentStudentId
       let savedStudent = await db.student.findById(req.params._id)
       // Admin code
-      if ( savedStudent.studentId == studentId || studentId == 1000 ) {
+      if ( savedStudent.studentId == currentStudentId || currentStudentId == 1000 ) {
         //student['darsId'] = req.body.darsId 
         //await student.save()
         console.log(req.body)
@@ -42,7 +46,7 @@ router.get('/students/:studentId',  async (req, res) => {
         //await savedStudent.save()
         res.sendStatus(200)
       } else {
-        res.sendStatus(404)
+        res.sendStatus(401)
       }
     } catch (e) {
        console.log(e)

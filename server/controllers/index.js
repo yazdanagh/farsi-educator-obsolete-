@@ -35,19 +35,22 @@ module.exports = (app) => {
        const code = req.body.code
        const email = req.body.email
        const student = await db.student.findOne({code,email}) 
+       //const id = student._id
        let studentId = student.studentId
+       //const accessToken = jwt.sign(, process.env.ACCESS_TOKEN_SECRET )
        const accessToken = jwt.sign(studentId, process.env.ACCESS_TOKEN_SECRET )
        console.log(`Login successful for student: ${student.name}`)
        res.json({accessToken,studentId})
+       //res.json({accessToken,studentId,id})
      } catch (e) {
        console.log(e)
        res.sendStatus(403)
      }
   })
 
-  app.use('/api', [ middleware.assignCurrentUser ] , require('./student.js') ); 
-  app.use('/api', [ middleware.assignCurrentUser ] , require('./harf.js') ); 
-  app.use('/api', [ middleware.assignCurrentUser ] , require('./dars.js') ); 
+  app.use('/api', [ middleware.assignCurrentStudent ] , require('./student.js') ); 
+  app.use('/api', [ middleware.assignCurrentStudent ] , require('./harf.js') ); 
+  app.use('/api', [ middleware.assignCurrentStudent ] , require('./dars.js') ); 
   app.use('/api', [],  require('./kelas.js') ); 
 
 
