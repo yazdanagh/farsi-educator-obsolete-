@@ -39,7 +39,7 @@ module.exports = {
        if ( studentId == 1000 ) {
          console.log("Authorized as ADMIN")
        } else {
-         console.log("Authorized")
+         console.log(`Authorized as student with id: ${studentId}`)
        }
        next()
     } catch (err) {
