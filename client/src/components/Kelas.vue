@@ -103,9 +103,6 @@ export default {
       res = (await axios.get(`${this.backendHost}/api/students` , this.headerConfig))
     }
     this.students = res.data
-    res = (await axios.get(`${this.backendHost}/api/kelases`, this.headerConfig))
-    this.kelases = res.data
-    this.kelasNames = this.kelases.map( a=>a.kelasName )
     let blob,url;
     for ( let student of this.students ) {
       if ( student.profileImage ) {
@@ -114,6 +111,10 @@ export default {
         student.url = url
       }
     }
+    res = (await axios.get(`${this.backendHost}/api/kelases`, this.headerConfig))
+    this.kelases = res.data
+    this.kelasNames = this.kelases.map( a=>a.kelasName )
+    
     console.log(res)
   },
 
