@@ -1,4 +1,4 @@
-const darsesInput = [ 
+const darsesInput = [
 
   // alef & be 
   [ "aa_bakola be_bozorg_tanha", "aab" ],
@@ -257,40 +257,76 @@ const darsesInput = [
 ]
 
 
-// harfName harfSound key harFrom(harfLead) key harfForm  
+// harfName,
+//       harfSound key harFrom(harfLead), 
+//       harfSound key harfForm  
 const harfInput = [
-  "alef aa aaba aa_bakola aac aa_chasban aabi aa_bikola",
-  "be be bbt be_bozorg_tanha bkc be_koochik_chap bkd be_koochik_dovar bbc be_bozorg_chasban" ,
-  "de de dt de_tanha dc de_chasban" ,
-  "meem me mbt me_bozorg_tanha mkc me_koochik_chap mkd me_koochik_dovar mbc me_bozorg_chasban" ,
-  "re re rt re_tanha rc re_chasban" ,
-  "noon ne nbt  ne_bozorg_tanha nkc  ne_koochik_chap nkd ne_koochik_dovar nbc ne_bozorg_chasban" ,
-  "ye ye ybt  ye_bozorg_tanha ykc ye_koochik_chap ykd ye_koochik_dovar  ybc ye_bozorg_chasban" ,
-  "sin se sibt sine_bozorg_tanha sikc  sine_koochik_chap sikd sine_koochik_dovar sibc sine_bozorg_chasban" ,
-  "pe pe pbt pe_bozorg_tanha  pkc pe_koochik_chap pkd pe_koochik_dovar pbc pe_bozorg_chasban" ,
-  "te te tbt te_bozorg_tanha tkc te_koochik_chap tkd te_koochik_dovar tbc te_bozorg_chasban" ,
-  "shin she shibt shine_bozorg_tanha shikc  shine_koochik_chap shikd shine_koochik_dovar shibc shine_bozorg_chasban" ,
-  "ze ze zt ze_tanha zc ze_chasban" ,
-  "khe khe khbt khe_bozorg_tanha khkc khe_koochik_chap khkd khe_koochik_dovar khbc khe_bozorg_chasban" ,
-  "che che chbt che_bozorg_tanha chkc che_koochik_chap chkd che_koochik_dovar chbc che_bozorg_chasban" ,
-  "kaf ke kbt ke_bozorg_tanha kkc ke_koochik_chap kkd ke_koochik_dovar kbc ke_bozorg_chasban" ,
-  "gaf ge gbt ge_bozorg_tanha gkc ge_koochik_chap gkd ge_koochik_dovar gbc ge_bozorg_chasban" ,
-  "lam le lbt le_bozorg_tanha lkc le_koochik_chap lkd le_koochik_dovar lbc le_bozorg_chasban" ,
-  "fe fe fbt fe_bozorg_tanha fkc fe_koochik_chap fkd fe_koochik_dovar fbc fe_bozorg_chasban" ,
-  "ghaf ghe ghbt ghe_bozorg_tanha ghkc ghe_koochik_chap ghkd ghe_koochik_dovar ghbc ghe_bozorg_chasban" ,
-  "vav ve vt vav_tanha vc vav_chasban",
-  "jim je jbt je_bozorg_tanha jkc je_koochik_chap jkd je_koochik_dovar jbc je_bozorg_chasban" ,
-  "he he hkc he_koochik_chap hkd he_koochik_dovar hbt he_bozorg_tanha hbc he_bozorg_chasban" ,
-  "hhe he hhat hhe_akhar_tanha hhv hhe_vasat hhac hhe_akhar_chasban hha hhe_aval", 
-  "zhe zhe zht zhe_tanha zhc zhe_chasban" ,
-  "sad se sadebt sade_bozorg_tanha sadekc sade_koochik_chap sadekd sade_koochik_dovar sadebc sade_bozorg_chasban",
-  "zze ze zzt zale_tanha zzc zale_chasban" ,
-  "ein ee einebt eine_bozorg_tanha einekc eine_koochik_chap einekd eine_koochik_dovar einebc eine_bozorg_chasban",
-  "sse se ssbt sse_bozorg_tanha sskc sse_koochik_chap sskd sse_koochik_dovar ssbc sse_bozorg_chasban" ,
-  "zad ze zadebt zade_bozorg_tanha zadekc zade_koochik_chap zadekd zade_koochik_dovar zadebc zade_bozorg_chasban",
-  "ghein ghe gheinebt gheine_bozorg_tanha gheinekc gheine_koochik_chap gheinekd gheine_koochik_dovar gheinebc gheine_bozorg_chasban",
-  "ta te tat ta_tanha tac ta_chap tar ta_rast tad ta_dovar", 
-  "za ze zat za_tanha zac za_chap zar za_rast zad za_dovar", 
+  `alef 
+       aa aaba aa_bakola 
+       aa aac aa_chasban 
+       aa aabi aa_bikola 
+       aa_a aabia aa_bikola_a 
+       aa_e aabio aa_bikola_e 
+       aa_o aabio aa_bikola_o`,
+  `be 
+       be bbt be_bozorg_tanha 
+       be bkc be_koochik_chap 
+       be_a bkca _ 
+       be_e bkce _ 
+       be_o bkco _ 
+       be bkd be_koochik_dovar 
+       be_a bkda _ 
+       be_e bkde _ 
+       be_o bkdo _ 
+       be bbc be_bozorg_chasban`,
+  `de 
+       de dt de_tanha 
+       de_a dta _ 
+       de_e dte _ 
+       de_o dto _ 
+       de dc de_chasban 
+       de_a dca _ 
+       de_e dce _ 
+       de_o dco _` ,
+  `meem 
+       me mbt me_bozorg_tanha 
+       me mkc me_koochik_chap 
+       me_a mkca _ 
+       me_e mkce _ 
+       me_o mkco _ 
+       mkd me_koochik_dovar 
+       me_a mkda _ 
+       me_e mkde _ 
+       me_o mkdo _ 
+       me mbc me_bozorg_chasban`,
+  //"re re rt re_tanha rc re_chasban" ,
+  //"noon ne nbt  ne_bozorg_tanha nkc  ne_koochik_chap nkd ne_koochik_dovar nbc ne_bozorg_chasban" ,
+  //"ye ye ybt  ye_bozorg_tanha ykc ye_koochik_chap ykd ye_koochik_dovar  ybc ye_bozorg_chasban" ,
+  //"sin se sibt sine_bozorg_tanha sikc  sine_koochik_chap sikd sine_koochik_dovar sibc sine_bozorg_chasban" ,
+  //"pe pe pbt pe_bozorg_tanha  pkc pe_koochik_chap pkd pe_koochik_dovar pbc pe_bozorg_chasban" ,
+  //"te te tbt te_bozorg_tanha tkc te_koochik_chap tkd te_koochik_dovar tbc te_bozorg_chasban" ,
+  //"shin she shibt shine_bozorg_tanha shikc  shine_koochik_chap shikd shine_koochik_dovar shibc shine_bozorg_chasban" ,
+  //"ze ze zt ze_tanha zc ze_chasban" ,
+  //"khe khe khbt khe_bozorg_tanha khkc khe_koochik_chap khkd khe_koochik_dovar khbc khe_bozorg_chasban" ,
+  //"che che chbt che_bozorg_tanha chkc che_koochik_chap chkd che_koochik_dovar chbc che_bozorg_chasban" ,
+  //"kaf ke kbt ke_bozorg_tanha kkc ke_koochik_chap kkd ke_koochik_dovar kbc ke_bozorg_chasban" ,
+  //"gaf ge gbt ge_bozorg_tanha gkc ge_koochik_chap gkd ge_koochik_dovar gbc ge_bozorg_chasban" ,
+  //"lam le lbt le_bozorg_tanha lkc le_koochik_chap lkd le_koochik_dovar lbc le_bozorg_chasban" ,
+  //"fe fe fbt fe_bozorg_tanha fkc fe_koochik_chap fkd fe_koochik_dovar fbc fe_bozorg_chasban" ,
+  //"ghaf ghe ghbt ghe_bozorg_tanha ghkc ghe_koochik_chap ghkd ghe_koochik_dovar ghbc ghe_bozorg_chasban" ,
+  //"vav ve vt vav_tanha vc vav_chasban",
+  //"jim je jbt je_bozorg_tanha jkc je_koochik_chap jkd je_koochik_dovar jbc je_bozorg_chasban" ,
+  //"he he hkc he_koochik_chap hkd he_koochik_dovar hbt he_bozorg_tanha hbc he_bozorg_chasban" ,
+  //"hhe he hhat hhe_akhar_tanha hhv hhe_vasat hhac hhe_akhar_chasban hha hhe_aval", 
+  //"zhe zhe zht zhe_tanha zhc zhe_chasban" ,
+  //"sad se sadebt sade_bozorg_tanha sadekc sade_koochik_chap sadekd sade_koochik_dovar sadebc sade_bozorg_chasban",
+  //"zze ze zzt zale_tanha zzc zale_chasban" ,
+  //"ein ee einebt eine_bozorg_tanha einekc eine_koochik_chap einekd eine_koochik_dovar einebc eine_bozorg_chasban",
+  //"sse se ssbt sse_bozorg_tanha sskc sse_koochik_chap sskd sse_koochik_dovar ssbc sse_bozorg_chasban" ,
+  //"zad ze zadebt zade_bozorg_tanha zadekc zade_koochik_chap zadekd zade_koochik_dovar zadebc zade_bozorg_chasban",
+  //"ghein ghe gheinebt gheine_bozorg_tanha gheinekc gheine_koochik_chap gheinekd gheine_koochik_dovar gheinebc gheine_bozorg_chasban",
+  //"ta te tat ta_tanha tac ta_chap tar ta_rast tad ta_dovar", 
+  //"za ze zat za_tanha zac za_chap zar za_rast zad za_dovar", 
 
   //[ faseleh ] 
 ]

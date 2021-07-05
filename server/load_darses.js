@@ -13,31 +13,43 @@ const main = async () => {
     const harfFormMap = {}
     const harfs = [] 
     for ( let a of cons.harfInput ) {
-      const elems = a.split(/\ +/).filter( a=> a)
+      const elems = a.split(/\ +/).filter( a=> a).filter(a => a != '\n' )
       const harfName = elems.shift()
-      const harfSound = elems.shift()
 
       let harfLead = null
       const harfForms = []
+      const harfAudios = []
+      const harfSounds = []
 
+      // TODO : optimize such that same harf audio is not repeated
       while ( elems.length ) { 
+        const harfSound = elems.shift()
         const key = elems.shift()
-        const harfForm = elems.shift()
+        let harfForm = elems.shift()
+        if ( harfForm === "_" ) { 
+           harfForm = key
+        }
         if ( !harfLead ) {
           harfLead = harfForm
         }
         harfForms.push(harfForm)
+        harfSounds.push(harfSound)
         harfFormMap[key] = harfForm
+
+        const harfAudio = { data: null, contentType : "audio/mp3" } 
+        const audioFile = `../client/src/audios/${harfSound}.mp3`
+        const fileExists = await fs.exists(audioFile)
+        if ( fileExists ) {
+          console.log(`harf ${harfName} harfSound ${harfSound} added`)
+          let fileData =  await fs.readFile(audioFile)
+          harfAudio.data = fileData.toString('base64');
+        }
+
+        harfAudios.push(harfAudio)
       }
-      const harfAudio = { data: null, contentType : "audio/mp3" } 
-      const audioFile = `../client/src/audios/${harfSound}.mp3`
-      const fileExists = await fs.exists(audioFile)
-      if ( fileExists ) {
-        console.log(`harf ${harfName} harfSound ${harfSound} added`)
-        let fileData =  await fs.readFile(audioFile)
-        harfAudio.data = fileData.toString('base64');
-      }
+      
       const harfImages= []
+      console.log(harfForms)
       for ( let harfForm of harfForms ) {
         const imageFile = `../client/src/images3/${harfForm}.png`
         let fileData =  await fs.readFile(imageFile)
@@ -47,11 +59,11 @@ const main = async () => {
       }
       harfs.push({ 
         harfName,
-        harfSound,
+        harfSounds,
         harfLead,
         harfForms,
         harfImages,
-        harfAudio,
+        harfAudios,
       })
     }
     await db.harf.deleteMany()

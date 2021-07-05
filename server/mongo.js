@@ -21,7 +21,7 @@ const darsSchema = new Schema({
   kalamehHarfForms: [String], 
   darsId: Number,
   numHarfLearned: Number,
-  kalamehAudio: { data: String, contentType: String }
+  kalamehAudios: [{ data: String, contentType: String }]
 
 });
 
@@ -32,7 +32,7 @@ const kelasSchema = new Schema({
 
 const harfSchema = new Schema({
 	harfName: String,
-	harfSound: String,
+	harfSounds: [String],
   harfForms: [String],
   harfImages: [ { data: String, contentType: String }] ,
   harfLead: String,
@@ -44,7 +44,7 @@ const Dars = mongoose.model("dars", darsSchema);
 const Harf = mongoose.model("harf", harfSchema);
 const Kelas = mongoose.model("kelas", kelasSchema);
 
-mongoose.connect("mongodb://yazdan:my_pwd@localhost:27017/shekkar", { useNewUrlParser: true });
+mongoose.connect("mongodb://yazdan:my_pwd@localhost:27017/shekkar2", { useNewUrlParser: true });
 //const a = await Student.find({}, "name naam")
 //console.log(a)
 //console.log(Student.find({}, "name naam"))
