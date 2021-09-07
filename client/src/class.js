@@ -118,12 +118,11 @@ class php {
         } else { 
           const tile = plh.aTile.group
           //window.tile = tile
-          //console.log(tile.bounds)
-          //console.log(tile.firstChild.bounds)
+          //console.log(tile.bounds) //console.log(tile.firstChild.bounds)
           //console.log(tile.lastChild.bounds)
           ////////  MOHEM const scaling =  this.phiSide / tile.lastChild.bounds.height
           //const scaling = 1
-          const newBound = new paper.Rectangle(startingTopRight, startingTopRight.subtract(tile.lastChild.bounds.width , -tile.lastChild.bounds.height ))
+          const newBound = new paper.Rectangle(startingTopRight, startingTopRight.subtract(tile.children[2].bounds.width , -tile.children[2].bounds.height ))
           //console.log ( "Scaling by: " + this.phiSide / tile.lastChild.bounds.height )
           //console.log ( "phiSide: " + this.phiSide )
           //console.log ( "tiles last child: " + tile.lastChild.bounds.height )
@@ -185,8 +184,8 @@ class atp {
 
 // alphabet tile instance
 class ati {
-    static rasterMargin = 5
-  constructor ( topRight, bottomLeft, atiSide, phList, letter) {
+  static rasterMargin = 5
+  constructor ( topRight, bottomLeft, atiSide, phList, letter, destLetter) {
     //console.log(topRight)
     //console.log(bottomLeft)
     this.atiRect = new paper.Path.Rectangle(topRight, bottomLeft )
@@ -194,29 +193,43 @@ class ati {
     this.atiRect.fillColor = 'white'
     let alpI = document.getElementById(letter)
     //console.log(document)
-    //console.log(letter)
-    //console.log(alpI)
+    console.log(letter)
+    console.log(alpI)
      var raster = new paper.Raster(alpI)  
      raster.position = this.atiRect.position 
-     //console.log(raster.size)
      raster.scale(1, (atiSide-ati.rasterMargin)/raster.size.height);
-     const group = new paper.Group([this.atiRect, raster])
+
+     if ( destLetter ) {
+       let destAlpI = document.getElementById(destLetter)
+       var destRaster = new paper.Raster(destAlpI)  
+       destRaster.position = this.atiRect.position 
+       destRaster.scale(1, (atiSide-ati.rasterMargin)/raster.size.height);
+       console.log(destRaster)
+       destRaster.visible = false
+     }
+
+     const group = new paper.Group([this.atiRect, raster, destRaster])
+     
+     this.group = group
+     this.origin = group.position
+     this.resolve = false
+     this.resolved = false
+     this.resolving = false
+     this.resolvingTarg = null
+     this.resolvingPhi = null
+     this.ph = phList
+     this.group = group
+
+     // For moving the alphaTile
      group.onMouseDrag = (event) => { 
        group.position = group.position.add(event.delta)
        window.gr = this
      }
-       group.onMouseUp = ( ) => {
-         this.resolve = true 
-       }
-       this.group = group
-       this.origin = group.position
-       this.resolve = false
-       this.resolved = false
-       this.resolving = false
-       this.resolvingTarg = null
-       this.resolvingPhi = null
-       this.ph = phList
-       this.group = group
+
+     // Upon release of mouse, resolve alphaTile
+     group.onMouseUp = ( ) => {
+       this.resolve = true 
+     }
   }
   animate() {
     if ( this.resolve ) {
@@ -225,14 +238,16 @@ class ati {
         if ( ph.aTile ) { 
           continue
         }
+
         if ( ph.phiRect.contains(this.group.position)) {
           this.resolvingTarg = ph.phiRect.position 
           this.resolvingPhi = ph 
-          console.log("then here ")
+          console.log("The resolving Target is found ")
           //window.ph = ph
           break
         } 
       }
+      // Either final destination is found or move back to origin
       this.resolvingTarg = this.resolvingTarg || this.origin
     }
 
@@ -254,14 +269,19 @@ class ati {
     }
     if ( this.resolvingPhi && this.group.position.equals(this.resolvingPhi.phiRect.position) ) {
       this.resolved = true
-      this.group.firstChild.visible = false
+      this.group.children[0].visible = false
+      this.group.children[1].visible = false
+      this.group.children[2].visible = true
+      //this.group[1].visible = false
       this.resolvingPhi.aTile = this
       //this.ph.group.bounds = this.group.lastChild.bounds 
       this.resolvingPhi.phiRect.visible = false
       console.log("resolved")
       //console.log(this)
     } else if ( this.group.position.equals(this.origin))  {
-      this.group.firstChild.visible = true
+      this.group.children[0].visible = true
+      this.group.children[1].visible = true
+      this.group.children[2].visible = false
       this.resolved = false
       if ( this.resolvingPhi ) {
         this.resolvingPhi.aTile = null
@@ -309,33 +329,83 @@ const createPlaceHolderPane = ( renderArea, TR, harfForms, darsKalameh) => {
    return phPane 
 }
 
-const createAlphatilePane = (rp, anchorTopRight, harf, phPane , harfForms) => {
+const createAlphatilePane = (rp, anchorTopRight, harf, phPane , kalamehHarfForms) => {
 
   let topRight = anchorTopRight.add(0, atp.atpBetRow ) 
   //if ( harf != "faseleh" ) {
     //  const audio = harf.match(/([a-z]*)_/).[1]
     //  createEar(topRight.add( atp.atpSpacing + atp.atiSide/4  , atp.atpSpacing + atp.atiSide/2   ) ,audio)
     //}
-    let atPane = new atp( topRight, rp.atiSide, harf['harfForms'].length  )
+
+    // to make sure its a primary
+    let atPane = new atp( topRight, rp.atiSide, harf['harfGroups'].filter(a => a === 'self').length  )
     let idx2=1
-    const audio = harf['harfSound'] 
+    //temp hack. for now use harfSounds[0]
+    const audio = harf['harfSounds'][0] 
     //console.log(harf['harfSound'])
     createEar(topRight.add( atp.atpSpacing + atPane.atiSide/4  , atp.atpSpacing + atPane.atiSide/2   ) ,audio)
-    for ( let harf of harf['harfForms'] ) {
-      const occurances = harfForms.reduce( (tot,elem,harfIndex) => { 
-        if (elem === harf) { 
+
+    console.log("============================= Rendering row for harf ="  )
+    console.log(harf['harfSounds'][0])
+    console.log("============================="  )
+
+    const kalamehHarfPrimaryForms = kalamehHarfForms.reduce( (tot,hf) => {
+       console.log(hf)
+       const idx = harf['harfKeys'].findIndex( a => a === hf )
+       if ( idx < 0 ) { 
+         console.log(" ... irrelevant")
+         tot.push(null)
+         return tot
+       }
+          console.log(harf['harfGroups'][idx])
+          console.log(harf['harfForms'][idx])
+       if ( harf['harfGroups'][idx] === 'self' ) { 
+          tot.push (harf['harfKeys'][idx])
+          return tot
+       } 
+       const primaryHarf = harf['harfKeys'].find( a => { 
+         console.log(a)
+         console.log(a.length)
+         console.log(harf['harfGroups'][idx])
+         console.log(harf['harfGroups'][idx].length)
+         console.log( a == harf['harfGroups'][idx])
+          return  a == harf['harfGroups'][idx] 
+       } )
+       console.log(harf['harfKeys'])
+       console.log(harf['harfGroups'][idx])
+       console.log(primaryHarf)
+       tot.push ( primaryHarf)
+       return tot
+    },[])
+    console.log(kalamehHarfForms)
+    console.log(kalamehHarfPrimaryForms)
+
+    for ( let [idx,harfKey] of harf['harfKeys'].entries() ) {
+      const harfGroup = harf['harfGroups'][idx]
+    console.log(harfKey)
+    console.log(harfGroup)
+
+      if ( harf['harfGroups'][idx] != 'self' ) continue 
+      const occurances = kalamehHarfForms.reduce( (tot,elem,harfIndex) => { 
+        console.log('--->' + elem )
+        if ( kalamehHarfPrimaryForms[harfIndex] === harfKey ) { 
           tot.push(harfIndex)
+          console.log('-------> direct' )
         } 
         return tot 
       } , [] )
+      console.log(occurances)
+
       //console.log( harf + " Occurs:" ) 
       //console.log( occurances)
       const plHoldersArray = occurances.map( a => phPane.phInsts[a] )
+      const destKey = kalamehHarfForms[occurances[0]]
+      console.log(destKey)
 
       let atInst
-      atInst = new ati( atPane.getAtiTopRight(idx2) , atPane.getAtiBottomLeft(idx2), atPane.atiSide, plHoldersArray, harf  )
+      atInst = new ati( atPane.getAtiTopRight(idx2) , atPane.getAtiBottomLeft(idx2), atPane.atiSide, plHoldersArray, harfKey, destKey  )
       atPane.addAtInsts([atInst])
-      atInst = new ati( atPane.getAtiTopRight(idx2) , atPane.getAtiBottomLeft(idx2), atPane.atiSide, plHoldersArray, harf  )
+      atInst = new ati( atPane.getAtiTopRight(idx2) , atPane.getAtiBottomLeft(idx2), atPane.atiSide, plHoldersArray, harfKey, destKey   )
       atPane.addAtInsts([atInst])
       idx2++
     }

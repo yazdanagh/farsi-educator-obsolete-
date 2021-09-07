@@ -18,13 +18,9 @@
 
 <v-col cols="9" class="mb-4">
 <!--<img id="ear" style="display:none" src="images2/ear.jpg" >  -->
-  <div>
-   <canvas id="myCanvas"  class="mt-3" style="border: 1px solid black; float: right">
-   </canvas>
- </div>
    <div  id="allImages">
      <div v-for="(aG,aIdx) in darsHoroof" :key="aIdx" >
-     <img v-for="alpha in aG['harfForms']" :key="alpha" style="display:none"  v-bind:id="alpha" v-bind:src="imgAlph[alpha]"> 
+     <img v-for="alpha in aG['harfKeys']" :key="alpha" style="display:none"  v-bind:id="alpha" v-bind:src="imgAlph[alpha]"> 
       <img id="ear" style="display:none" src="/images2/ear.jpg" > 
      </div>
    </div>
@@ -36,6 +32,11 @@
         <source :src="audioAlph[aG.harfSound]" type="audio/mp3">
      </audio>
    </div>
+  <div>
+   <canvas id="myCanvas"  class="mt-3" style="border: 1px solid black; float: right">
+   </canvas>
+ </div>
+   
 </v-col>
 <v-col cols="3" id="navColumn">
 <!-- <v-spacer> </v-spacer> -->
@@ -286,7 +287,7 @@ export default {
 
       for ( let harf of this.horoof ) {
       //if ( harf.harfAudio.data ) { 
-        blob = new Blob([ new Buffer(harf.harfAudio.data, 'base64')], { type: 'audio/m4a' });
+        blob = new Blob([ new Buffer(harf.harfAudios[0].data, 'base64')], { type: 'audio/m4a' });
         url = window.URL.createObjectURL(blob)
       //} else {
       //  console.log(` No audio for ${harf.harfName}`)
@@ -296,7 +297,7 @@ export default {
       for ( let [idx,harfImage] of harf.harfImages.entries() ) {
         blob = new Blob([ new Buffer(harfImage.data, 'base64')], { type: 'image/png' });
         url = window.URL.createObjectURL(blob)
-        this.imgAlph[harf.harfForms[idx]]  = url
+        this.imgAlph[harf.harfKeys[idx]]  = url
       }
     }
 
@@ -352,7 +353,7 @@ export default {
      let harfHash = {}
      const darsUniqueHarfForms = this.darsHarfForms.filter((value, index, self) => {return self.indexOf(value) === index; })
      let darsHarfs = darsUniqueHarfForms.reduce((tot,harfForm) => { 
-       let harf = this.horoof.find( g => g.harfForms.includes(harfForm))
+       let harf = this.horoof.find( g => g.harfKeys.includes(harfForm))
        if ( harfHash[harf.harfName] ) return tot 
        tot.push(harf)
        harfHash[harf.harfName] = 1
