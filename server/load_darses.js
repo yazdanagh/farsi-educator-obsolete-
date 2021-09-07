@@ -13,19 +13,23 @@ const main = async () => {
     const harfFormMap = {}
     const harfs = [] 
     for ( let a of cons.harfInput ) {
-      const elems = a.split(/\ +/).filter( a=> a).filter(a => a != '\n' )
+      //const elems = a.split(/\ +/).filter( a=> a).filter(a => a != '\n' )
+      const elems = a.match(/\b(\w+)\b/g).filter( a=> a).filter(a => a != '\n' )
       const harfName = elems.shift()
 
       let harfLead = null
       const harfForms = []
       const harfAudios = []
       const harfSounds = []
+      const harfGroups = []
+      const harfKeys = []
 
       // TODO : optimize such that same harf audio is not repeated
       while ( elems.length ) { 
         const harfSound = elems.shift()
         const key = elems.shift()
         let harfForm = elems.shift()
+        let harfGroup = elems.shift() 
         if ( harfForm === "_" ) { 
            harfForm = key
         }
@@ -34,6 +38,8 @@ const main = async () => {
         }
         harfForms.push(harfForm)
         harfSounds.push(harfSound)
+        harfGroups.push(harfGroup)
+        harfKeys.push(key)
         harfFormMap[key] = harfForm
 
         const harfAudio = { data: null, contentType : "audio/mp3" } 
@@ -49,7 +55,7 @@ const main = async () => {
       }
       
       const harfImages= []
-      console.log(harfForms)
+      console.log('harf Forms: ' + harfForms)
       for ( let harfForm of harfForms ) {
         const imageFile = `../client/src/images3/${harfForm}.png`
         let fileData =  await fs.readFile(imageFile)
@@ -57,9 +63,12 @@ const main = async () => {
         harfImage.data = fileData.toString('base64');
         harfImages.push(harfImage)
       }
+      console.log(`harf groups` + harfGroups)
       harfs.push({ 
         harfName,
         harfSounds,
+        harfGroups,
+        harfKeys,
         harfLead,
         harfForms,
         harfImages,
@@ -73,12 +82,13 @@ const main = async () => {
 
     const darses = []
     for ( let [idx,a] of cons.darsesInput.entries() ) { 
-        const kalamehHarfForms = a.shift().split(/\ +/).filter( a=> a).map(a => {
-          if ( harfFormMap[a] ) { 
-            return harfFormMap[a]
-          } else {
+        //const kalamehHarfForms = a.shift().split(/\ +/).filter( a=> a).map(a => {
+        const kalamehHarfForms = a.shift().match(/\b(\w+)\b/g).filter( a=> a).map(a => {
+         // if ( harfFormMap[a] ) { 
+         //   return harfFormMap[a]
+         // } else {
             return a
-          }
+         // }
         })
         const kalameh = a.shift() 
         const kalamehAudio = { data: null, contentType : "audio/mp3" } 
