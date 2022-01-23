@@ -343,7 +343,7 @@ export default {
    },
    
    darsHarfForms() {  
-     return this.dars ? this.dars['kalamehHarfForms'] : [] 
+     return this.dars ? this.dars['kalamehHarfKeys'] : [] 
    },
    darsKalameh() {
      return this.dars ? this.dars['kalameh'] : ''

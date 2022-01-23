@@ -1,14 +1,13 @@
-
-
 const util = require("util")
 const bluebird = require("bluebird")
 const exec = util.promisify(require('child_process').exec);
 const fs = bluebird.promisifyAll(require("fs-extra"))
 const _= require("lodash")
+
 const db = require("./mongo.js")
 const cons = require('./constants');
 
-const main = async () => {
+const main = async (verbose) => {
 
    //let idx = -1
    //const darses = cons.darsesInput.map(a => { 
@@ -30,10 +29,10 @@ const main = async () => {
       dars.numHarfLearned = numHarfLearned 
       await dars.save()
     
-     const darsUniqueHarfForms = _.uniq(dars['kalamehHarfForms'])
+     const darsUniqueHarfForms = _.uniq(dars['kalamehHarfKeys'])
      //console.log(darsUniqueHarfForms.length)
      let darsHarfs = darsUniqueHarfForms.reduce((tot,harfForm) => { 
-       let harf = harfs.find( g => g.harfForms.includes(harfForm))
+       let harf = harfs.find( g => g.harfKeys.includes(harfForm))
        if ( harfHash[harf.harfName] ) return tot 
        tot.push(harf)
        harfHash[harf.harfName] = 1

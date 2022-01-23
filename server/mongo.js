@@ -18,7 +18,7 @@ const studentSchema = new Schema({
 });
 const darsSchema = new Schema({
 	kalameh: String,
-  kalamehHarfForms: [String], 
+  kalamehHarfKeys: [String], 
   darsId: Number,
   numHarfLearned: Number,
   kalamehAudio: { data: String, contentType: String }
