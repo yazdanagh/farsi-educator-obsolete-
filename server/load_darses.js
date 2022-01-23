@@ -75,6 +75,7 @@ const main = async () => {
         harfAudios,
       })
     }
+    console.log("Delete and create...")
     await db.harf.deleteMany()
     await db.harf.create(harfs)
     const harfsDB = await db.harf.find({})

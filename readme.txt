@@ -17,10 +17,19 @@ sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8000
 
 3. Running mongo db
 
+in arm mac: 
+
+In rosetta terminal
+brew services start mongodb-community@5.0
+
+-----------
+
 mongodb user creation
 running: brew services start mongodb-community@4.4
 use shekkar
 db.createUser({user: "yazdan", pwd: "my_pwd", roles: ["dbOwner"] })
+db.dropUser("yazdan")
+db.createUser({user: "yazdan", pwd: "my_pwd2", roles: ["dbOwner"] })
 
 4. admin account 
 
