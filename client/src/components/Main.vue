@@ -29,7 +29,7 @@
         <source :src="audioDars" type="audio/mp3">
      </audio>
      <audio v-for="(aG,aIdx) in darsHoroof" :id="audioAlphId(aG)" :key="aIdx" >
-        <source :src="audioAlph[aG.harfSound]" type="audio/mp3">
+        <source :src="audioAlph[aG.harfSounds[0]]" type="audio/mp3">
      </audio>
    </div>
   <div>
@@ -293,7 +293,7 @@ export default {
       //  console.log(` No audio for ${harf.harfName}`)
        // url = "no_audio"
       //}
-      this.audioAlph[harf.harfSound ]  = url
+      this.audioAlph[harf.harfSounds[0] ]  = url
       for ( let [idx,harfImage] of harf.harfImages.entries() ) {
         blob = new Blob([ new Buffer(harfImage.data, 'base64')], { type: 'image/png' });
         url = window.URL.createObjectURL(blob)
@@ -539,7 +539,7 @@ export default {
     //  return '/audios/' + aG['harfSound'] + '.m4a'
     //},
     audioAlphId(aG) {
-      return aG['harfSound']
+      return aG['harfSounds'][0]
     },
 
     async clearCanvas() {

@@ -297,6 +297,7 @@ class ati {
 }
 
 const createEar = ( earPosition, audio ) => { 
+  console.log(`create ear for ${audio}`)
   let ear = document.getElementById("ear")
   let earRaster = new paper.Raster(ear)  
   earRaster.position = earPosition  
@@ -312,11 +313,12 @@ const createEar = ( earPosition, audio ) => {
 const createPlaceHolderPane = ( renderArea, TR, harfForms, darsKalameh) => {
 
   var phPane = new php( renderArea, TR, harfForms.length )
-  console.log(phPane)
+  //console.log(phPane)
   
   const earPosition = phPane.topRight.add( php.phiSpacing + renderArea.phiSide/4 , php.phiSpacing + renderArea.phiSide/2 ) 
-  if (darsKalameh) 
+  if (darsKalameh) { 
     createEar(earPosition, darsKalameh);
+  }
 
   let phInsts = []
   let idx = 0
