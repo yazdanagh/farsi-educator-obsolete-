@@ -260,12 +260,13 @@ const darsesInput = [
 
 
 // harfName,
-//       harfSound HarfKey harFrom(harfLead) primaryKey
-//       harfSound HarfKey harfForm primaryKey  
-//       if primaryKey is self
+//       harfSound HarfKey harFrom(harfLead) harfGroup
+//       harfSound HarfKey harfForm harfGroup  
+//       harfFrom can be _ which means we use harfKey instead
+//       if harfGroup is self
 //           harfKey renders as itself in alphaTile and resolve as itself in placeHolderInst 
 //       else 
-//           harfKey renders as primaryKey in alphaTile and resolve ast itself in placeHolderInst
+//           harfKey renders as harfGroup in alphaTile and resolve as itself in placeHolderInst
 const harfInput = [
   `alef 
        aa aaba aa_bakola self

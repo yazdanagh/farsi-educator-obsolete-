@@ -50,7 +50,7 @@ const main = async ( verbose ) => {
         harfFormMap[key] = harfForm
 
         const harfAudio = { data: null, contentType : "audio/mp3" } 
-        const audioFile = `../client/src/audios/${harfSound}.mp3`
+        const audioFile = `../client/src/audios_hrkt/harfs/${harfSound}.mp3`
         const fileExists = await fs.exists(audioFile)
         if ( fileExists ) {
           if ( verbose ) {
@@ -109,7 +109,7 @@ const main = async ( verbose ) => {
         })
         const kalameh = a.shift() 
         const kalamehAudio = { data: null, contentType : "audio/mp3" } 
-        const audioFile = `../client/src/audios/${kalameh}.mp3`
+        const audioFile = `../client/src/audios_hrkt/kalamehs/${kalameh}.mp3`
         //const kalamehAudio = { data: null, contentType : "audio/m4a" } 
         //const audioFile = `../client/src/audios/${kalameh}.m4a`
         const fileExists = await fs.exists(audioFile)
